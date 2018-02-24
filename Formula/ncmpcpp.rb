@@ -1,18 +1,19 @@
 class Ncmpcpp < Formula
   desc "Ncurses-based client for the Music Player Daemon"
   homepage "https://rybczak.net/ncmpcpp/"
-  url "https://ncmpcpp.rybczak.net/stable/ncmpcpp-0.7.7.tar.bz2"
-  sha256 "b7bcbec83b1f88cc7b21f196b10be09a27b430566c59f402df170163464d01ef"
+  url "https://rybczak.net/ncmpcpp/stable/ncmpcpp-0.8.1.tar.bz2"
+  sha256 "4df9570a1db4ba2dc9b759aab88b283c00806fb5d2bce5f5d27a2eb10e6888ff"
+  revision 1
 
   bottle do
     cellar :any
-    sha256 "292cadcda6559e9d12d44fc32d04122ddabb2dae490ace89324f41e39e8ec49c" => :sierra
-    sha256 "ea5fa24e458b53e0356b7d0d158d1d1fb0cc9d118b9f3e5905b784b47c68fb7d" => :el_capitan
-    sha256 "b639432437c80da9b8e268b23fd881744852f61e0fc8a398445ae6e48b7dd073" => :yosemite
+    sha256 "36c74f63fa67f4dc84efdcd203d56f0918d35c2d6923de359f127b564c99308f" => :high_sierra
+    sha256 "343c653c3ec11828500c31c6a5cc5aed9eda846b6cc5f74ddac9ad87c71b97a1" => :sierra
+    sha256 "4c05fa5f8db01f70c7392cf6102639abe45a375de0992fe074d3b28f5d37ba47" => :el_capitan
   end
 
   head do
-    url "git://repo.or.cz/ncmpcpp.git"
+    url "https://github.com/arybczak/ncmpcpp.git"
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
@@ -28,17 +29,12 @@ class Ncmpcpp < Formula
   option "with-clock", "Compile with optional clock tab"
 
   depends_on "pkg-config" => :build
+  depends_on "boost"
   depends_on "libmpdclient"
+  depends_on "ncurses"
   depends_on "readline"
+  depends_on "taglib"
   depends_on "fftw" if build.with? "visualizer"
-
-  if MacOS.version < :mavericks
-    depends_on "boost" => "c++11"
-    depends_on "taglib" => "c++11"
-  else
-    depends_on "boost"
-    depends_on "taglib"
-  end
 
   needs :cxx11
 
@@ -60,12 +56,9 @@ class Ncmpcpp < Formula
     args << "--enable-visualizer" if build.with? "visualizer"
     args << "--enable-clock" if build.with? "clock"
 
-    if build.head?
-      # Also runs configure
-      system "./autogen.sh", *args
-    else
-      system "./configure", *args
-    end
+    system "./autogen.sh" if build.head?
+    system "./configure", *args
+    system "make"
     system "make", "install"
   end
 

@@ -1,19 +1,20 @@
 class Ffmpeg < Formula
   desc "Play, record, convert, and stream audio and video"
   homepage "https://ffmpeg.org/"
-  url "https://ffmpeg.org/releases/ffmpeg-3.2.tar.bz2"
-  sha256 "76d6cd9f5e64463a5b9940736da8a515c990bcbbe506a722e2040916cb366d74"
+  url "https://ffmpeg.org/releases/ffmpeg-3.4.2.tar.bz2"
+  sha256 "eb0370bf223809b9ebb359fed5318f826ac038ce77933b3afd55ab1a0a21785a"
   head "https://github.com/FFmpeg/FFmpeg.git"
 
   bottle do
-    sha256 "84fba610ee0802576eef1a25020ff7dcd1d4f080c2a667444e47394a36980df7" => :sierra
-    sha256 "19c5859847ae7c99c51da1c4e1ee3ed3600f86643b0a6d95d7a8f522a10dff1a" => :el_capitan
-    sha256 "d5a26d633ef56f2aa37b72229629db3197d779a16c82edaa0c11509e7d6669d1" => :yosemite
+    sha256 "9df7c5868b825944edc80822e818028b4123ee8cdf85ef60eb11fed235b23c79" => :high_sierra
+    sha256 "18b50630056fbe4a3d12515f32728242349b43bd7b956f3401190861b2ccd402" => :sierra
+    sha256 "e507900d3ec72618b365588223f57428654334119d34d6d61ca58210bb7c4907" => :el_capitan
   end
 
+  option "with-chromaprint", "Enable the Chromaprint audio fingerprinting library"
   option "with-fdk-aac", "Enable the Fraunhofer FDK AAC library"
   option "with-libass", "Enable ASS/SSA subtitle format"
-  option "with-libebur128", "Enable using libebur128 for EBU R128 loudness measurement"
+  option "with-librsvg", "Enable SVG files as inputs via librsvg"
   option "with-libsoxr", "Enable the soxr resample library"
   option "with-libssh", "Enable SFTP protocol via libssh"
   option "with-tesseract", "Enable the tesseract OCR engine"
@@ -24,7 +25,6 @@ class Ffmpeg < Formula
   option "with-openssl", "Enable SSL support"
   option "with-rtmpdump", "Enable RTMP protocol"
   option "with-rubberband", "Enable rubberband library"
-  option "with-schroedinger", "Enable Dirac video format"
   option "with-sdl2", "Enable FFplay media player"
   option "with-snappy", "Enable Snappy library"
   option "with-tools", "Enable additional FFmpeg tools"
@@ -35,21 +35,24 @@ class Ffmpeg < Formula
   option "with-zimg", "Enable z.lib zimg library"
   option "without-lame", "Disable MP3 encoder"
   option "without-qtkit", "Disable deprecated QuickTime framework"
+  option "without-securetransport", "Disable use of SecureTransport"
   option "without-x264", "Disable H.264 encoder"
   option "without-xvid", "Disable Xvid MPEG-4 video encoder"
+  option "without-gpl", "Disable building GPL licensed parts of FFmpeg"
 
   deprecated_option "with-ffplay" => "with-sdl2"
   deprecated_option "with-sdl" => "with-sdl2"
   deprecated_option "with-libtesseract" => "with-tesseract"
 
+  depends_on "nasm" => :build
   depends_on "pkg-config" => :build
   depends_on "texi2html" => :build
-  depends_on "yasm" => :build
 
   depends_on "lame" => :recommended
   depends_on "x264" => :recommended
   depends_on "xvid" => :recommended
 
+  depends_on "chromaprint" => :optional
   depends_on "fdk-aac" => :optional
   depends_on "fontconfig" => :optional
   depends_on "freetype" => :optional
@@ -59,9 +62,9 @@ class Ffmpeg < Formula
   depends_on "libbluray" => :optional
   depends_on "libbs2b" => :optional
   depends_on "libcaca" => :optional
-  depends_on "libebur128" => :optional
   depends_on "libgsm" => :optional
   depends_on "libmodplug" => :optional
+  depends_on "librsvg" => :optional
   depends_on "libsoxr" => :optional
   depends_on "libssh" => :optional
   depends_on "libvidstab" => :optional
@@ -74,7 +77,6 @@ class Ffmpeg < Formula
   depends_on "opus" => :optional
   depends_on "rtmpdump" => :optional
   depends_on "rubberband" => :optional
-  depends_on "schroedinger" => :optional
   depends_on "sdl2" => :optional
   depends_on "snappy" => :optional
   depends_on "speex" => :optional
@@ -89,17 +91,10 @@ class Ffmpeg < Formula
   depends_on "zimg" => :optional
 
   def install
-    # Fixes "dyld: lazy symbol binding failed: Symbol not found: _clock_gettime"
-    if MacOS.version == "10.11" && MacOS::Xcode.installed? && MacOS::Xcode.version >= "8.0"
-      inreplace %w[libavdevice/v4l2.c libavutil/time.c], "HAVE_CLOCK_GETTIME",
-                                                         "UNDEFINED_GIBBERISH"
-    end
-
     args = %W[
       --prefix=#{prefix}
       --enable-shared
       --enable-pthreads
-      --enable-gpl
       --enable-version3
       --enable-hardcoded-tables
       --enable-avresample
@@ -108,14 +103,17 @@ class Ffmpeg < Formula
       --host-ldflags=#{ENV.ldflags}
     ]
 
+    args << "--disable-jack" if build.stable?
+    args << "--enable-gpl" if build.with? "gpl"
     args << "--disable-indev=qtkit" if build.without? "qtkit"
+    args << "--disable-securetransport" if build.without? "securetransport"
+    args << "--enable-chromaprint" if build.with? "chromaprint"
     args << "--enable-ffplay" if build.with? "sdl2"
     args << "--enable-frei0r" if build.with? "frei0r"
     args << "--enable-libass" if build.with? "libass"
     args << "--enable-libbluray" if build.with? "libbluray"
     args << "--enable-libbs2b" if build.with? "libbs2b"
     args << "--enable-libcaca" if build.with? "libcaca"
-    args << "--enable-libebur128" if build.with? "libebur128"
     args << "--enable-libfdk-aac" if build.with? "fdk-aac"
     args << "--enable-libfontconfig" if build.with? "fontconfig"
     args << "--enable-libfreetype" if build.with? "freetype"
@@ -126,9 +124,9 @@ class Ffmpeg < Formula
     args << "--enable-libopencore-amrnb" << "--enable-libopencore-amrwb" if build.with? "opencore-amr"
     args << "--enable-libopenh264" if build.with? "openh264"
     args << "--enable-libopus" if build.with? "opus"
+    args << "--enable-librsvg" if build.with? "librsvg"
     args << "--enable-librtmp" if build.with? "rtmpdump"
     args << "--enable-librubberband" if build.with? "rubberband"
-    args << "--enable-libschroedinger" if build.with? "schroedinger"
     args << "--enable-libsnappy" if build.with? "snappy"
     args << "--enable-libsoxr" if build.with? "libsoxr"
     args << "--enable-libspeex" if build.with? "speex"
@@ -147,6 +145,7 @@ class Ffmpeg < Formula
     args << "--enable-libzimg" if build.with? "zimg"
     args << "--enable-libzmq" if build.with? "zeromq"
     args << "--enable-opencl" if MacOS.version > :lion
+    args << "--enable-videotoolbox" if MacOS.version >= :mountain_lion
     args << "--enable-openssl" if build.with? "openssl"
 
     if build.with? "xz"
@@ -163,34 +162,9 @@ class Ffmpeg < Formula
 
     # These librares are GPL-incompatible, and require ffmpeg be built with
     # the "--enable-nonfree" flag, which produces unredistributable libraries
-    if %w[fdk-aac openssl].any? { |f| build.with? f }
-      args << "--enable-nonfree"
-    end
-
-    # A bug in a dispatch header on 10.10, included via CoreFoundation,
-    # prevents GCC from building VDA support. GCC has no problems on
-    # 10.9 and earlier.
-    # See: https://github.com/Homebrew/homebrew/issues/33741
-    if MacOS.version < :yosemite || ENV.compiler == :clang
-      args << "--enable-vda"
-    else
-      args << "--disable-vda"
-    end
-
-    # For 32-bit compilation under gcc 4.2, see:
-    # https://trac.macports.org/ticket/20938#comment:22
-    ENV.append_to_cflags "-mdynamic-no-pic" if Hardware::CPU.is_32_bit? && Hardware::CPU.intel? && ENV.compiler == :clang
+    args << "--enable-nonfree" if build.with?("fdk-aac") || build.with?("openssl")
 
     system "./configure", *args
-
-    if MacOS.prefer_64_bit?
-      inreplace "config.mak" do |s|
-        shflags = s.get_make_var "SHFLAGS"
-        if shflags.gsub!(" -Wl,-read_only_relocs,suppress", "")
-          s.change_make_var! "SHFLAGS", shflags
-        end
-      end
-    end
 
     system "make", "install"
 
@@ -204,6 +178,6 @@ class Ffmpeg < Formula
     # Create an example mp4 file
     mp4out = testpath/"video.mp4"
     system bin/"ffmpeg", "-filter_complex", "testsrc=rate=1:duration=1", mp4out
-    assert mp4out.exist?
+    assert_predicate mp4out, :exist?
   end
 end

@@ -1,13 +1,14 @@
 class Sickbeard < Formula
   desc "PVR application to search and manage TV shows"
   homepage "http://www.sickbeard.com/"
-  head "https://github.com/midgetspy/Sick-Beard.git"
   url "https://github.com/midgetspy/Sick-Beard/archive/build-507.tar.gz"
   sha256 "eaf95ac78e065f6dd8128098158b38674479b721d95d937fe7adb892932e9101"
+  head "https://github.com/midgetspy/Sick-Beard.git"
 
   bottle do
     cellar :any_skip_relocation
     rebuild 1
+    sha256 "d9db0e5fd4383ca3c388e597dd09f0240be542e54eab6e70265dca613c62f78e" => :high_sierra
     sha256 "6138d1320eeaa59271e29ac77f922054368ce833b1bb913e44c9931b2b112961" => :sierra
     sha256 "2954e69685502cf87b91ace26ed1d8ac5f7286368bacb38c786cb0f23f3b36dc" => :el_capitan
     sha256 "e6948de6d4e6a4511f16b83d06e6d5c65adfb422a371620ddc90354a270b151f" => :yosemite
@@ -39,9 +40,13 @@ class Sickbeard < Formula
     (bin+"sickbeard").write(startup_script)
   end
 
+  def caveats
+    "SickBeard defaults to port 8081."
+  end
+
   plist_options :manual => "sickbeard"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -63,7 +68,7 @@ class Sickbeard < Formula
     EOS
   end
 
-  def startup_script; <<-EOS.undent
+  def startup_script; <<~EOS
     #!/bin/bash
     export PYTHONPATH="#{libexec}/lib/python2.7/site-packages:$PYTHONPATH"
     python "#{libexec}/SickBeard.py"\
@@ -71,9 +76,5 @@ class Sickbeard < Formula
            "--datadir=#{etc}/sickbeard"\
            "$@"
     EOS
-  end
-
-  def caveats
-    "SickBeard defaults to port 8081."
   end
 end

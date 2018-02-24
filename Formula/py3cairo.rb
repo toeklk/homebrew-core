@@ -1,28 +1,22 @@
 class Py3cairo < Formula
   desc "Python 3 bindings for the Cairo graphics library"
   homepage "https://cairographics.org/pycairo/"
-  url "https://cairographics.org/releases/pycairo-1.10.0.tar.bz2"
-  mirror "https://distfiles.macports.org/py-cairo/pycairo-1.10.0.tar.bz2"
-  sha256 "9aa4078e7eb5be583aeabbe8d87172797717f95e8c4338f0d4a17b683a7253be"
-  revision 2
+  url "https://github.com/pygobject/pycairo/releases/download/v1.16.2/pycairo-1.16.2.tar.gz"
+  sha256 "49a3cf8737c009852e97289d43e952bf228d8df53a7ddb840d4deeb4d0cc1ea7"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "4c09c892ebd8cbb783d9191b055b30f7b45ae2048dfaef9754c26e0f9d49b22b" => :sierra
-    sha256 "3e853d8591df79acdd2406fb0696f136ef27de7064b4383827180c423b2e167b" => :el_capitan
-    sha256 "679305655b5d1453e338dac356d81c42796313fc1092cdcdef01f5f2e53e6043" => :yosemite
+    sha256 "8f0e738c337db39228c54613d92628f38f9ae484c44091b7009712db5c1c0976" => :high_sierra
+    sha256 "cd33e199107a61afb3602bce56a568b1a18178907387384967628097b0502a88" => :sierra
+    sha256 "0280c974f1035f80ba3dfe1ee41003f0be0fbfe63e1ec78bbd45a580254c9d7c" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "cairo"
-  depends_on :python3
+  depends_on "python3"
 
   def install
-    ENV["PYTHON"] = "python3"
-    system "./waf", "configure", "--prefix=#{prefix}"
-    system "./waf", "build"
-    system "./waf", "install"
+    system "python3", *Language::Python.setup_install_args(prefix)
   end
 
   test do

@@ -1,16 +1,16 @@
 class N < Formula
   desc "Node version management"
   homepage "https://github.com/tj/n"
-  url "https://github.com/tj/n/archive/v2.1.0.tar.gz"
-  sha256 "6fb70b39065a6d6ba1d12915906c06907a3e1afbb25c7653ad23a21217f51c76"
+  url "https://github.com/tj/n/archive/v2.1.7.tar.gz"
+  sha256 "2ba3c9d4dd3c7e38885b37e02337906a1ee91febe6d5c9159d89a9050f2eea8f"
   head "https://github.com/tj/n.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "9f6ffe51fb747e1f989ece22bcb69c9af829d223cb7be4ecb7f7e95899804cf6" => :sierra
-    sha256 "c3c3d85ecf24faaa4fd58531bc231ec811a9d2839d5aeae4112e0c47a36ea5ac" => :el_capitan
-    sha256 "e71ab24dcf496d2022327fe70fb7ee2fbf5fc66ebc5895c856d85e2825a662f8" => :yosemite
-    sha256 "da5e7575c5f86216e67a43068071d0441db7d2ef91a2058c1d383a02a0bad173" => :mavericks
+    sha256 "a538489555c1201252853388588b5b12330f81a79fb86b64858f27a0386ef436" => :high_sierra
+    sha256 "33b215f0d3ee9bd1182b261025621f01ee42c0cc452475f206673e62e97b1092" => :sierra
+    sha256 "65df30f85c36938e4c0c608e9849d784213dda13d717989755965377c74ae7a9" => :el_capitan
+    sha256 "65df30f85c36938e4c0c608e9849d784213dda13d717989755965377c74ae7a9" => :yosemite
   end
 
   def install

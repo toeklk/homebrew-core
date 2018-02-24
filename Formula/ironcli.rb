@@ -1,27 +1,26 @@
 class Ironcli < Formula
   desc "Go version of the Iron.io command-line tools"
   homepage "https://github.com/iron-io/ironcli"
-  url "https://github.com/iron-io/ironcli/archive/0.1.3.tar.gz"
-  sha256 "7fc530da947b31ba3a60e74a065deac5a88cb1a4c34dc7835998645816894af1"
+  url "https://github.com/iron-io/ironcli/archive/0.1.6.tar.gz"
+  sha256 "2b9e65c36e4f57ccb47449d55adc220d1c8d1c0ad7316b6afaf87c8d393caae6"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "ecae4943c3a6a2827c8d34cc75173f0ac816c2221ecab05804f88b8c48a849d4" => :sierra
-    sha256 "7020a17bdbe63f9685c4e3e8407599f41faa1484572103bdc8e73f524cef7e15" => :el_capitan
-    sha256 "816e9831e6f00e9f919cb2c5e2b0744f12d32ab846e0627d8a1ed89b2180287f" => :yosemite
+    sha256 "c4f4ad82734f93b32a2f64e1adaaf493fa38b4e34cbc9298fbbdc02851003343" => :high_sierra
+    sha256 "14d4bcd4ac89e89fb09b27994ba372d1e25690724c99b7ffbfb0231466c01bca" => :sierra
+    sha256 "62bed7f56cf23a148407527ff2b1234638ae0b365806ccc79c602ee081eed1dc" => :el_capitan
   end
 
+  depends_on "dep" => :build
   depends_on "go" => :build
-  depends_on "glide" => :build
 
   def install
     ENV["GOPATH"] = buildpath
-    ENV["GLIDE_HOME"] = HOMEBREW_CACHE/"glide_home/#{name}"
-    dir = buildpath/"src/github.com/iron-io/ironcli"
-    dir.install Dir["*"]
-    cd dir do
-      system "glide", "install"
+    (buildpath/"src/github.com/iron-io/ironcli").install buildpath.children
+    cd "src/github.com/iron-io/ironcli" do
+      system "dep", "ensure"
       system "go", "build", "-o", bin/"iron"
+      prefix.install_metafiles
     end
   end
 

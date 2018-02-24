@@ -1,30 +1,75 @@
 class Gmime < Formula
   desc "MIME mail utilities"
-  homepage "http://spruce.sourceforge.net/gmime/"
-  url "https://download.gnome.org/sources/gmime/2.6/gmime-2.6.20.tar.xz"
-  sha256 "e0a170fb264c2ae4cecd852f4e7aaddb8d58e8f3f0b569ce2d2a4704f55bdf65"
+  homepage "https://spruce.sourceforge.io/gmime/"
+  url "https://download.gnome.org/sources/gmime/3.2/gmime-3.2.0.tar.xz"
+  sha256 "75ec6033f9192488ff37745792c107b3d0ab0a36c2d3e4f732901a771755d7e0"
 
   bottle do
-    cellar :any
-    sha256 "cb981e780b4171bd0547071cd3774fd853a1c59fbcaad68d2a5264e9be8a3917" => :sierra
-    sha256 "848440f6eaec305993135ee8708b81ad5ae2cfa9cfb5f7e6fcc8f4d077e9eda0" => :el_capitan
-    sha256 "445348c5634172858befc936961626d1bc45ee6e6119f11b764032efc1b96687" => :yosemite
-    sha256 "be33acb8e9285f2d17a0895fb7c85b0938c517708e81ea3de34a86065f0c49cd" => :mavericks
-    sha256 "89e935d9ed23f2c5c426e2f19a112a682e71e805ac89f7faf91f102e24676691" => :mountain_lion
+    sha256 "f259025c542b5d0486c23d001dbf858cfd50beca495dad58dbcb2d6027376660" => :high_sierra
+    sha256 "9d696db40dba32aac602a9ba84516520c63e74c31e60002d59dc8baa83d20748" => :sierra
+    sha256 "cb7d81356c0fc27f95110a21929dc4772dc571269fbe1ed2cb7c5d7079c7490b" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
-  depends_on "libgpg-error" => :build
+  depends_on "gobject-introspection" => :recommended
   depends_on "glib"
+  depends_on "gpgme"
 
   def install
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--enable-largefile",
-                          "--disable-introspection",
-                          "--disable-vala",
-                          "--disable-mono",
-                          "--disable-glibtest"
+    args = %W[
+      --disable-dependency-tracking
+      --prefix=#{prefix}
+      --enable-largefile
+      --disable-vala
+      --disable-glibtest
+      --enable-crypto
+    ]
+
+    if build.with? "gobject-introspection"
+      args << "--enable-introspection"
+    else
+      args << "--disable-introspection"
+    end
+
+    system "./configure", *args
     system "make", "install"
+  end
+
+  test do
+    (testpath/"test.c").write <<~EOS
+      #include <stdio.h>
+      #include <gmime/gmime.h>
+      int main (int argc, char **argv)
+      {
+        g_mime_init();
+        if (gmime_major_version>=3) {
+          return 0;
+        } else {
+          return 1;
+        }
+      }
+      EOS
+    gettext = Formula["gettext"]
+    glib = Formula["glib"]
+    pcre = Formula["pcre"]
+    flags = (ENV.cflags || "").split + (ENV.cppflags || "").split + (ENV.ldflags || "").split
+    flags += %W[
+      -I#{gettext.opt_include}
+      -I#{glib.opt_include}/glib-2.0
+      -I#{glib.opt_lib}/glib-2.0/include
+      -I#{include}/gmime-3.0
+      -I#{pcre.opt_include}
+      -D_REENTRANT
+      -L#{gettext.opt_lib}
+      -L#{glib.opt_lib}
+      -L#{lib}
+      -lgio-2.0
+      -lglib-2.0
+      -lgmime-3.0
+      -lgobject-2.0
+      -lintl
+    ]
+    system ENV.cc, "-o", "test", "test.c", *flags
+    system "./test"
   end
 end

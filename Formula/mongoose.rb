@@ -1,14 +1,14 @@
 class Mongoose < Formula
   desc "Web server build on top of Libmongoose embedded library"
   homepage "https://github.com/cesanta/mongoose"
-  url "https://github.com/cesanta/mongoose/archive/6.6.tar.gz"
-  sha256 "ecb67def6ce8182665e8bc5da6a14ba72bc878587d133461da79539cfc8ab414"
+  url "https://github.com/cesanta/mongoose/archive/6.11.tar.gz"
+  sha256 "74ee598bb0eba87780becb56586e4342d1b9a85282c53a11cb5ef87d2b66256b"
 
   bottle do
     cellar :any
-    sha256 "2a29b6494d6e7d38b616ee8f8fabdbcec42377b17afb4eb1d399886fadb2b292" => :sierra
-    sha256 "a55500b5747b8629023e0e132794a1f9d6e81b048d52c2bec43444346dd1b552" => :el_capitan
-    sha256 "f81a27631658176fccaceaf55f2c93a536bcf21f7f7d18e5aa2d6666ff43f817" => :yosemite
+    sha256 "569e2ff5b7d5864e3133ac6b5d941f5681006d06b8506b4fee1ac1cfc514ff74" => :high_sierra
+    sha256 "12e2cdc336a00a9798bd2bc5e278a39ac30fc93055490e3faf069aff1690a7d8" => :sierra
+    sha256 "788bd2c11b0edf968e786cb4869b8ca383df694f868c81cc269ca2f3eb7fc5f7" => :el_capitan
   end
 
   depends_on "openssl" => :recommended
@@ -30,7 +30,7 @@ class Mongoose < Formula
   end
 
   test do
-    (testpath/"hello.html").write <<-EOS.undent
+    (testpath/"hello.html").write <<~EOS
       <!DOCTYPE html>
       <html>
         <head>

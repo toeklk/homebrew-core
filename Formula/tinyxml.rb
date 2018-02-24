@@ -6,14 +6,13 @@ class Tinyxml < Formula
 
   bottle do
     cellar :any
+    sha256 "ec0f83018a9ff93c11b6a8c92483056b2771359a14aedfb6dc46e1ab078ce9ac" => :high_sierra
     sha256 "ef8c7bbbae6148e161b6f3369ede8bd3533a32847dc716000b46d26e6fb1c26c" => :sierra
     sha256 "16e6052892b43e68c45f5122b6802e9bc32001dc9478dfcd89511a24544660e5" => :el_capitan
     sha256 "4b1df9cb229b04f9968621a52737d96e86fcd6c2ad8904ae8a5c324347845f50" => :yosemite
     sha256 "75f79bb5d502e7be74de20e1cd3e3dcdd4702b37ef7de53d9d9a546a51776b50" => :mavericks
     sha256 "2db8d34dafd503a2982dd9ca5ffb4a2a2740e0eb78195933cb121dd7b7836728" => :mountain_lion
   end
-
-  option :universal
 
   depends_on "cmake" => :build
 
@@ -39,13 +38,12 @@ class Tinyxml < Formula
   end
 
   def install
-    ENV.universal_binary if build.universal?
     system "cmake", ".", *std_cmake_args
     system "make", "install"
     (lib+"pkgconfig/tinyxml.pc").write pc_file
   end
 
-  def pc_file; <<-EOS.undent
+  def pc_file; <<~EOS
     prefix=#{opt_prefix}
     exec_prefix=${prefix}
     libdir=${exec_prefix}/lib
@@ -60,11 +58,11 @@ class Tinyxml < Formula
   end
 
   test do
-    (testpath/"test.xml").write <<-EOS.undent
+    (testpath/"test.xml").write <<~EOS
       <?xml version="1.0" ?>
       <Hello>World</Hello>
     EOS
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <tinyxml.h>
 
       int main()

@@ -3,21 +3,20 @@ class Supervisor < Formula
 
   desc "Process Control System"
   homepage "http://supervisord.org/"
-  url "https://github.com/Supervisor/supervisor/archive/3.3.1.tar.gz"
-  sha256 "454f532fae5a54363838fba42bc568f7b2fd0fd71d946b8c39d848a225d0da0f"
+  url "https://github.com/Supervisor/supervisor/archive/3.3.4.tar.gz"
+  sha256 "d6456e784a54d90b11bacd95d18382e336aa9786f33c91830a0941df4748ed02"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "f5dfbd7f65cc792d05dbe7f4ae4d4eb2378c3572ee88434990c6d88eaaf96c20" => :sierra
-    sha256 "920599306afc192e6c0dd6a2b5357ad04adf141d617b7279e1aa70497e79a6c9" => :el_capitan
-    sha256 "3de17d476d3b0eb0ccefb3b6ead1ed12a973e0b98dd489f6250f06d5f0552cb2" => :yosemite
-    sha256 "128cffecdcff84b578905be655dbbeeb82f1b0e3a49fafeab833b97b8fb58f83" => :mavericks
+    sha256 "de602ba5a4d850c369a1cb9f7275044babd776b21aed0d028e87b68e68dba2b4" => :high_sierra
+    sha256 "432c2afe07eecfb03c4b8268caa0898b68cd7af5bf6364ae71d054e805842905" => :sierra
+    sha256 "dfae5fc72acbfe08f53222ee70fa34259c29a46927272f1af8512c010acf02df" => :el_capitan
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
 
   resource "meld3" do
-    url "https://pypi.python.org/packages/source/m/meld3/meld3-1.0.2.tar.gz"
+    url "https://files.pythonhosted.org/packages/45/a0/317c6422b26c12fe0161e936fc35f36552069ba8e6f7ecbd99bbffe32a5f/meld3-1.0.2.tar.gz"
     sha256 "f7b754a0fde7a4429b2ebe49409db240b5699385a572501bb0d5627d299f9558"
   end
 
@@ -38,7 +37,7 @@ class Supervisor < Formula
   plist_options :manual => "supervisord -c #{HOMEBREW_PREFIX}/etc/supervisord.ini"
 
   def plist
-    <<-EOS.undent
+    <<~EOS
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       <plist version="1.0">
@@ -68,7 +67,7 @@ class Supervisor < Formula
   end
 
   test do
-    (testpath/"sd.ini").write <<-EOS.undent
+    (testpath/"sd.ini").write <<~EOS
       [unix_http_server]
       file=supervisor.sock
 

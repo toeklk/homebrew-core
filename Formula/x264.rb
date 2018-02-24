@@ -2,27 +2,22 @@ class X264 < Formula
   desc "H.264/AVC encoder"
   homepage "https://www.videolan.org/developers/x264.html"
   # the latest commit on the stable branch
-  url "https://git.videolan.org/git/x264.git", :revision => "86b71982e131eaa70125f8d0e725fcade9c4c677"
-  version "r2708"
+  url "https://git.videolan.org/git/x264.git",
+      :revision => "e9a5903edf8ca59ef20e6f4894c196f135af735e"
+  version "r2854"
   head "https://git.videolan.org/git/x264.git"
 
   bottle do
     cellar :any
-    sha256 "a795934302fb05c99877f3964fda26c5eab209151f07fe71db9f2240af2ece32" => :sierra
-    sha256 "996b9403ec3fd21d483b83a092433529f986838b1af3c010888ce2f4c5bb1f94" => :el_capitan
-    sha256 "b9271495a8f01a534b123e1cc3061480ac9c5125489d701248b964ce5614da0a" => :yosemite
-  end
-
-  devel do
-    # the latest commit on the master branch
-    url "https://git.videolan.org/git/x264.git", :revision => "72d53ab2ac7af24597a824e868f2ef363a22f5d4"
-    version "r2721"
+    sha256 "2e2cf99b9f06181e9d1bbd549e3426717d4fb93fc12fe2cd7f295b92f7b28a55" => :high_sierra
+    sha256 "b656ff61da5b8ab33dc940bb4efa57bed89c3d40e79416aee8a960d8f7f2e4f1" => :sierra
+    sha256 "3ac151bdd5cf62a55fb41c60761c548db721a7b6c1ebc6f4af5b4fc71b499e7f" => :el_capitan
   end
 
   option "with-10-bit", "Build a 10-bit x264 (default: 8-bit)"
   option "with-l-smash", "Build CLI with l-smash mp4 output"
 
-  depends_on "yasm" => :build
+  depends_on "nasm" => :build
   depends_on "l-smash" => :optional
 
   deprecated_option "10-bit" => "with-10-bit"
@@ -42,7 +37,7 @@ class X264 < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <stdint.h>
       #include <x264.h>
 
@@ -55,7 +50,7 @@ class X264 < Formula
           return 0;
       }
     EOS
-    system ENV.cc, "-lx264", "test.c", "-o", "test"
+    system ENV.cc, "-L#{lib}", "-lx264", "test.c", "-o", "test"
     system "./test"
   end
 end

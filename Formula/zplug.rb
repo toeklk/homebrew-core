@@ -1,8 +1,8 @@
 class Zplug < Formula
   desc "The next-generation plugin manager for zsh"
   homepage "https://zplug.sh/"
-  url "https://github.com/zplug/zplug/archive/2.3.2.tar.gz"
-  sha256 "ce7083915eb715841ed0a6e2bc0ab84aec69b49d461511bf6496fc06bc79e45c"
+  url "https://github.com/zplug/zplug/archive/2.4.2.tar.gz"
+  sha256 "82a51e8c388844acbfb64196623bede07eee2384f1fc30966eac880373aa9030"
   head "https://github.com/zplug/zplug.git"
 
   bottle :unneeded
@@ -16,7 +16,7 @@ class Zplug < Formula
     touch prefix/"packages.zsh"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     In order to use zplug, please add the following to your .zshrc:
       export ZPLUG_HOME=#{opt_prefix}
       source $ZPLUG_HOME/init.zsh

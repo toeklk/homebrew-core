@@ -3,53 +3,58 @@ class Thefuck < Formula
 
   desc "Programatically correct mistyped console commands"
   homepage "https://github.com/nvbn/thefuck"
-  url "https://files.pythonhosted.org/packages/60/79/be88fab918f5b1004174d51c3bdcdf69768d9f5d66a148c6214b1a1ddb13/thefuck-3.11.tar.gz"
-  sha256 "a7a7145699b3f6a5054f9bdb2979a74f63869803eb72125325c68991ea9a966b"
+  url "https://files.pythonhosted.org/packages/ec/20/3f136313c27ea36ba38d31818b9f0a1a4656668fc6747b3bfa04f3debc98/thefuck-3.25.tar.gz"
+  sha256 "70cbe6295d2d2d371a395619216d38eb1666e4b3c3b1a24f67d11b88e65fea78"
+  revision 1
   head "https://github.com/nvbn/thefuck.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "4df009ba13d6e6acdfccbedc61a68a9afce4efcb2de9de3f18d3ca5fdcc1a783" => :sierra
-    sha256 "76b8b3a739db3d716d983fd30ce15c3ccb2056cc1d52fea2f15c4a9c8f8fd7ec" => :el_capitan
-    sha256 "cf3be90c176ee71167389e325f0de3663a82567572fe528971733e3165ff304d" => :yosemite
-    sha256 "3690744f57178d0e2e945b3039d0ce937aa774533909509d9ffc59461d69a9e8" => :mavericks
+    sha256 "ebcbf91843da49d8b57f711d238935f06c84547e960d96bdbb19e77461681ddf" => :high_sierra
+    sha256 "cedb475fcf1ca8865f23a1ad482effbcf55472d3d753d084eec12d3810f02ccf" => :sierra
+    sha256 "7c78686d8277a148e9d10247df47bbe5d83b4d6265ce779ae97c039350e27d01" => :el_capitan
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python3"
 
   resource "colorama" do
-    url "https://files.pythonhosted.org/packages/f0/d0/21c6449df0ca9da74859edc40208b3a57df9aca7323118c913e58d442030/colorama-0.3.7.tar.gz"
-    sha256 "e043c8d32527607223652021ff648fbb394d5e19cba9f1a698670b338c9d782b"
+    url "https://files.pythonhosted.org/packages/e6/76/257b53926889e2835355d74fec73d82662100135293e17d382e2b74d1669/colorama-0.3.9.tar.gz"
+    sha256 "48eb22f4f8461b1df5734a074b57042430fb06e1d61bd1e11b078c0fe6d7a1f1"
   end
 
   resource "decorator" do
-    url "https://files.pythonhosted.org/packages/13/8a/4eed41e338e8dcc13ca41c94b142d4d20c0de684ee5065523fee406ce76f/decorator-4.0.10.tar.gz"
-    sha256 "9c6e98edcb33499881b86ede07d9968c81ab7c769e28e9af24075f0a5379f070"
-  end
-
-  resource "pathlib2" do
-    url "https://files.pythonhosted.org/packages/c9/27/8448b10d8440c08efeff0794adf7d0ed27adb98372c70c7b38f3947d4749/pathlib2-2.1.0.tar.gz"
-    sha256 "deb3a960c1d55868dfbcac98432358b92ba89d95029cddd4040db1f27405055c"
+    url "https://files.pythonhosted.org/packages/bb/e0/f6e41e9091e130bf16d4437dabbac3993908e4d6485ecbc985ef1352db94/decorator-4.1.2.tar.gz"
+    sha256 "7cb64d38cb8002971710c8899fbdfb859a23a364b7c99dab19d1f719c2ba16b5"
   end
 
   resource "psutil" do
-    url "https://files.pythonhosted.org/packages/22/a8/6ab3f0b3b74a36104785808ec874d24203c6a511ffd2732dd215cf32d689/psutil-4.3.0.tar.gz"
-    sha256 "86197ae5978f216d33bfff4383d5cc0b80f079d09cf45a2a406d1abb5d0299f0"
+    url "https://files.pythonhosted.org/packages/fe/17/0f0bf5792b2dfe6003efc5175c76225f7d3426f88e2bf8d360cfab870cd8/psutil-5.4.1.tar.gz"
+    sha256 "42e2de159e3c987435cb3b47d6f37035db190a1499f3af714ba7af5c379b6ba2"
+  end
+
+  resource "pyte" do
+    url "https://files.pythonhosted.org/packages/d2/1c/f65766736e40916b9a27c6cd582313e78092501b68284d44a1b014f30230/pyte-0.7.0.tar.gz"
+    sha256 "873acb47b624b9f30e9c54fab9c06a53be3b6bfa4b3d863ab30f55e93724c5aa"
   end
 
   resource "six" do
-    url "https://files.pythonhosted.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-1.10.0.tar.gz"
-    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
+    url "https://files.pythonhosted.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"
+    sha256 "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
+  end
+
+  resource "wcwidth" do
+    url "https://files.pythonhosted.org/packages/55/11/e4a2bb08bb450fdbd42cc709dd40de4ed2c472cf0ccb9e64af22279c5495/wcwidth-0.1.7.tar.gz"
+    sha256 "3df37372226d6e63e1b1e1eda15c594bca98a22d33a23832a90998faa96bc65e"
   end
 
   def install
     virtualenv_install_with_resources
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Add the following to your .bash_profile, .bashrc or .zshrc:
 
-      eval "$(thefuck --alias)"
+      eval $(thefuck --alias)
 
     For other shells, check https://github.com/nvbn/thefuck/wiki/Shell-aliases
     EOS
@@ -57,12 +62,13 @@ class Thefuck < Formula
 
   test do
     ENV["THEFUCK_REQUIRE_CONFIRMATION"] = "false"
+    ENV["LC_ALL"] = "en_US.UTF-8"
 
     output = shell_output("#{bin}/thefuck --version 2>&1")
     assert_match "The Fuck #{version} using Python", output
 
     output = shell_output("#{bin}/thefuck --alias")
-    assert_match /.+TF_ALIAS.+thefuck.+/, output
+    assert_match "TF_ALIAS=fuck", output
 
     output = shell_output("#{bin}/thefuck git branchh")
     assert_equal "git branch", output.chomp

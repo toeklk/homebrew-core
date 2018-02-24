@@ -1,24 +1,37 @@
 class Latex2html < Formula
   desc "LaTeX-to-HTML translator"
   homepage "https://www.ctan.org/pkg/latex2html"
-  url "http://mirrors.ctan.org/support/latex2html/latex2html-2016.tar.gz"
-  sha256 "ab1dbc18ab0ec62f65c1f8c14f2b74823a0a2fc54b07d73ca49524bcae071309"
+  url "http://mirrors.ctan.org/support/latex2html/latex2html-2018.tar.gz"
+  sha256 "09e37526d169e77c266c23122348998a0841c3d50866e45ff2550128157ad4e2"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "96aba432faa475b5201a84d032e5e4e90d95264e23387ba20bd59fea5d06403b" => :sierra
-    sha256 "093a49aaa3b77c884b9e7aa7ebcff872dc763a984c779fa03b3a50013c311ea1" => :el_capitan
-    sha256 "6a304d1b869c3bdb472c4eea5b4251e626a89446c3d55443da81bbbbe626a59c" => :yosemite
+    sha256 "85d6f0725f609bcb997296d58304a466b8a0ae7a21440953f822feea0b34f05f" => :high_sierra
+    sha256 "f1ee587fcf18d7c94eff2e0cc377e255f7a6c3495558438227e74a51d66a71d8" => :sierra
+    sha256 "484dc0ebe2273a16cf1f35bd76a1ef551eee16406fd5927d551c86a7a788212e" => :el_capitan
   end
 
   depends_on "netpbm"
   depends_on "ghostscript"
-  depends_on :tex => :optional
 
   def install
     system "./configure", "--prefix=#{prefix}",
                           "--without-mktexlsr",
                           "--with-texpath=#{share}/texmf/tex/latex/html"
     system "make", "install"
+  end
+
+  test do
+    (testpath/"test.tex").write <<~EOS
+      \\documentclass{article}
+      \\usepackage[utf8]{inputenc}
+      \\title{Experimental Setup}
+      \\date{\\today}
+      \\begin{document}
+      \\maketitle
+      \\end{document}
+    EOS
+    system "#{bin}/latex2html", "test.tex"
+    assert_match /Experimental Setup/, File.read("test/test.html")
   end
 end

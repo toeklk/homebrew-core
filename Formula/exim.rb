@@ -1,21 +1,20 @@
 class Exim < Formula
   desc "Complete replacement for sendmail"
   homepage "https://exim.org"
-  url "http://ftp.exim.org/pub/exim/exim4/exim-4.87.tar.bz2"
-  mirror "https://www.mirrorservice.org/sites/ftp.exim.org/pub/exim/exim4/exim-4.87.tar.bz2"
-  sha256 "74691e0dff4d1b5d387e9c33c86f96a8f6d2adbc781c0dec9d2061a847b07dc9"
+  url "https://ftp.exim.org/pub/exim/exim4/exim-4.90.1.tar.xz"
+  sha256 "5c98dfd12043be5751b88ef64d5363cd99284236eaeec6316b062a7628c2f726"
 
   bottle do
-    sha256 "ae1edaa9bf887ede5ed4b3617486b02b9e40ca693beacf6f6eee264be1d5de73" => :sierra
-    sha256 "55453f4af7c7d9c0484869ac923fc7ff4e49e866ec70cedff00cd12358466dd7" => :el_capitan
-    sha256 "033f2c0465b702ea98b89c74858be24026215c957504ab695c57daefd2c60d7e" => :yosemite
+    sha256 "4e7766c4ac809c41d87d258c056aa706f4704acd5e28e15768ac1ae5b3b9673f" => :high_sierra
+    sha256 "809ae3690e6581365f97aca7222020eb2e4ebdc31b8f529ae3fb35a38f680046" => :sierra
+    sha256 "bf8f087f3e15750160b825c2dc5a93c82115ae68568938ef086fe7a18f13e726" => :el_capitan
   end
 
   deprecated_option "support-maildir" => "with-maildir"
   option "with-maildir", "Support delivery in Maildir format"
 
   depends_on "pcre"
-  depends_on "berkeley-db4"
+  depends_on "berkeley-db@4"
   depends_on "openssl"
 
   def install
@@ -40,7 +39,9 @@ class Exim < Formula
       s << "LOOKUP_LIBS=-L#{HOMEBREW_PREFIX}/lib\n"
     end
 
-    bdb4 = Formula["berkeley-db4"]
+    bdb4 = Formula["berkeley-db@4"]
+
+    mv Dir["OS/unsupported/*Darwin*"], "OS"
 
     inreplace "OS/Makefile-Darwin" do |s|
       s.remove_make_var! %w[CC CFLAGS]
@@ -52,7 +53,7 @@ class Exim < Formula
     # The compile script ignores CPPFLAGS
     ENV.append "CFLAGS", ENV.cppflags
 
-    ENV.j1 # See: https://lists.exim.org/lurker/thread/20111109.083524.87c96d9b.en.html
+    ENV.deparallelize # See: https://lists.exim.org/lurker/thread/20111109.083524.87c96d9b.en.html
     system "make"
     system "make", "INSTALL_ARG=-no_chown", "install"
     man8.install "doc/exim.8"
@@ -60,7 +61,7 @@ class Exim < Formula
   end
 
   # Inspired by MacPorts startup script. Fixes restart issue due to missing setuid.
-  def startup_script; <<-EOS.undent
+  def startup_script; <<~EOS
     #!/bin/sh
     PID=#{var}/spool/exim/exim-daemon.pid
     case "$1" in
@@ -84,7 +85,7 @@ class Exim < Formula
     EOS
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Start with:
       exim_ctl start
     Don't forget to run it as root to be able to bind port 25.

@@ -1,14 +1,14 @@
 class GitSeries < Formula
   desc "Track changes to a patch series over time"
   homepage "https://github.com/git-series/git-series"
-  url "https://github.com/git-series/git-series/archive/0.8.11.tar.gz"
-  sha256 "d884e77c03304ba77cac3845b5e51a7856d517771db72c652f53b47cbaa13890"
+  url "https://github.com/git-series/git-series/archive/0.9.1.tar.gz"
+  sha256 "c0362e19d3fa168a7cb0e260fcdecfe070853b163c9f2dfd2ad8213289bc7e5f"
 
   bottle do
-    cellar :any
-    sha256 "2ba7be3922b6ef0e3fb615ab03ee71732139085172cb64033cec1528dc8cc423" => :sierra
-    sha256 "c6c0bcd6f2fe3f07204a568c5b9a3d258e6c78233aa718f134bda32547b8fdb0" => :el_capitan
-    sha256 "d2999d4f44f0c43d9761456500f333ea8e44d5c09bd8d48932efd47da20662e2" => :yosemite
+    rebuild 1
+    sha256 "f22eb16a878279e6613c26c92348d48e5c3aa9916bb9598589857d9bcc7596da" => :high_sierra
+    sha256 "602d435ffa40726db60f3bd69bd7d1e6eacc51f587daeb4afb022e3b147068a3" => :sierra
+    sha256 "3365e4bad3de55810eb4b8fa8788c19b7d56f2a28bc76b0a03601c1d9a37cd0c" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -22,10 +22,10 @@ class GitSeries < Formula
   end
 
   test do
-    (testpath/".gitconfig").write <<-EOS.undent
-    [user]
-      name = Real Person
-      email = notacat@hotmail.cat
+    (testpath/".gitconfig").write <<~EOS
+      [user]
+        name = Real Person
+        email = notacat@hotmail.cat
     EOS
 
     system "git", "init"

@@ -1,17 +1,14 @@
 class Libmpc < Formula
   desc "C library for the arithmetic of high precision complex numbers"
-  homepage "http://multiprecision.org"
-  url "https://ftpmirror.gnu.org/mpc/mpc-1.0.3.tar.gz"
-  mirror "http://multiprecision.org/mpc/download/mpc-1.0.3.tar.gz"
-  sha256 "617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3"
+  homepage "http://www.multiprecision.org/mpc/"
+  url "https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz"
+  sha256 "6985c538143c1208dcb1ac42cedad6ff52e267b47e5f970183a3e75125b43c2e"
 
   bottle do
     cellar :any
-    sha256 "5c1a6689cf34bf05df9fbb2e42422b26d501d51d6937b1b8005991e5e770fe0e" => :sierra
-    sha256 "04280215d9638c3e4dd0296cb1a0fe0e3e159088ebd59b6ab0c16585ada91f87" => :el_capitan
-    sha256 "afc56d4ba864a701495e7a8787d53a6375e808fed19fc056a8afea417f924958" => :yosemite
-    sha256 "8e20b94ef5014396801c5d3a99899cfd116e6f0e9873b239901f561bb9ff789d" => :mavericks
-    sha256 "040e6c55e3b641a1c8775eeb7416d6f9e20698d8670dc51e81d8175abd05283a" => :mountain_lion
+    sha256 "3b28ec506ab53ef5f3163e87fb72ae735b7f91ee2fc20fe184cf1241481b72a5" => :high_sierra
+    sha256 "18d620a1612bc51b1fbd1b3b62c9c73766b90549c746740c5a27d2ab1ec5ede7" => :sierra
+    sha256 "6f19f936781dae0db248abdd84a72c3e25451c44379706bc3800760f0aa43888" => :el_capitan
   end
 
   depends_on "gmp"
@@ -32,18 +29,24 @@ class Libmpc < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <mpc.h>
+      #include <assert.h>
+      #include <math.h>
 
-      int main()
-      {
+      int main() {
         mpc_t x;
         mpc_init2 (x, 256);
+        mpc_set_d_d (x, 1., INFINITY, MPC_RNDNN);
+        mpc_tanh (x, x, MPC_RNDNN);
+        assert (mpfr_nan_p (mpc_realref (x)) && mpfr_nan_p (mpc_imagref (x)));
         mpc_clear (x);
         return 0;
       }
     EOS
-    system ENV.cc, "test.c", "-lgmp", "-lmpfr", "-lmpc", "-o", "test"
+    system ENV.cc, "test.c", "-L#{lib}", "-L#{Formula["mpfr"].opt_lib}",
+                   "-L#{Formula["gmp"].opt_lib}", "-lmpc", "-lmpfr",
+                   "-lgmp", "-o", "test"
     system "./test"
   end
 end

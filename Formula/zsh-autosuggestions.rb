@@ -1,8 +1,8 @@
 class ZshAutosuggestions < Formula
-  desc "Fish-like fast/unobtrusive autosuggestions for zsh."
+  desc "Fish-like fast/unobtrusive autosuggestions for zsh"
   homepage "https://github.com/zsh-users/zsh-autosuggestions"
-  url "https://github.com/zsh-users/zsh-autosuggestions/archive/v0.3.3.tar.gz"
-  sha256 "3831f0d6e37b2fba59c5a4003b7420ccb5ffc08d8f9e037ac639cff6e7962eb4"
+  url "https://github.com/zsh-users/zsh-autosuggestions/archive/v0.4.2.tar.gz"
+  sha256 "d2316f998338ee7a83ed1741a82e59f3c83757541291ca4eb0025625c1dae9dd"
 
   bottle :unneeded
 
@@ -11,14 +11,14 @@ class ZshAutosuggestions < Formula
   end
 
   def caveats
-    <<-EOS.undent
-    To activate the autosuggestions, add the following at the end of your .zshrc:
+    <<~EOS
+      To activate the autosuggestions, add the following at the end of your .zshrc:
 
-      source #{HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+        source #{HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-    You will also need to force reload of your .zshrc:
+      You will also need to force reload of your .zshrc:
 
-      source ~/.zshrc
+        source ~/.zshrc
     EOS
   end
 

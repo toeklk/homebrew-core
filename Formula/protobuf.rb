@@ -1,61 +1,31 @@
 class Protobuf < Formula
   desc "Protocol buffers (Google's data interchange format)"
   homepage "https://github.com/google/protobuf/"
-  url "https://github.com/google/protobuf/archive/v3.1.0.tar.gz"
-  sha256 "0a0ae63cbffc274efb573bdde9a253e3f32e458c41261df51c5dbc5ad541e8f7"
+  url "https://github.com/google/protobuf/archive/v3.5.1.tar.gz"
+  sha256 "826425182ee43990731217b917c5c3ea7190cfda141af4869e6d4ad9085a740f"
   head "https://github.com/google/protobuf.git"
 
   bottle do
-    sha256 "937351ede8db879b572c43994845d49a0dafc890a2ee0caf99c61b3ed75c2d76" => :sierra
-    sha256 "561c3788b7b3cc1df6fce744c20c5ef85fd484cc3177e14525e262f0544b4fe5" => :el_capitan
-    sha256 "902bc03d7ee53fb688ae428bc24aa33c1122b8bf40530da3b5e8f6883e3ec125" => :yosemite
+    sha256 "1220bdfc9fea448df265b0d6dc957301cfb6e7f750fbcf7cb285e959fe0bde74" => :high_sierra
+    sha256 "fdb2cce4d549df62f359c42cc070ed2dbd948ae2bde878ab39f0504796df215b" => :sierra
+    sha256 "0f4ba8bf3fe29b96637dc653cfa7e031aee79dd6f9b9b929307fd45f31a5afc5" => :el_capitan
   end
 
   # this will double the build time approximately if enabled
   option "with-test", "Run build-time check"
   option "without-python", "Build without python support"
-  option :universal
-  option :cxx11
 
   deprecated_option "with-check" => "with-test"
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool" => :build
-  depends_on :python => :recommended if MacOS.version <= :snow_leopard
-
-  fails_with :llvm do
-    build 2334
-  end
-
-  resource "setuptools" do
-    url "https://pypi.python.org/packages/df/c3/4265eb901f9db8c0ea5bdfb344084d85bc96c1a9b883f70430254b5491f6/setuptools-26.1.0.tar.gz"
-    sha256 "64a2f7676cd026b64e46d179ed26b365e2f92f26c7fe04228ddd86d0436b797f"
-  end
+  depends_on "python" => :recommended if MacOS.version <= :snow_leopard
+  depends_on "python3" => :optional
 
   resource "six" do
-    url "https://pypi.python.org/packages/source/s/six/six-1.10.0.tar.gz"
-    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
-  end
-
-  resource "python-dateutil" do
-    url "https://pypi.python.org/packages/3e/f5/aad82824b369332a676a90a8c0d1e608b17e740bbb6aeeebca726f17b902/python-dateutil-2.5.3.tar.gz"
-    sha256 "1408fdb07c6a1fa9997567ce3fcee6a337b39a503d80699e0f213de4aa4b32ed"
-  end
-
-  resource "pytz" do
-    url "https://pypi.python.org/packages/f7/c7/08e54702c74baf9d8f92d0bc331ecabf6d66a56f6d36370f0a672fc6a535/pytz-2016.6.1.tar.bz2"
-    sha256 "b5aff44126cf828537581e534cc94299b223b945a2bb3b5434d37bf8c7f3a10c"
-  end
-
-  resource "python-gflags" do
-    url "https://pypi.python.org/packages/91/97/84778286b3a1c0d52533a35a0b70a477050df2b83229f56e99c7a0f2d9d6/python-gflags-3.0.6.tar.gz"
-    sha256 "e904b251cb1d70ddd3a1fd152bd4b3674a95981dcac497450efd1311ff2b9b5a"
-  end
-
-  resource "google-apputils" do
-    url "https://pypi.python.org/packages/source/g/google-apputils/google-apputils-0.4.2.tar.gz"
-    sha256 "47959d0651c32102c10ad919b8a0ffe0ae85f44b8457ddcf2bdc0358fb03dc29"
+    url "https://files.pythonhosted.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"
+    sha256 "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
   end
 
   # Upstream's autogen script fetches this if not present
@@ -66,13 +36,14 @@ class Protobuf < Formula
     sha256 "26fcbb5925b74ad5fc8c26b0495dfc96353f4d553492eb97e85a8a6d2f43095b"
   end
 
+  needs :cxx11
+
   def install
     # Don't build in debug mode. See:
     # https://github.com/Homebrew/homebrew/issues/9279
     # https://github.com/google/protobuf/blob/5c24564811c08772d090305be36fae82d8f12bbe/configure.ac#L61
     ENV.prepend "CXXFLAGS", "-DNDEBUG"
-    ENV.universal_binary if build.universal?
-    ENV.cxx11 if build.cxx11?
+    ENV.cxx11
 
     (buildpath/"gmock").install resource("gmock")
     system "./autogen.sh"
@@ -86,38 +57,31 @@ class Protobuf < Formula
     # Install editor support and examples
     doc.install "editors", "examples"
 
-    if build.with? "python"
-      # google-apputils is a build-time dependency
-      ENV.prepend_create_path "PYTHONPATH", buildpath/"homebrew/lib/python2.7/site-packages"
-      %w[setuptools six python-dateutil pytz python-gflags google-apputils].each do |package|
-        resource(package).stage do
-          system "python", *Language::Python.setup_install_args(buildpath/"homebrew")
-        end
+    Language::Python.each_python(build) do |python, version|
+      resource("six").stage do
+        system python, *Language::Python.setup_install_args(libexec)
       end
-      # google is a namespace package and .pth files aren't processed from
-      # PYTHONPATH
-      touch buildpath/"homebrew/lib/python2.7/site-packages/google/__init__.py"
       chdir "python" do
         ENV.append_to_cflags "-I#{include}"
         ENV.append_to_cflags "-L#{lib}"
         args = Language::Python.setup_install_args libexec
         args << "--cpp_implementation"
-        system "python", *args
+        system python, *args
       end
-      site_packages = "lib/python2.7/site-packages"
+      site_packages = "lib/python#{version}/site-packages"
       pth_contents = "import site; site.addsitedir('#{libexec/site_packages}')\n"
       (prefix/site_packages/"homebrew-protobuf.pth").write pth_contents
     end
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Editor support and examples have been installed to:
       #{doc}
     EOS
   end
 
   test do
-    testdata = <<-EOS.undent
+    testdata = <<~EOS
       syntax = "proto3";
       package test;
       message TestCase {
@@ -130,5 +94,6 @@ class Protobuf < Formula
     (testpath/"test.proto").write testdata
     system bin/"protoc", "test.proto", "--cpp_out=."
     system "python", "-c", "import google.protobuf" if build.with? "python"
+    system "python3", "-c", "import google.protobuf" if build.with? "python3"
   end
 end

@@ -2,11 +2,12 @@ class Libmodbus < Formula
   desc "Portable modbus library"
   homepage "http://libmodbus.org"
   url "http://libmodbus.org/releases/libmodbus-3.1.4.tar.gz"
-  mirror "https://sources.lede-project.org/dl/dl/libmodbus-3.1.4.tar.gz"
+  mirror "https://librecmc.org/librecmc/downloads/sources/v1.3.4/libmodbus-3.1.4.tar.gz"
   sha256 "c8c862b0e9a7ba699a49bc98f62bdffdfafd53a5716c0e162696b4bf108d3637"
 
   bottle do
     cellar :any
+    sha256 "a3c060ca8f3d80e7e2a42f2a87ffbeb157105632e5e2a9a107e4c0f3523199d3" => :high_sierra
     sha256 "4cf11a1c8739b213105a05bbaf49331b35b226dd90191d6a494898b3021aba6e" => :sierra
     sha256 "3335403ddd6011372473fe338ae2cac2ab7f168f214a0624620aa9c1575477be" => :el_capitan
     sha256 "0c3f25dc4288d69acc7abc8cd3e46915c76c7ea50d7ef62893a36981d6f926a3" => :yosemite
@@ -28,7 +29,7 @@ class Libmodbus < Formula
   end
 
   test do
-    (testpath/"hellomodbus.c").write <<-EOS.undent
+    (testpath/"hellomodbus.c").write <<~EOS
       #include <modbus.h>
       #include <stdio.h>
       int main() {
@@ -49,7 +50,7 @@ class Libmodbus < Formula
         return (p == 0);
       }
     EOS
-    system ENV.cc, "hellomodbus.c", "-o", "foo", "-lmodbus",
+    system ENV.cc, "hellomodbus.c", "-o", "foo", "-L#{lib}", "-lmodbus",
       "-I#{include}/libmodbus", "-I#{include}/modbus"
     system "./foo"
   end

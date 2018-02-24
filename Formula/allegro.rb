@@ -1,37 +1,27 @@
 class Allegro < Formula
   desc "C/C++ multimedia library for cross-platform game development"
   homepage "http://liballeg.org/"
-  revision 1
+  url "https://github.com/liballeg/allegro5/releases/download/5.2.3.0/allegro-5.2.3.0.tar.gz"
+  sha256 "5a4d40601899492b697ad5cfdf11d8265fe554036a2c912c86a6e6d23001f905"
 
   head "https://github.com/liballeg/allegro5.git", :branch => "master"
 
-  stable do
-    url "http://download.gna.org/allegro/allegro/5.2.1.1/allegro-5.2.1.1.tar.gz"
-    sha256 "b5d9df303bc6d72d54260c24505889acd995049b75463b46344e797a58a44a71"
-
-    # Fix compilation on 10.12
-    # https://github.com/liballeg/allegro5/pull/682
-    patch do
-      url "https://raw.githubusercontent.com/Homebrew/formula-patches/2daef1c/allegro/patch-allegro-10.12.diff"
-      sha256 "f2879676a370749319b8247ab7437b8060c9d9dc2f58f45db0d782419fe37adf"
-    end
-  end
-
   bottle do
     cellar :any
-    sha256 "8491d79cf614dbf5a4fe3798d18d70493c64035d8d9c36db580f3654b7d294fe" => :sierra
-    sha256 "91486ac3298f48f4160fbed4980fc0ee3f92ff9ee6c3d92b9d1af83fc5bb2c88" => :el_capitan
-    sha256 "7488de3a760d2e36ab3a5933cff118c622a3dd9fb854bc31b8934922bb5cede6" => :yosemite
+    sha256 "35a544646e7e4d38a77afa7032c67506f40cd93447de255d81b1879fa8956c9e" => :high_sierra
+    sha256 "ca4daf0ada1bf65e4a0a8cfa6afcde4805fb4921199393f1ca37bd20bdfe4af0" => :sierra
+    sha256 "687ea283ee293728c40889db1589844ad4e56acd53ae7fd7238e67e4eea79a0e" => :el_capitan
   end
 
   depends_on "cmake" => :build
-  depends_on "libvorbis" => :recommended
-  depends_on "freetype" => :recommended
-  depends_on "flac" => :recommended
-  depends_on "physfs" => :recommended
-  depends_on "libogg" => :recommended
-  depends_on "opusfile" => :recommended
-  depends_on "theora" => :recommended
+  depends_on "flac"
+  depends_on "freetype"
+  depends_on "libogg"
+  depends_on "libvorbis"
+  depends_on "opusfile"
+  depends_on "physfs"
+  depends_on "theora"
+  depends_on "webp"
   depends_on "dumb" => :optional
 
   def install
@@ -45,16 +35,16 @@ class Allegro < Formula
   end
 
   test do
-    (testpath/"allegro_test.cpp").write <<-EOS
-    #include <assert.h>
-    #include <allegro5/allegro5.h>
+    (testpath/"allegro_test.cpp").write <<~EOS
+      #include <assert.h>
+      #include <allegro5/allegro5.h>
 
-    int main(int n, char** c) {
-      if (!al_init()) {
-        return 1;
+      int main(int n, char** c) {
+        if (!al_init()) {
+          return 1;
+        }
+        return 0;
       }
-      return 0;
-    }
     EOS
 
     system ENV.cxx, "-I#{include}", "-L#{lib}", "-lallegro", "-lallegro_main", "-o", "allegro_test", "allegro_test.cpp"

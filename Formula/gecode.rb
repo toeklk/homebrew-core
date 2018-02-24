@@ -1,17 +1,19 @@
 class Gecode < Formula
   desc "Toolkit for developing constraint-based systems and applications"
   homepage "http://www.gecode.org/"
-  url "http://www.gecode.org/download/gecode-5.0.0.tar.gz"
-  sha256 "f4ff2fa115fed8c09a049b2d8520363b1f9b1a39d80461f597e29dab2ba9e77b"
+  url "http://www.gecode.org/download/gecode-6.0.0.tar.gz"
+  sha256 "79b8ef0253ba5ac2cbc8b8adf45abff2884b1ba6705bc26d6a1758331e79f8db"
 
   bottle do
     cellar :any
-    sha256 "b07a271d4087f7816cce5123c74f0e543527cd315ae5a9fd8d2f2ff31950cbfd" => :sierra
-    sha256 "5069485f83581c158bdc1d0a79fa89daaf044cc4fef6967a595d09e8c77c7466" => :el_capitan
-    sha256 "b02d94fdeb69e26e4de952c62d3955586cf23cd8b15bca7d3caa018ecd9848db" => :yosemite
+    sha256 "2d060e1fb1c00e96a71b8cab6ef55f1ca5bfdfb9f1055cba9ab912ec3390723f" => :high_sierra
+    sha256 "56f0ad61ca96479733c686a0bcf94640d88ab08a5931a216355db3e27aa320fc" => :sierra
+    sha256 "a56de24c36f255f23ed845f582498fa8987f0b485bcc13de49bd5fdf715b6bbc" => :el_capitan
   end
 
-  depends_on "qt5" => :optional
+  deprecated_option "with-qt5" => "with-qt"
+
+  depends_on "qt" => :optional
 
   def install
     args = %W[
@@ -19,9 +21,9 @@ class Gecode < Formula
       --disable-examples
     ]
     ENV.cxx11
-    if build.with? "qt5"
+    if build.with? "qt"
       args << "--enable-qt"
-      ENV.append_path "PKG_CONFIG_PATH", "#{HOMEBREW_PREFIX}/opt/qt5/lib/pkgconfig"
+      ENV.append_path "PKG_CONFIG_PATH", "#{HOMEBREW_PREFIX}/opt/qt/lib/pkgconfig"
     else
       args << "--disable-qt"
     end
@@ -30,7 +32,7 @@ class Gecode < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <gecode/driver.hh>
       #include <gecode/int.hh>
       #if defined(GECODE_HAS_QT) && defined(GECODE_HAS_GIST)
@@ -48,11 +50,11 @@ class Gecode < Formula
           distinct(*this, v);
           branch(*this, v, INT_VAR_NONE(), INT_VAL_MIN());
         }
-        Test(bool share, Test& s) : Script(share, s) {
-          v.update(*this, share, s.v);
+        Test(Test& s) : Script(s) {
+          v.update(*this, s.v);
         }
-        virtual Space* copy(bool share) {
-          return new Test(share, *this);
+        virtual Space* copy() {
+          return new Test(*this);
         }
         virtual void print(std::ostream& os) const {
           os << v << std::endl;
@@ -73,7 +75,7 @@ class Gecode < Formula
 
     args = %W[
       -std=c++11
-      -I#{HOMEBREW_PREFIX}/opt/qt5/include
+      -I#{HOMEBREW_PREFIX}/opt/qt/include
       -I#{include}
       -lgecodedriver
       -lgecodesearch
@@ -83,9 +85,7 @@ class Gecode < Formula
       -L#{lib}
       -o test
     ]
-    if build.with? "qt5"
-      args << "-lgecodegist"
-    end
+    args << "-lgecodegist" if build.with? "qt"
     system ENV.cxx, "test.cpp", *args
     assert_match "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", shell_output("./test")
   end

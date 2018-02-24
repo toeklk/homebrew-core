@@ -1,16 +1,16 @@
 class Nq < Formula
   desc "Unix command-line queue utility"
   homepage "https://github.com/chneukirchen/nq"
-  url "https://github.com/chneukirchen/nq/archive/v0.1.tar.gz"
-  sha256 "e0962a5e6a2cbf799bba7a79af22c40d21e5a80605df42c8bba37d3d8efb1793"
+  url "https://github.com/chneukirchen/nq/archive/v0.2.2.tar.gz"
+  sha256 "c9b0ec8cc0fa55484b8e3033705896def432bd6ec4ae4957f4aafb81cf679222"
 
   head "https://github.com/chneukirchen/nq.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "f321a091c031ca3870cfd10844835ddbef55bd82c8c6ecf5275ae3323b9b4897" => :sierra
-    sha256 "5ce475e389f345a2f1a0376a4253cf59672393f58b88e5a03b25f4c3c7d14ba6" => :el_capitan
-    sha256 "1d6d53c0c53a230a600ee3be346c07625d7deffd2c134c46eb61d429d4392722" => :yosemite
+    sha256 "60d65eb6a06549557a866ecd6b6c5570e490f02cb0f84e53f0e6198d2535f1a3" => :high_sierra
+    sha256 "875e20911bc821d2c160bf3d7c267a988bd691cc2d1f84a8cb1d48d4b586dbc6" => :sierra
+    sha256 "80e3a08a3453ed509bbd4bfab3e9c589449277578024b2f114744c5e716e5595" => :el_capitan
   end
 
   depends_on :macos => :yosemite
@@ -23,6 +23,6 @@ class Nq < Formula
   test do
     system "#{bin}/nq", "touch", "TEST"
     assert_match /exited with status 0/, shell_output("#{bin}/fq -a")
-    assert File.exist?("TEST")
+    assert_predicate testpath/"TEST", :exist?
   end
 end

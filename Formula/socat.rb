@@ -1,28 +1,21 @@
 class Socat < Formula
   desc "netcat on steroids"
   homepage "http://www.dest-unreach.org/socat/"
-  url "http://www.dest-unreach.org/socat/download/socat-1.7.3.1.tar.gz"
-  sha256 "a8cb07b12bcd04c98f4ffc1c68b79547f5dd4e23ddccb132940f6d55565c7f79"
-  revision 1
+  url "http://www.dest-unreach.org/socat/download/socat-1.7.3.2.tar.gz"
+  sha256 "ce3efc17e3e544876ebce7cd6c85b3c279fda057b2857fcaaf67b9ab8bdaf034"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "a8d3d1071187640117ed5ee28f0cc9daa756ecd7b53e2e73832b86bc05046a62" => :sierra
-    sha256 "9c13f2f3a21c6ccfa4347767875f70adad43476b361ee4357ec69dc64e51a2f5" => :el_capitan
-    sha256 "b1f4d317c2462d800b8fe4e354a21f18d460ca2cacd29d2d71fd6d716e93ca91" => :yosemite
+    sha256 "8440c4f765cf7c068461e33088e80057fbfa6be598107666714ba7cd0bb8c97d" => :high_sierra
+    sha256 "c630c4273615556c167da5875a67e28d79e51bc7493eb07ba73b7f7fead14372" => :sierra
+    sha256 "78787f35cdbc55bc5bce5f12c253eace7db1ae39767d55ad1e032eadc4f33ad3" => :el_capitan
   end
 
-  devel do
-    url "http://www.dest-unreach.org/socat/download/socat-2.0.0-b9.tar.gz"
-    version "2.0.0-b9"
-    sha256 "f9496ea44898d7707507a728f1ff16b887c80ada63f6d9abb0b727e96d5c281a"
-  end
-
-  depends_on "readline"
   depends_on "openssl"
+  depends_on "readline"
 
   def install
-    ENV.enable_warnings # -w causes build to fail
     system "./configure", "--prefix=#{prefix}", "--mandir=#{man}"
     system "make", "install"
   end

@@ -1,21 +1,22 @@
 class Stk < Formula
   desc "Sound Synthesis Toolkit"
   homepage "https://ccrma.stanford.edu/software/stk/"
-  url "https://ccrma.stanford.edu/software/stk/release/stk-4.5.0.tar.gz"
-  sha256 "619f1a0dee852bb2b2f37730e2632d83b7e0e3ea13b4e8a3166bf11191956ee3"
+  url "https://ccrma.stanford.edu/software/stk/release/stk-4.6.0.tar.gz"
+  sha256 "648fcb9a0a4243d2d93fc72b29955953f4e794edf04c31f2ed0ed720d05287d2"
 
   bottle do
     cellar :any_skip_relocation
-    rebuild 1
-    sha256 "fb9f9ccc2be022a9dedda6fa46ef27bee10455a164d42c11e1e03202f769c805" => :sierra
-    sha256 "8d8b488cd816e06005998c7ecf1d76a1fee75698a567073d0dc654ce64b51647" => :el_capitan
-    sha256 "3549b42faa4640d337110a5f5a44841790b1764cee11acb2145ffa638b3570a2" => :yosemite
-    sha256 "b1195d0437e7ab54130a2c49aaf2ab77f4b587b08e0bbb4513c1898f4db0c010" => :mavericks
+    sha256 "67c1c6c12bbf98d866bac55955d4715f94c05c63551bd0687646c6acd549de91" => :high_sierra
+    sha256 "70c1c7e91fc3477055e6bc1a39dd5ef160c4e496887bb22b88d7fd149b03bfa6" => :sierra
+    sha256 "e333e99c0fe8611be1fc7fb54d3e4e77f4cde210bb1c281031ed54b74187ef4d" => :el_capitan
   end
 
   option "with-debug", "Compile with debug flags and modified CFLAGS for easier debugging"
 
   deprecated_option "enable-debug" => "with-debug"
+
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
 
   fails_with :clang do
     build 421
@@ -34,6 +35,7 @@ class Stk < Formula
       args << "--disable-debug"
     end
 
+    system "autoreconf", "-fiv"
     system "./configure", *args
     system "make"
 
@@ -45,7 +47,7 @@ class Stk < Formula
     pkgshare.install "src", "projects", "rawwaves"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     The header files have been put in a standard search path, it is possible to use an include statement in programs as follows:
 
       #include \"stk/FileLoop.h\"
@@ -53,5 +55,9 @@ class Stk < Formula
 
     src/ projects/ and rawwaves/ have all been copied to #{opt_pkgshare}
     EOS
+  end
+
+  test do
+    assert_equal "xx No input files", shell_output("#{bin}/treesed", 1).chomp
   end
 end

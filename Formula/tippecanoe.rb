@@ -1,14 +1,14 @@
 class Tippecanoe < Formula
   desc "Build vector tilesets from collections of GeoJSON features"
   homepage "https://github.com/mapbox/tippecanoe"
-  url "https://github.com/mapbox/tippecanoe/archive/1.14.4.tar.gz"
-  sha256 "8182adc59709b182f196a4258cbe9024eb4b938af70567075cd62082762a7001"
+  url "https://github.com/mapbox/tippecanoe/archive/1.27.7.tar.gz"
+  sha256 "0c3bdae8623f9d78f59cf63589fb2d4bcbdc5519dd402127620a43d60b8b1442"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "a38904c410c5c5ca4ac40f8ab9a45d2eb2ef75f189324dd2debc08d07d25d98d" => :sierra
-    sha256 "480c581f08212a7305a3295c1152cf088de46ea9bebebfdfee0533d82053fe06" => :el_capitan
-    sha256 "60b4a22639cac708c29b7ff3beb71c7b502f9adc32e2718481ba912e245efab7" => :yosemite
+    sha256 "f1ffa1cabfca7640f10be90d2b71ee16b780649aa502c15ce365818ce86a0abc" => :high_sierra
+    sha256 "26183c7bc0a78debe7b9fc05184add4cd5961ace3a83a647b9fe994a4f5177a5" => :sierra
+    sha256 "d895895e00b678c4fa34f3e7740771408dffadd378d48634f97abece1ff4f4f0" => :el_capitan
   end
 
   def install
@@ -17,10 +17,10 @@ class Tippecanoe < Formula
   end
 
   test do
-    (testpath/"test.json").write <<-EOS.undent
+    (testpath/"test.json").write <<~EOS
       {"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[0,0]}}
     EOS
     safe_system "#{bin}/tippecanoe", "-o", "test.mbtiles", "test.json"
-    assert File.exist?("#{testpath}/test.mbtiles"), "tippecanoe generated no output!"
+    assert_predicate testpath/"test.mbtiles", :exist?, "tippecanoe generated no output!"
   end
 end

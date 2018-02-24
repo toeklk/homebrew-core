@@ -1,13 +1,14 @@
 class Serveit < Formula
-  desc "synchronous server and rebuilder of static content"
+  desc "Synchronous server and rebuilder of static content"
   homepage "https://github.com/garybernhardt/serveit"
-  url "https://github.com/garybernhardt/serveit/archive/v0.0.1.tar.gz"
-  sha256 "8cf25c80ea9b9fe0383545d083e305f7723b6dec7e70d29a4e15016264861f49"
+  url "https://github.com/garybernhardt/serveit/archive/v0.0.2.tar.gz"
+  sha256 "d7a04f2fbd97f90c31e1838da952cbf5fd8844abeabce0a88569e3d279488ad4"
+  revision 1
   head "https://github.com/garybernhardt/serveit.git"
 
   bottle :unneeded
 
-  depends_on :ruby => "1.9"
+  depends_on "ruby" if MacOS.version <= :mountain_lion
 
   def install
     bin.install "serveit"

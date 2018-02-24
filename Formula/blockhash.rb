@@ -1,17 +1,16 @@
 class Blockhash < Formula
   desc "Perceptual image hash calculation tool"
-  homepage "http://blockhash.io/"
-  url "https://github.com/commonsmachinery/blockhash/archive/0.1.tar.gz"
-  sha256 "aef300f39be2cbc1b508af15d7ddb5b851b671b27680d8b7ab1d043cc0369893"
+  homepage "https://github.com/commonsmachinery/blockhash"
+  url "https://github.com/commonsmachinery/blockhash/archive/v0.3.tar.gz"
+  sha256 "a4fbe16dc8d1e9b82de860d97222ce6259495f7832c7dfe3de9e0bb42f85995e"
+  revision 1
   head "https://github.com/commonsmachinery/blockhash.git"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "73c61a29551f98f1827910efa4d9fe5712aad7a9303be74e1ec382d219b0bc78" => :sierra
-    sha256 "84a9ec978c225087a1699cc53490c18ed8447e115968bf66c12beea8e501e107" => :el_capitan
-    sha256 "cbd13eb4fd577a7bd20fae814ae5a303fa7c4dd17a382c9a74acbed6977b676f" => :yosemite
-    sha256 "3ca5aeb1b8324803f6f40ee08b2acbb1cb8a57328c8fcb3c776c8192d01beb25" => :mavericks
+    sha256 "d93acc3ec087d317d7e0fbe166d83745f516d2f85d32c3acc8fa0a18b764853c" => :high_sierra
+    sha256 "e4cce87334c21ede18f40f74ccb2f00a9d298e3b4f4e46b4aaedeefe0341e95e" => :sierra
+    sha256 "41faab24b6b7e72dff9719972dd7c2fc16864c2b99a69aa5d6250816b27aa2e3" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -30,11 +29,8 @@ class Blockhash < Formula
 
   test do
     resource("testdata").stage testpath
-    hash = "00007ffe7ffe7ffe7ffe7ffe7ffe77fe77fe600e7f5e00000000000000000000"
-    # Exit status is not meaningful, so use pipe_output instead of shell_output
-    # for now
-    # https://github.com/commonsmachinery/blockhash/pull/9
-    result = pipe_output("#{bin}/blockhash #{testpath}/clipper_ship.jpg", nil, nil)
+    hash = "00007ff07ff07fe07fe67ff07560600077fe701e7f5e000079fd40410001ffff"
+    result = shell_output("#{bin}/blockhash #{testpath}/clipper_ship.jpg")
     assert_match hash, result
   end
 end

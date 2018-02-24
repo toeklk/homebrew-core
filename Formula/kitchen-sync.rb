@@ -1,24 +1,24 @@
 class KitchenSync < Formula
   desc "Fast efficiently sync database without dumping & reloading"
   homepage "https://github.com/willbryant/kitchen_sync"
-  url "https://github.com/willbryant/kitchen_sync/archive/0.56.tar.gz"
-  sha256 "ce6915cbfec6f0072ce028ace49d6ed6809864bd7fd729be7c2a3b03e1cd9edb"
+  url "https://github.com/willbryant/kitchen_sync/archive/0.99.1.tar.gz"
+  sha256 "895b710f10e9399ce8e49efe1b24ca925b4a62510d817a0e4b60e11c4cefcaf6"
+  revision 2
   head "https://github.com/willbryant/kitchen_sync.git"
 
   bottle do
     cellar :any
-    sha256 "3fa3355ce4c6b9000a5b65fadf94ab465d5bd3fd9f90cd56188152131c04b7d9" => :sierra
-    sha256 "b81ff335ec0227e4b5a167da5f3a5463266a8530bf133933ea4fc8e63d0170cb" => :el_capitan
-    sha256 "6019280d1f6630f76acc2cfb526c7e67b1ca1094e8fa0508558e65140682f620" => :yosemite
+    sha256 "49ad47bba862b6c73727cb6f0d0d72725c961e6003eca4a81633b31d1f0b5e99" => :high_sierra
+    sha256 "305a5c37197e113074c4ba61265ea28fde9c7560531032611e380ca3204d1d34" => :sierra
+    sha256 "30846fdf73486d98d69d3361a7329a89717e2cb81f3531241ebc4b2dfa2174a4" => :el_capitan
   end
 
   depends_on "cmake" => :build
   depends_on "pkg-config" => :build
   depends_on "boost"
-  depends_on "yaml-cpp" => (MacOS.version <= :mountain_lion ? "c++11" : [])
-
-  depends_on :mysql => :recommended
-  depends_on :postgresql => :optional
+  depends_on "yaml-cpp"
+  depends_on "mysql" => :recommended
+  depends_on "postgresql" => :optional
 
   needs :cxx11
 

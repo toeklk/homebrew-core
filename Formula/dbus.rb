@@ -2,21 +2,14 @@ class Dbus < Formula
   # releases: even (1.10.x) = stable, odd (1.11.x) = development
   desc "Message bus system, providing inter-application communication"
   homepage "https://wiki.freedesktop.org/www/Software/dbus"
-  url "https://dbus.freedesktop.org/releases/dbus/dbus-1.10.12.tar.gz"
-  mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/d/dbus/dbus_1.10.12.orig.tar.gz"
-  sha256 "210a79430b276eafc6406c71705e9140d25b9956d18068df98a70156dc0e475d"
+  url "https://dbus.freedesktop.org/releases/dbus/dbus-1.12.4.tar.gz"
+  mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/d/dbus/dbus_1.12.4.orig.tar.gz"
+  sha256 "f9756b68ec68065ae2dafcf1191ee40b4cb06e9534a01f6a74d5a4d7894221c7"
 
   bottle do
-    rebuild 1
-    sha256 "fd7a6f18cc6770a055ecc383281e9cf3e3c06fb1339e7008a87bfc38a0add3c8" => :sierra
-    sha256 "297e18121ad14e4d04021eb8ef79c116ed0118b03ddd877d706916c31868bec3" => :el_capitan
-    sha256 "33477927d3a16d8a00d4e985028bf7536d0aebf983c25eee401ee223e0efb484" => :yosemite
-  end
-
-  devel do
-    url "https://dbus.freedesktop.org/releases/dbus/dbus-1.11.6.tar.gz"
-    mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/d/dbus/dbus_1.11.6.orig.tar.gz"
-    sha256 "a228ce822983206becd5d36c0a63243ea77d47f65134feccacb10350250b9c0e"
+    sha256 "9bc82ed6545a7a91f8980db8cacb00b012ba4d1fc4886be2030eb4fc2b966e0e" => :high_sierra
+    sha256 "189218fb3f274f4088599133f438b2a4c578b9df61e7562ccbde366dbb09dd30" => :sierra
+    sha256 "a01bf4fa6922dd4e5188429a1cf2a3fe615924288284e63a9d9d4179cf9c9747" => :el_capitan
   end
 
   head do
@@ -41,6 +34,10 @@ class Dbus < Formula
     # Fix the TMPDIR to one D-Bus doesn't reject due to odd symbols
     ENV["TMPDIR"] = "/tmp"
 
+    # macOS doesn't include a pkg-config file for expat
+    ENV["EXPAT_CFLAGS"] = "-I#{MacOS.sdk_path}/usr/include"
+    ENV["EXPAT_LIBS"] = "-lexpat"
+
     ENV["XML_CATALOG_FILES"] = "#{etc}/xml/catalog"
 
     system "./autogen.sh", "--no-configure" if build.head?
@@ -54,8 +51,6 @@ class Dbus < Formula
                           "--with-launchd-agent-dir=#{prefix}",
                           "--without-x",
                           "--disable-tests"
-    system "make"
-    ENV.deparallelize
     system "make", "install"
   end
 

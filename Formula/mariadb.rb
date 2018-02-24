@@ -1,21 +1,28 @@
 class Mariadb < Formula
   desc "Drop-in replacement for MySQL"
   homepage "https://mariadb.org/"
-  url "http://ftp.osuosl.org/pub/mariadb/mariadb-10.1.19/source/mariadb-10.1.19.tar.gz"
-  sha256 "5b9373f314e2d1727422fb3795bcf50c1c59005129b35b6cadafae5663251a81"
+  url "https://downloads.mariadb.org/f/mariadb-10.2.13/source/mariadb-10.2.13.tar.gz"
+  sha256 "272e7ed9300a05da9e02f8217a01ed3447c4f5a36a12e5233d62cc7c586fc753"
 
   bottle do
-    sha256 "a6c1a516d9196708d5ea0cfb118a227e3c61b9a423e2f2e3fd87319fd0a7c17f" => :sierra
-    sha256 "8e976152019917a4dffc1c8aedfdd0abd448f13be0af9acb86b555319be5bf31" => :el_capitan
-    sha256 "811d4e414b15824190c428ceb8fddcab5a22dd7964faa829a8abdf0a730471cf" => :yosemite
+    sha256 "74dc1bbef50322f29558f46267dd0ad1006fa7c5fde70d1095f356ee7d5c31db" => :high_sierra
+    sha256 "0a66bb259d1a12119f910164fb6bf3518422e90b696ac8bf7415b2d9f823621e" => :sierra
+    sha256 "3aebe8389be1af00ee1e1ccbb6dbacf72e4e16c753ae346901e43c762c8f5f23" => :el_capitan
   end
 
   devel do
-    url "http://ftp.osuosl.org/pub/mariadb/mariadb-10.2.2/source/mariadb-10.2.2.tar.gz"
-    sha256 "55cf9e357ae4511fc1330e7cb8a15746d99b3a7875b6da9bcf1acfb1aa6f893a"
+    url "https://downloads.mariadb.org/f/mariadb-10.3.4/source/mariadb-10.3.4.tar.gz"
+    sha256 "5b7146c528e53083c36141cff6a1d24cae77285acceeb84fd446956c52e5ba5b"
+
+    # compilation fix
+    # https://jira.mariadb.org/browse/MDEV-14753
+    # https://github.com/MariaDB/server/pull/524
+    patch do
+      url "https://github.com/MariaDB/server/commit/dd6686462b0fa3f4d71a65c4b26cb02b65a07fec.patch?full_index=1"
+      sha256 "c6dabcb2af28b7c2d35123bf8a7217fd99c6068d2d78f933ca60630ae4e1a5a2"
+    end
   end
 
-  option :universal
   option "with-test", "Keep test when installing"
   option "with-bench", "Keep benchmark app when installing"
   option "with-embedded", "Build the embedded server"
@@ -28,7 +35,6 @@ class Mariadb < Formula
   deprecated_option "with-tests" => "with-test"
 
   depends_on "cmake" => :build
-  depends_on "pidof" unless MacOS.version >= :mountain_lion
   depends_on "openssl"
 
   conflicts_with "mysql", "mysql-cluster", "percona-server",
@@ -40,12 +46,6 @@ class Mariadb < Formula
     :because => "both install plugins"
 
   def install
-    # Don't hard-code the libtool path. See:
-    # https://github.com/Homebrew/homebrew/issues/20185
-    inreplace "cmake/libutils.cmake",
-      "COMMAND /usr/bin/libtool -static -o ${TARGET_LOCATION}",
-      "COMMAND libtool -static -o ${TARGET_LOCATION}"
-
     # Set basedir and ldata so that mysql_install_db can find the server
     # without needing an explicit path to be set. This can still
     # be overridden by calling --basedir= when calling.
@@ -53,10 +53,6 @@ class Mariadb < Formula
       s.change_make_var! "basedir", "\"#{prefix}\""
       s.change_make_var! "ldata", "\"#{var}/mysql\""
     end
-
-    # Build without compiler or CPU specific optimization flags to facilitate
-    # compilation of gems and other software that queries `mysql-config`.
-    ENV.minimal_optimization
 
     # -DINSTALL_* are relative to prefix
     args = %W[
@@ -66,6 +62,7 @@ class Mariadb < Formula
       -DINSTALL_DOCDIR=share/doc/#{name}
       -DINSTALL_INFODIR=share/info
       -DINSTALL_MYSQLSHAREDIR=share/mysql
+      -DWITH_PCRE=bundled
       -DWITH_SSL=yes
       -DDEFAULT_CHARSET=utf8
       -DDEFAULT_COLLATION=utf8_general_ci
@@ -89,12 +86,6 @@ class Mariadb < Formula
 
     # Compile with BLACKHOLE engine enabled if chosen
     args << "-DPLUGIN_BLACKHOLE=YES" if build.with? "blackhole-storage-engine"
-
-    # Make universal for binding to universal applications
-    if build.universal?
-      ENV.universal_binary
-      args << "-DCMAKE_OSX_ARCHITECTURES=#{Hardware::CPU.universal_archs.as_cmake_arch_flags}"
-    end
 
     # Build with local infile loading support
     args << "-DENABLED_LOCAL_INFILE=1" if build.with? "local-infile"
@@ -120,16 +111,11 @@ class Mariadb < Formula
     bin.install_symlink prefix/"scripts/mysql_install_db"
 
     # Fix up the control script and link into bin
-    inreplace "#{prefix}/support-files/mysql.server" do |s|
-      s.gsub!(/^(PATH=".*)(")/, "\\1:#{HOMEBREW_PREFIX}/bin\\2")
-      # pidof can be replaced with pgrep from proctools on Mountain Lion
-      s.gsub!(/pidof/, "pgrep") if MacOS.version >= :mountain_lion
-    end
+    inreplace "#{prefix}/support-files/mysql.server", /^(PATH=".*)(")/, "\\1:#{HOMEBREW_PREFIX}/bin\\2"
 
     bin.install_symlink prefix/"support-files/mysql.server"
 
     # Move sourced non-executable out of bin into libexec
-    libexec.mkpath
     libexec.install "#{bin}/wsrep_sst_common"
     # Fix up references to wsrep_sst_common
     %w[
@@ -141,6 +127,15 @@ class Mariadb < Formula
       inreplace "#{bin}/#{f}", "$(dirname $0)/wsrep_sst_common",
                                "#{libexec}/wsrep_sst_common"
     end
+
+    # Install my.cnf that binds to 127.0.0.1 by default
+    (buildpath/"my.cnf").write <<~EOS
+      # Default Homebrew MySQL server config
+      [mysqld]
+      # Only allow connections from localhost
+      bind-address = 127.0.0.1
+    EOS
+    etc.install "my.cnf"
   end
 
   def post_install
@@ -153,9 +148,11 @@ class Mariadb < Formula
     end
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     A "/etc/my.cnf" from another install may interfere with a Homebrew-built
     server starting up correctly.
+
+    MySQL is configured to only allow connections from localhost by default
 
     To connect:
         mysql -uroot
@@ -164,7 +161,7 @@ class Mariadb < Formula
 
   plist_options :manual => "mysql.server start"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -176,7 +173,6 @@ class Mariadb < Formula
       <key>ProgramArguments</key>
       <array>
         <string>#{opt_bin}/mysqld_safe</string>
-        <string>--bind-address=127.0.0.1</string>
         <string>--datadir=#{var}/mysql</string>
       </array>
       <key>RunAtLoad</key>

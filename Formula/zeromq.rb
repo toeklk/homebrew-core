@@ -1,14 +1,14 @@
 class Zeromq < Formula
   desc "High-performance, asynchronous messaging library"
   homepage "http://www.zeromq.org/"
-  url "https://github.com/zeromq/libzmq/releases/download/v4.2.0/zeromq-4.2.0.tar.gz"
-  sha256 "53b83bf0ee978931f76fa9cb46ad4affea65787264a5f3d140bc743412d0c117"
+  url "https://github.com/zeromq/libzmq/releases/download/v4.2.3/zeromq-4.2.3.tar.gz"
+  sha256 "8f1e2b2aade4dbfde98d82366d61baef2f62e812530160d2e6d0a5bb24e40bc0"
 
   bottle do
     cellar :any
-    sha256 "a7fbc3c02719a8e1f828a44ad16625a75e076f2b77baf6e10b242de7950bae39" => :sierra
-    sha256 "5737a824fa12a919595ec21650f2c85abc4bc04876b3af8273db42cf459b65e6" => :el_capitan
-    sha256 "1aff88bffa74b14fb02df052d4a7bf6f0417a54d51e12803b92888d66a8c2896" => :yosemite
+    sha256 "6977c4c28e6bf87938395821f6447316188de80fa61142a6256c218e3cf1f77c" => :high_sierra
+    sha256 "f1c00c7dd7aa192dd5d88bce737902b4530796259b535adf6e391c1f69a67970" => :sierra
+    sha256 "6b6abaf6b8466e97605de55d9158e54dd847a09635d0bee1ea00fed93e6f04d7" => :el_capitan
   end
 
   head do
@@ -19,7 +19,6 @@ class Zeromq < Formula
     depends_on "libtool" => :build
   end
 
-  option :universal
   option "with-libpgm", "Build with PGM extension"
   option "with-norm", "Build with NORM extension"
   option "with-drafts", "Build and install draft classes and methods"
@@ -34,7 +33,6 @@ class Zeromq < Formula
   depends_on "norm" => :optional
 
   def install
-    ENV.universal_binary if build.universal?
     ENV["XML_CATALOG_FILES"] = "#{etc}/xml/catalog"
 
     args = ["--disable-dependency-tracking", "--prefix=#{prefix}"]
@@ -45,7 +43,8 @@ class Zeromq < Formula
     args << "--enable-drafts" if build.with?("drafts")
 
     ENV["LIBUNWIND_LIBS"] = "-framework System"
-    ENV["LIBUNWIND_CFLAGS"] = "-I#{MacOS.sdk_path}/usr/include"
+    sdk = MacOS::CLT.installed? ? "" : MacOS.sdk_path
+    ENV["LIBUNWIND_CFLAGS"] = "-I#{sdk}/usr/include"
 
     system "./autogen.sh" if build.head?
     system "./configure", *args
@@ -54,7 +53,7 @@ class Zeromq < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <assert.h>
       #include <zmq.h>
 

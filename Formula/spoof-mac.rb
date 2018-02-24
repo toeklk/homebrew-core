@@ -7,13 +7,14 @@ class SpoofMac < Formula
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "f7972b66a491d8513262e3bdb9098850fe91e4c8e0e3d7a12efd24994e47dda5" => :high_sierra
     sha256 "baa45eb53fc9e1a713ca7693351409f66c833834e7c7d0838115bcf5f38df555" => :sierra
     sha256 "6c97eaa9a82f7eadb5c1127a0dcf9b0f9f1837e36d3e9978e989471322f42b4a" => :el_capitan
     sha256 "927644491edf064dcc3145e05107737c3e571b55989ae8d539bf0b499da3685c" => :yosemite
     sha256 "f7dc1529dd2c83d8bf8667d170299aa592910bb4918174b23f6a9b7d3555084e" => :mavericks
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
 
   resource "docopt" do
     url "https://pypi.python.org/packages/source/d/docopt/docopt-0.6.2.tar.gz"
@@ -33,7 +34,7 @@ class SpoofMac < Formula
     bin.env_script_all_files(libexec/"bin", :PYTHONPATH => ENV["PYTHONPATH"])
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Although spoof-mac can run without root, you must be root to change the MAC.
 
     The launchdaemon is set to randomize en0.
@@ -49,7 +50,7 @@ class SpoofMac < Formula
 
   plist_options :startup => true, :manual => "spoof-mac"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

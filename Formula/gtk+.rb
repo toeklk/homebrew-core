@@ -1,17 +1,16 @@
 class Gtkx < Formula
   desc "GUI toolkit"
-  homepage "http://gtk.org/"
+  homepage "https://gtk.org/"
 
   stable do
-    url "https://download.gnome.org/sources/gtk+/2.24/gtk+-2.24.31.tar.xz"
-    sha256 "68c1922732c7efc08df4656a5366dcc3afdc8791513400dac276009b40954658"
+    url "https://download.gnome.org/sources/gtk+/2.24/gtk+-2.24.32.tar.xz"
+    sha256 "b6c8a93ddda5eabe3bfee1eb39636c9a03d2a56c7b62828b359bf197943c582e"
   end
 
   bottle do
-    sha256 "99aa757a41d35651816dc44acf1eefb85ce2334c90e2c4801f57158ed9765a42" => :sierra
-    sha256 "1ccd4e2e5e0e4be8ab9cc577a88560eb41568713d2b3a32609377b85fcbd077e" => :el_capitan
-    sha256 "276e32ca1759b28b020f401c780e3bde6f18f85167f2e01595ea1248e403f62b" => :yosemite
-    sha256 "4ae4cefcbaf0d6fc3755b2255bde899a10d9371d97f4630c71105cece297cd0d" => :mavericks
+    sha256 "fddc3c3e42a03fcd44088060a87adde38153c6dbc4a4db4bbb6ea6fe82502ea6" => :high_sierra
+    sha256 "64652ec795e1e5bef45edcae0e73207c8bd943834e0ab33cfa72a0ec309ea964" => :sierra
+    sha256 "a3797a10d8c6351eb85d60280b7e3ed19e0fd3251df74561b1bde80220eab6d6" => :el_capitan
   end
 
   head do
@@ -23,7 +22,6 @@ class Gtkx < Formula
     depends_on "gtk-doc" => :build
   end
 
-  option :universal
   option "with-quartz-relocation", "Build with quartz relocation support"
 
   depends_on "pkg-config" => :build
@@ -34,23 +32,18 @@ class Gtkx < Formula
   depends_on "gobject-introspection"
   depends_on "hicolor-icon-theme"
 
-  fails_with :llvm do
-    build 2326
-    cause "Undefined symbols when linking"
-  end
-
-  # Patch to allow Freeciv's gtk2 client to run.
+  # Patch to allow Eiffel Studio to run in Cocoa / non-X11 mode, as well as Freeciv's freeciv-gtk2 client
   # See:
+  # - https://bugzilla.gnome.org/show_bug.cgi?id=757187
+  # referenced from
   # - https://bugzilla.gnome.org/show_bug.cgi?id=557780
   # - Homebrew/homebrew-games#278
   patch do
-    url "https://bug557780.bugzilla-attachments.gnome.org/attachment.cgi?id=306776"
-    sha256 "4d7a1fe8d55174dc7f0be0016814668098d38bbec233b05a6c46180e96a159fc"
+    url "https://bug757187.bugzilla-attachments.gnome.org/attachment.cgi?id=331173"
+    sha256 "ce5adf1a019ac7ed2a999efb65cfadeae50f5de8663638c7f765f8764aa7d931"
   end
 
   def install
-    ENV.universal_binary if build.universal?
-
     args = ["--disable-dependency-tracking",
             "--disable-silent-rules",
             "--prefix=#{prefix}",
@@ -71,7 +64,7 @@ class Gtkx < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gtk/gtk.h>
 
       int main(int argc, char *argv[]) {

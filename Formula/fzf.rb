@@ -1,48 +1,29 @@
-require "language/go"
-
 class Fzf < Formula
   desc "Command-line fuzzy finder written in Go"
   homepage "https://github.com/junegunn/fzf"
-  url "https://github.com/junegunn/fzf/archive/0.15.7.tar.gz"
-  sha256 "33fbf720119da6395f9c23be8d871d21041e46b7325f36c2259c86128976ce15"
+  url "https://github.com/junegunn/fzf/archive/0.17.3.tar.gz"
+  sha256 "e843904417adf926613431e4403fded24fade56269446e92aac6ff1db86af81e"
   head "https://github.com/junegunn/fzf.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "6fb732e589f02fe41e545bb7e5f41104768779df1210411d6a60d9ce10a5b7d8" => :sierra
-    sha256 "78e4f8d44c1d890503a1a75b8a8402daac68401cddba5069388782470c2341a8" => :el_capitan
-    sha256 "4edcd3d5b14ec86da1947ba6eca8b807b910e781c4750b95769821128793d826" => :yosemite
+    sha256 "81658f0f3113ff48873fe7bbc79338f1f50284c5a2f2da456047670d4350221b" => :high_sierra
+    sha256 "f430afe26c931e0d5b210793cd2daa98a24551868fc16501c67209042535c5c2" => :sierra
+    sha256 "c32dd7988d5c606fb790f59fe57f9cca9c40eddf8c187ff7a95c56f81b1c02f8" => :el_capitan
   end
 
+  depends_on "glide" => :build
   depends_on "go" => :build
 
-  go_resource "github.com/junegunn/go-isatty" do
-    url "https://github.com/junegunn/go-isatty.git",
-        :revision => "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8"
-  end
-
-  go_resource "github.com/junegunn/go-runewidth" do
-    url "https://github.com/junegunn/go-runewidth.git",
-        :revision => "63c378b851290989b19ca955468386485f118c65"
-  end
-
-  go_resource "github.com/junegunn/go-shellwords" do
-    url "https://github.com/junegunn/go-shellwords.git",
-        :revision => "35d512af75e283aae4ca1fc3d44b159ed66189a4"
-  end
-
   def install
+    ENV["GLIDE_HOME"] = buildpath/"glide_home"
     ENV["GOPATH"] = buildpath
-    mkdir_p buildpath/"src/github.com/junegunn"
+    (buildpath/"src/github.com/junegunn").mkpath
     ln_s buildpath, buildpath/"src/github.com/junegunn/fzf"
-    Language::Go.stage_deps resources, buildpath/"src"
+    system "glide", "install"
+    system "go", "build", "-o", bin/"fzf", "-ldflags", "-X main.revision=brew"
 
-    cd buildpath/"src/fzf" do
-      system "go", "build"
-      bin.install "fzf"
-    end
-
-    prefix.install %w[install uninstall LICENSE]
+    prefix.install "install", "uninstall"
     (prefix/"shell").install %w[bash zsh fish].map { |s| "shell/key-bindings.#{s}" }
     (prefix/"shell").install %w[bash zsh].map { |s| "shell/completion.#{s}" }
     (prefix/"plugin").install "plugin/fzf.vim"
@@ -50,7 +31,7 @@ class Fzf < Formula
     bin.install "bin/fzf-tmux"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     To install useful keybindings and fuzzy completion:
       #{opt_prefix}/install
 
@@ -60,7 +41,7 @@ class Fzf < Formula
   end
 
   test do
-    (testpath/"list").write %w[hello world].join($/)
+    (testpath/"list").write %w[hello world].join($INPUT_RECORD_SEPARATOR)
     assert_equal "world", shell_output("cat #{testpath}/list | #{bin}/fzf -f wld").chomp
   end
 end

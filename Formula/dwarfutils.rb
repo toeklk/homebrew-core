@@ -1,14 +1,14 @@
 class Dwarfutils < Formula
-  desc "lib and utility to dump and produce DWARF debug info in ELF objects"
+  desc "Dump and produce DWARF debug information in ELF objects"
   homepage "https://www.prevanders.net/dwarf.html"
-  url "https://www.prevanders.net/libdwarf-20161021.tar.gz"
-  sha256 "5f64edf7cfabf516603b65d2cb30b5abba83b35db327e10599a20378c3d3c8cd"
+  url "https://www.prevanders.net/libdwarf-20180129.tar.gz"
+  sha256 "8bd91b57064b0c14ade5a009d3a1ce819f1b6ec0e189fc876eb8f42a8720d8a6"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "0f438c3cd34530354e60623a7b08a28400e73f0527f3f0b91c839bd9fcf78b5a" => :sierra
-    sha256 "d60842f5bfe921d6fc7eb649302262544c3ab4fda5d1699ea8e69c5cafe695f9" => :el_capitan
-    sha256 "aeeda0cfd7fc1ce9400a6c368d02a12eb42c5859e8a11a84e38e3add9879878f" => :yosemite
+    sha256 "1f818559afe85bd41eb7e96c273b3e8f4d68afa4aea28ad9c28a9461595eb077" => :high_sierra
+    sha256 "092c2d5cb68c6644d312e7b7b365e926e9353dfd196d7680fdf5cbadb1406f9e" => :sierra
+    sha256 "0769a3da91dead3364d833cb9caa602f36bfc4b2b5ed8e0c9fb7d7ef93fb52a2" => :el_capitan
   end
 
   option "with-sanitize", "Use -fsanitize"
@@ -37,7 +37,7 @@ class Dwarfutils < Formula
   test do
     system "#{bin}/dwarfdump", "-V"
 
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <dwarf.h>
       #include <libdwarf.h>
       #include <stdio.h>

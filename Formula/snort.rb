@@ -1,15 +1,14 @@
 class Snort < Formula
   desc "Flexible Network Intrusion Detection System"
   homepage "https://www.snort.org"
-  url "https://www.snort.org/downloads/snort/snort-2.9.8.3.tar.gz"
-  sha256 "856d02ccec49fa30c920a1e416c47c0d62dd224340a614959ba5c03239100e6a"
+  url "https://www.snort.org/downloads/snort/snort-2.9.11.1.tar.gz"
+  sha256 "9f6b3aeac5a109f55504bd370564ac431cb1773507929dc461626898f33f46cd"
 
   bottle do
     cellar :any
-    sha256 "d6e0d7b077ab1bd0d5a157290cf5b02959341263adb570a46a8d284547420a12" => :sierra
-    sha256 "a9d181fa99b247f0393f80eb6c95144d69148479baf3b91133f48f6f347a558c" => :el_capitan
-    sha256 "32c6242acec71ab2a9ae4723e7ca70779c91070441f5d2d2a073b6fac83e2385" => :yosemite
-    sha256 "9118f3787b7fd32a4750ceae0bdc5923e911bed9515b7587fb527f9459e2c84b" => :mavericks
+    sha256 "ac8a7b3007b307d8368da7e3879e3c6cd6c718746b9443d544f5e8adcb286be6" => :high_sierra
+    sha256 "b152a9869efd30d40e0d3750a0fd12f825360bf7c1d7cb39156320d32381a649" => :sierra
+    sha256 "00de9088a3e7471026430cf17a7cc7d3d9787496398662c2e2c6a7c766c212cd" => :el_capitan
   end
 
   option "with-debug", "Compile Snort with debug options enabled"
@@ -58,7 +57,7 @@ class Snort < Formula
     (etc/"snort").install Dir[buildpath/"etc/*"]
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     For snort to be functional, you need to update the permissions for /dev/bpf*
     so that they can be read by non-root users.  This can be done manually using:
         sudo chmod o+r /dev/bpf*

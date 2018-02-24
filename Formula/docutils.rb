@@ -1,19 +1,21 @@
 class Docutils < Formula
+  include Language::Python::Virtualenv
+
   desc "Text processing system for reStructuredText"
-  homepage "http://docutils.sourceforge.net"
-  url "https://downloads.sourceforge.net/project/docutils/docutils/0.12/docutils-0.12.tar.gz"
-  sha256 "c7db717810ab6965f66c8cf0398a98c9d8df982da39b4cd7f162911eb89596fa"
+  homepage "https://docutils.sourceforge.io"
+  url "https://downloads.sourceforge.net/project/docutils/docutils/0.14/docutils-0.14.tar.gz"
+  sha256 "51e64ef2ebfb29cae1faa133b3710143496eca21c530f3f71424d77687764274"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "6254928e32d119dbce4fc37f0a84306942f760696ecae02f8db4654934a238e6" => :sierra
-    sha256 "ee05c025462c3a5cb0ffd524e8fa146c1b3918eb4f4c6fd1006ea4bf4ae5db96" => :el_capitan
-    sha256 "a0cb7ec024d31a9f6f3bbcde7f07249e966bf9000008f7aee46a0978dcda9cb9" => :yosemite
-    sha256 "61fe1f390fdef3c130f46d66123a483ab0d15994420c89884fb0e99143ff8c19" => :mavericks
+    sha256 "e54f0dadb8de1059b925dd9f59ff605a04486ddc075459b63bf01b706891aaeb" => :high_sierra
+    sha256 "c48f799c313e8c8008ced95c907c902284c289e7f1212ef96d8770f28dd56a01" => :sierra
+    sha256 "823debb7f2b27abbd6e4deb33bcc6cf322c2f79d4b976262b852d95fad36c3dd" => :el_capitan
+    sha256 "53e168f1335e9198d4948b2d89c434097b8878c835efeb2c6f0f116353212702" => :yosemite
   end
 
   def install
-    system "python", *Language::Python.setup_install_args(prefix)
+    virtualenv_install_with_resources
   end
 
   test do

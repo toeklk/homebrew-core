@@ -1,15 +1,13 @@
 class Harfbuzz < Formula
   desc "OpenType text shaping engine"
   homepage "https://wiki.freedesktop.org/www/Software/HarfBuzz/"
-  url "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-1.3.3.tar.bz2"
-  sha256 "2620987115a4122b47321610dccbcc18f7f121115fd7b88dc8a695c8b66cb3c9"
-  revision 1
+  url "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-1.7.5.tar.bz2"
+  sha256 "84574e1b1f65ca694cb8fb6905309665c0368af18a312357f8ff886ee2f29563"
 
   bottle do
-    rebuild 1
-    sha256 "1d3e2872366ff4b170cbcb9a825641adb3957e3d38b1b61a9eef54942fa9d070" => :sierra
-    sha256 "f5bdfb13fe973b6d0ab1ebf7fea91927997642ac0a4d8bd572f3b988e0ea62e2" => :el_capitan
-    sha256 "453c721161af7b9f9cd72f444c52d486881d2188795d93cc2b43a025c1eaa4b2" => :yosemite
+    sha256 "0a43f2277203cdbab4b0509d483593514bb8cee51dc52d28958e06d4822c85e5" => :high_sierra
+    sha256 "e16c0e72ce780ab1a17d6d8448b957cb4187332554aabf193b7c21a20a565e70" => :sierra
+    sha256 "c2089227532d4471a8e2bdc9e875c6b40a3d0feea1dc02ce63727c85d36fc9b8" => :el_capitan
   end
 
   head do
@@ -21,16 +19,15 @@ class Harfbuzz < Formula
     depends_on "libtool" => :build
   end
 
-  option :universal
   option "with-cairo", "Build command-line utilities that depend on Cairo"
 
   depends_on "pkg-config" => :build
   depends_on "freetype" => :recommended
   depends_on "glib" => :recommended
   depends_on "gobject-introspection" => :recommended
+  depends_on "graphite2" => :recommended
   depends_on "icu4c" => :recommended
   depends_on "cairo" => :optional
-  depends_on "graphite2" => :optional
 
   resource "ttf" do
     url "https://github.com/behdad/harfbuzz/raw/fc0daafab0336b847ac14682e581a8838f36a0bf/test/shaping/fonts/sha1sum/270b89df543a7e48e206a2d830c0e10e5265c630.ttf"
@@ -38,8 +35,6 @@ class Harfbuzz < Formula
   end
 
   def install
-    ENV.universal_binary if build.universal?
-
     args = %W[
       --disable-dependency-tracking
       --prefix=#{prefix}

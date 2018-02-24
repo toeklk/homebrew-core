@@ -1,18 +1,18 @@
 class WakatimeCli < Formula
   desc "Command-line interface to the WakaTime api"
   homepage "https://wakatime.com/"
-  url "https://pypi.python.org/packages/47/a4/3e4a4c72e4610a7ccdaa0a0706cab4c040090b84a29a27a4b3266499d7b1/wakatime-6.0.9.tar.gz"
-  sha256 "fa9214ce24b9fd67054634c6d155b37bc8a46f20cfbcbc9dc206aff95e679f36"
+  url "https://pypi.python.org/packages/8f/b7/a575a758cf33c8c1ce0ddd642a6c26d94105ca407d68a2074e6731c878b3/wakatime-8.0.3.tar.gz"
+  sha256 "bb178937a762a1250dd2e22a62ec28dc7c1ebe2dabcc9bbe05cb781afe86dd47"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "f48b185cd7bc761201d941e85e8c8cb0dd5097090517091c0d51340e490dd35f" => :sierra
-    sha256 "8ef3926a7ac3531c132a98d5a8af730b7092b21d5e124bd9e75d4e3163b6483b" => :el_capitan
-    sha256 "c600037b7da15c50cdfa6362d32cfbd369878a9601ffb2b085f526089a7558c2" => :yosemite
-    sha256 "ed449f66b2fd822792a50905227e177a5ca2d1db77b90455e52344a650d051c9" => :mavericks
+    sha256 "19816456d3eecbc4cb89dd6fc247a3b91c82d783167a050b85738a90910d9a72" => :high_sierra
+    sha256 "4968086ecffa2200407d844fc568e7675b20983fe6cf3a4ae683cb86ddcfde06" => :sierra
+    sha256 "ee933f36da072757c1c186494b2d5f2efd93b76f76784defb4b8a5a05a1ffd70" => :el_capitan
+    sha256 "ee933f36da072757c1c186494b2d5f2efd93b76f76784defb4b8a5a05a1ffd70" => :yosemite
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
 
   def install
     ENV["PYTHONPATH"] = libexec/"lib/python2.7/site-packages"

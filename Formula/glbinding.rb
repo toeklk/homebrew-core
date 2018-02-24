@@ -1,31 +1,34 @@
 class Glbinding < Formula
   desc "C++ binding for the OpenGL API"
   homepage "https://github.com/cginternals/glbinding"
-  url "https://github.com/cginternals/glbinding/archive/v2.1.1.tar.gz"
-  sha256 "253671f2b730a6efa55de92a704938bb0f1761d151f3f8e87c043c51d46ea1e4"
+  url "https://github.com/cginternals/glbinding/archive/v2.1.4.tar.gz"
+  sha256 "cb5971b086c0d217b2304d31368803fd2b8c12ee0d41c280d40d7c23588f8be2"
 
   bottle do
     cellar :any
-    sha256 "68452e05178ce9dd90cc47aa62e5c2508ff8ffbbc3ed5054e20b65130f370231" => :sierra
-    sha256 "a41937f898840ca580188b002308a6e13696e1e659feda33493f0c6c4cf9287f" => :el_capitan
-    sha256 "773e5ce2e1012af403b58e0db3f4cc0f7b98d111eaea9cab528057d27c5c7c35" => :yosemite
-    sha256 "97b4e0dc61be2fdd33928db4b2ed51250f38b4cab55310819715ef6f9f324530" => :mavericks
+    sha256 "fd4ecf93841f884924c9394e6c9ce1ceadbd4d4a5d93a8e816ba547873fe8f84" => :high_sierra
+    sha256 "17af598a7d19f598412b3c94efe9166ab31f027d81ed3ded7aa7e2e318c2d166" => :sierra
+    sha256 "206ed78988d76389de106d58d8b8ffb8417fc1e48ed32141f58e3ebc1f41b77e" => :el_capitan
   end
 
-  option "with-glfw3", "Enable tools that display OpenGL information for your system"
+  option "with-glfw", "Enable tools that display OpenGL information for your system"
+  option "with-static", "Build static instead of shared glbinding libraries"
 
   depends_on "cmake" => :build
-  depends_on "homebrew/versions/glfw3" => :optional
+  depends_on "glfw" => :optional
   needs :cxx11
 
   def install
     ENV.cxx11
-    system "cmake", ".", *std_cmake_args
+    args = std_cmake_args
+    args << "-DGLFW_LIBRARY_RELEASE=" if build.without? "glfw"
+    args << "-DBUILD_SHARED_LIBS:BOOL=OFF" if build.with? "static"
+    system "cmake", ".", *args
     system "cmake", "--build", ".", "--target", "install"
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <glbinding/gl/gl.h>
       #include <glbinding/Binding.h>
       int main(void)
@@ -34,8 +37,8 @@ class Glbinding < Formula
       }
       EOS
     system ENV.cxx, "-o", "test", "test.cpp", "-std=c++11", "-stdlib=libc++",
-                    "-I#{include}/glbinding", "-I#{lib}/glbinding",
-                    "-lglbinding", *ENV.cflags.to_s.split
+                    "-I#{include}/glbinding", "-I#{lib}/glbinding", "-framework", "OpenGL",
+                    "-L#{lib}", "-lglbinding", *ENV.cflags.to_s.split
     system "./test"
   end
 end

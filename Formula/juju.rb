@@ -1,14 +1,14 @@
 class Juju < Formula
   desc "DevOps management tool"
   homepage "https://jujucharms.com/"
-  url "https://launchpad.net/juju-core/1.25/1.25.6/+download/juju-core_1.25.6.tar.gz"
-  sha256 "b826cbc4085fe3b3cf5413ef5dc20ece1fb69d36fa6c0dda711aeaaca19ff7fa"
+  url "https://launchpad.net/juju/2.3/2.3.3/+download/juju-core_2.3.3.tar.gz"
+  sha256 "98b13d76c34118da110d3bc50931de9b7aa69594ebf2cb18b37cb187a9ffc6dd"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "75e0c0d140097fdbc279ed90bf94d5ce260cf73a942abbf2321653b6a3942cb6" => :el_capitan
-    sha256 "1c6a2dc852a800c59576a85625b0df1796715dd6104e7daaf9a44efd99d0aff2" => :yosemite
-    sha256 "76a5338a55ac6aaf7986a6870738422639dce42bb0b0f095e01a25f31ef5b6f8" => :mavericks
+    sha256 "ed92d69d256a19ead50f139437f063e865008123b0c87d4be7b6fa3bbfc09fea" => :high_sierra
+    sha256 "051b9e188b0e9bcda30364015ffd6bee5c03550e71600ff6b65f25fbbd7ecd23" => :sierra
+    sha256 "4530a6f0b5a7c3d4242fadbcb9eebddfd29477eb219a066e943ab1173f4cc2e4" => :el_capitan
   end
 
   depends_on "go" => :build
@@ -18,7 +18,7 @@ class Juju < Formula
     system "go", "build", "github.com/juju/juju/cmd/juju"
     system "go", "build", "github.com/juju/juju/cmd/plugins/juju-metadata"
     bin.install "juju", "juju-metadata"
-    bash_completion.install "src/github.com/juju/juju/etc/bash_completion.d/juju-core"
+    bash_completion.install "src/github.com/juju/juju/etc/bash_completion.d/juju"
   end
 
   test do

@@ -1,8 +1,8 @@
 class Jenkins < Formula
   desc "Extendable open source continuous integration server"
-  homepage "https://jenkins-ci.org"
-  url "http://mirrors.jenkins-ci.org/war/2.32/jenkins.war"
-  sha256 "e1b6f6aec89baa1d4596292637e6586e91e3c875315cfce156a0349df062d5e3"
+  homepage "https://jenkins.io/"
+  url "http://mirrors.jenkins.io/war/2.108/jenkins.war"
+  sha256 "396406c34da9d7f7710a1d5d60057a67c2e97b6ff77e1516585b4b40d9c566b6"
 
   head do
     url "https://github.com/jenkinsci/jenkins.git"
@@ -11,11 +11,10 @@ class Jenkins < Formula
 
   bottle :unneeded
 
-  depends_on :java => "1.7+"
+  depends_on :java => "1.8"
 
   def install
     if build.head?
-      ENV.java_cache
       system "mvn", "clean", "install", "-pl", "war", "-am", "-DskipTests"
     else
       system "jar", "xvf", "jenkins.war"
@@ -25,14 +24,14 @@ class Jenkins < Formula
     bin.write_jar_script libexec/"jenkins-cli.jar", "jenkins-cli"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Note: When using launchctl the port will be 8080.
   EOS
   end
 
   plist_options :manual => "jenkins"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -41,7 +40,11 @@ class Jenkins < Formula
         <string>#{plist_name}</string>
         <key>ProgramArguments</key>
         <array>
-          <string>/usr/bin/java</string>
+          <string>/usr/libexec/java_home</string>
+          <string>-v</string>
+          <string>1.8</string>
+          <string>--exec</string>
+          <string>java</string>
           <string>-Dmail.smtp.starttls.enable=true</string>
           <string>-jar</string>
           <string>#{opt_libexec}/jenkins.war</string>
@@ -57,7 +60,7 @@ class Jenkins < Formula
 
   test do
     ENV["JENKINS_HOME"] = testpath
-    ENV["_JAVA_OPTIONS"] = "-Djava.io.tmpdir=#{testpath}"
+    ENV.prepend "_JAVA_OPTIONS", "-Djava.io.tmpdir=#{testpath}"
     pid = fork do
       exec "#{bin}/jenkins"
     end

@@ -1,38 +1,23 @@
-require "language/go"
-
 class Vultr < Formula
   desc "Command-line tool for Vultr"
   homepage "https://jamesclonk.github.io/vultr"
-  url "https://github.com/JamesClonk/vultr/archive/v1.10.tar.gz"
-  sha256 "d794d38f1c0693601604d420b4d50695e267abb5f41aa21592ac249208092912"
+  url "https://github.com/JamesClonk/vultr/archive/1.15.0.tar.gz"
+  sha256 "6e5eafdf16e18bcb5d2a6a448307b021f47149e480a01d6cfb4454e923623d3f"
   head "https://github.com/JamesClonk/vultr.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "ad760f5ff85df56a96abce0224df04b60983cbbc8a0e0131c76717924e89626f" => :sierra
-    sha256 "af34a9509b998f5bc6248ac2368c766d23a2f8e29720d50f569ca1ad4df0a8fa" => :el_capitan
-    sha256 "c198a930dc7a08e8dcaac10d991b7f969c91200bd4fd0128888c7ea106db7568" => :yosemite
+    sha256 "223b1b559d163410cae027526f5c6de0c7f9ac766bafbf77b7abf1e4a2f3e83a" => :high_sierra
+    sha256 "97fec16060a7e644402ea8e24fe57aa0dcf4a8e31b6505dc8f57574fd1b57f2c" => :sierra
+    sha256 "b97a438ef61327a2c876a934417d61f0cebc710520f0a17eb123217b57a13d2f" => :el_capitan
   end
 
   depends_on "go" => :build
-  depends_on "godep" => :build
-  depends_on "gdm" => :build
-
-  go_resource "github.com/jawher/mow.cli" do
-    url "https://github.com/jawher/mow.cli.git",
-        :revision => "660b9261e2c80bb92e5a0eaa581596084656140e"
-  end
-
-  go_resource "github.com/juju/ratelimit" do
-    url "https://github.com/juju/ratelimit.git",
-        :revision => "77ed1c8a01217656d2080ad51981f6e99adaa177"
-  end
 
   def install
     ENV["GOPATH"] = buildpath
     (buildpath/"src/github.com/JamesClonk").mkpath
     ln_s buildpath, buildpath/"src/github.com/JamesClonk/vultr"
-    Language::Go.stage_deps resources, buildpath/"src"
     system "go", "build", "-o", bin/"vultr"
   end
 

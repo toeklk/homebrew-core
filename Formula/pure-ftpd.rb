@@ -1,25 +1,21 @@
 class PureFtpd < Formula
   desc "Secure and efficient FTP server"
   homepage "https://www.pureftpd.org/"
-  url "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.42.tar.gz"
-  mirror "ftp://ftp.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.42.tar.gz"
-  sha256 "7be73a8e58b190a7054d2ae00c5e650cb9e091980420082d02ec3c3b68d8e7f9"
+  url "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.47.tar.gz"
+  sha256 "4740c316f5df879a2d68464489fb9b8b90113fe7dce58e2cdd2054a4768f27ad"
 
   bottle do
-    cellar :any
-    rebuild 2
-    sha256 "63aa01e41750ace02f46a44c4526229cf9ded7e6837f8885e28a6bf58943618c" => :sierra
-    sha256 "86d1097a53f790ed8c25dd50034d1839c63edd70d9075ffad0938db2e9c40de7" => :el_capitan
-    sha256 "f97ab54d8932b289e91467fb04c158b092d33e97ca35d51f1099fa4b12991f77" => :yosemite
-    sha256 "054b8d5193b19c5d296766f1b3046673400416080773bc1a559a7d8f99607d2a" => :mavericks
+    sha256 "3ee0ae276bad11f6459e2a866f96f7618a12b8625e69dd1d2b3fbcb3c7f3d3fe" => :high_sierra
+    sha256 "fcde5497abd815c560b9b8dc1bcb40d1018e378e16fcbc04cb942d244a64c972" => :sierra
+    sha256 "db8752838fcba745378a65f79c40ee8e573f50cd648d48b23b47b813dfb5cba1" => :el_capitan
   end
 
   option "with-virtualchroot", "Follow symbolic links even for chrooted accounts"
 
   depends_on "libsodium"
   depends_on "openssl"
-  depends_on :postgresql => :optional
-  depends_on :mysql => :optional
+  depends_on "postgresql" => :optional
+  depends_on "mysql" => :optional
 
   def install
     args = %W[
@@ -43,7 +39,7 @@ class PureFtpd < Formula
 
   plist_options :manual => "pure-ftpd"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -55,7 +51,10 @@ class PureFtpd < Formula
         <key>ProgramArguments</key>
         <array>
           <string>#{opt_sbin}/pure-ftpd</string>
-          <string>-A -j -z</string>
+          <string>--chrooteveryone</string>
+          <string>--createhomedir</string>
+          <string>--allowdotfiles</string>
+          <string>--login=puredb:#{etc}/pureftpd.pdb</string>
         </array>
         <key>RunAtLoad</key>
         <true/>

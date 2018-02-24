@@ -1,15 +1,14 @@
 class JpegTurbo < Formula
   desc "JPEG image codec that aids compression and decompression"
-  homepage "http://www.libjpeg-turbo.org/"
-  url "https://downloads.sourceforge.net/project/libjpeg-turbo/1.5.0/libjpeg-turbo-1.5.0.tar.gz"
-  sha256 "9f397c31a67d2b00ee37597da25898b03eb282ccd87b135a50a69993b6a2035f"
+  homepage "https://www.libjpeg-turbo.org/"
+  url "https://downloads.sourceforge.net/project/libjpeg-turbo/1.5.3/libjpeg-turbo-1.5.3.tar.gz"
+  sha256 "b24890e2bb46e12e72a79f7e965f409f4e16466d00e1dd15d93d73ee6b592523"
 
   bottle do
     cellar :any
-    sha256 "a2aa24949f11a108120cb753c2a78bf98ef308ce6403c5c8ae051c0611e313e7" => :sierra
-    sha256 "147386c1824c1abdc11d49f6f7b3d3350a90cd400f3dbac2a699b86dd3442795" => :el_capitan
-    sha256 "7278b7093b4ecf4d8dfd33e01663ea5fac5774d785511158b45ee375cb58a103" => :yosemite
-    sha256 "a3bd1c1936800ab4cf819135963574edd2f7a7851283c640c3c587024a45908c" => :mavericks
+    sha256 "f40b0fe6a775f787436bace3e201c0cd9b441fe24c64093c948ddc369e94b0fd" => :high_sierra
+    sha256 "0a499d6cc6e1de389154fb0d859fe2def77a973c629125ac8c783cb872e055db" => :sierra
+    sha256 "6912770fdaefa0941c3259cbec3abf670ba8b6067239fde276686ed610599dda" => :el_capitan
   end
 
   head do
@@ -19,7 +18,7 @@ class JpegTurbo < Formula
     depends_on "autoconf" => :build
   end
 
-  keg_only "libjpeg-turbo is not linked to prevent conflicts with the standard libjpeg."
+  keg_only "libjpeg-turbo is not linked to prevent conflicts with the standard libjpeg"
 
   option "without-test", "Skip build-time checks (Not Recommended)"
 
@@ -28,13 +27,18 @@ class JpegTurbo < Formula
 
   def install
     cp Dir["#{Formula["libtool"].opt_share}/libtool/*/config.{guess,sub}"], buildpath
-    args = %W[--disable-dependency-tracking --prefix=#{prefix} --with-jpeg8 --mandir=#{man}]
+    args = %W[
+      --disable-dependency-tracking
+      --prefix=#{prefix}
+      --with-jpeg8
+      --mandir=#{man}
+    ]
 
     system "autoreconf", "-fvi" if build.head?
     system "./configure", *args
     system "make"
     system "make", "test" if build.with? "test"
-    ENV.j1 # Stops a race condition error: file exists
+    ENV.deparallelize # Stops a race condition error: file exists
     system "make", "install"
   end
 

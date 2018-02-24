@@ -3,26 +3,20 @@ class Supersonic < Formula
   homepage "https://code.google.com/archive/p/supersonic/"
   url "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/supersonic/supersonic-0.9.4.tar.gz"
   sha256 "1592dfd2dc73f0b97298e0d25e51528dc9a94e9e7f4ab525569f63db0442d769"
-  revision 2
+  revision 7
 
   bottle do
     cellar :any
-    sha256 "91f211f1f97db835c2bfca0d57ef4395f2f0db1ac0bb29399fe4137d99489ae7" => :sierra
-    sha256 "04ca7fc01824e99db96641ec2aad43b8f0e32d3366714997bb4b9eef8197b240" => :el_capitan
-    sha256 "037e4b12ceb0973ce0e3132714e47f0d05d69aa74ad687cb811b76a452b62c7a" => :yosemite
-  end
-
-  if MacOS.version < :mavericks
-    depends_on "protobuf" => "c++11"
-    depends_on "boost" => "c++11"
-  else
-    depends_on "protobuf"
-    depends_on "boost"
+    sha256 "34c2702ea62cfd75c2c5cab31fef4e85c416ccd84ebc70c2a7953a6a4a31dfcc" => :high_sierra
+    sha256 "01ed3df20216556094e8a22209a08a1f60a5b01848f9b52ddbe65fd90e1e6e5e" => :sierra
+    sha256 "9bd0c97e669fb3a06c16c8b2118c4cb1535db4403c481c5d2f4a7fc2e200315d" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
+  depends_on "boost"
   depends_on "glog"
   depends_on "gflags"
+  depends_on "protobuf"
 
   needs :cxx11
 
@@ -41,7 +35,7 @@ class Supersonic < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <iostream>
       #include <supersonic/supersonic.h>
       using std::cout;
@@ -112,7 +106,7 @@ class Supersonic < Formula
           return 0;
       }
     EOS
-    system ENV.cxx, "test.cpp", "-std=c++1y", "-stdlib=libc++", "-lsupersonic", "-lglog", "-lprotobuf", "-lboost_system", "-o", "test"
+    system ENV.cxx, "test.cpp", "-std=c++1y", "-stdlib=libc++", "-L#{lib}", "-lsupersonic", "-lglog", "-lprotobuf", "-lboost_system", "-o", "test"
     system "./test"
   end
 end

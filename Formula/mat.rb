@@ -1,18 +1,17 @@
 class Mat < Formula
   desc "Metadata anonymization toolkit"
   homepage "https://mat.boum.org/"
-  url "https://mat.boum.org/files/mat-0.5.4.tar.xz"
-  sha256 "a928cb2d5ebcafec4563b552096436771598376f8b4dded86a769c278c1314d1"
+  url "https://mat.boum.org/files/mat-0.6.1.tar.xz"
+  sha256 "0782e7db554ad1dddefd71c9c81e36a05464d73ab54ee2a474ea6ac90e8e51b9"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "9ba9e05f83512d744c55a694e592699984986291de73be9cff605d6289b01a99" => :sierra
-    sha256 "d3b96d99a81bbf560d6aa6f288d85c10e1f3ff31c54559fd22958a8a882baeb6" => :el_capitan
-    sha256 "4e8d9c641e402bbd41330df930eb3476ebd502bb6c671691a699b775d28a03f5" => :yosemite
-    sha256 "53c46830d2c77a24e2096e8aa6e30fdc1a2510957573b8578d8316dfeab1b635" => :mavericks
+    sha256 "2ff667933d3ed9542e39d129f4b81d47918ecd768430a80616306922aba56d4e" => :high_sierra
+    sha256 "6cc51d125ec0093a4c4bca86c371461bb7bbf454a95267521b8e5dd64a12f12e" => :sierra
+    sha256 "c9a7a83fc8822a6bb0bcedb4222e09ef8a19cbe21c39ef8b95be4faa3b230ed6" => :el_capitan
   end
 
-  depends_on :python => :optional
+  depends_on "python" => :optional
   depends_on "coreutils"
   depends_on "poppler"
   depends_on "pygobject3"
@@ -70,7 +69,8 @@ class Mat < Formula
     bin.env_script_all_files(libexec/"bin", :PYTHONPATH => ENV["PYTHONPATH"])
   end
 
-  def caveats; <<-EOS.undent
+  def caveats
+    <<~EOS
       MAT was built without PDF support nor GUI.
     EOS
   end

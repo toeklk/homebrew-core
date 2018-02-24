@@ -1,16 +1,15 @@
 class Sslsplit < Formula
-  desc "man-in-the-middle attacks against SSL encrypted network connections"
+  desc "Man-in-the-middle attacks against SSL encrypted network connections"
   homepage "https://www.roe.ch/SSLsplit"
-  url "https://mirror.roe.ch/rel/sslsplit/sslsplit-0.5.0.tar.bz2"
-  sha256 "3eb13c1d0164bf04e7602d9fc45ef7460444b953efaee3ee7d52c357adb3a89a"
+  url "https://mirror.roe.ch/rel/sslsplit/sslsplit-0.5.2.tar.bz2"
+  sha256 "f32c7fd760a45bb521adb8d96c819173fcaed1964bf114e666fcd7cf7ff043a8"
   head "https://github.com/droe/sslsplit.git", :branch => "develop"
 
   bottle do
     cellar :any
-    sha256 "e7d2e81df066ed3d673cb475cdf075764058ef3f765e751a065e18c4ff1021a9" => :sierra
-    sha256 "f2321a371e97032488d3f83ba8675221247e528d214d57d049fe7b061715f649" => :el_capitan
-    sha256 "428633efd8536a64b3d59f81cc0fbd108d074e70293ed921c40f1771fab7785f" => :yosemite
-    sha256 "ef365628a85b83a00202933ff68e46f47fccb5681293230b2f9fceefa4535375" => :mavericks
+    sha256 "77fecfb100b0790546886a4aa51af7799505cc656ba2950c6d49b93801aed621" => :high_sierra
+    sha256 "ea1ed69cb35e34a67e956549ce71ae3043e1ca48bb436c53d244a7cef93534e1" => :sierra
+    sha256 "a772d1ae52d6e4c89fd90339ceb5f9a8739246ecb73acbf50fb292814b9ec36d" => :el_capitan
   end
 
   depends_on "check" => :build

@@ -1,15 +1,16 @@
 class Godep < Formula
   desc "Dependency tool for go"
   homepage "https://godoc.org/github.com/tools/godep"
-  url "https://github.com/tools/godep/archive/v75.tar.gz"
-  sha256 "a9508db6a792170f9815864b70a70a8e0e66ca0bf57f1a9cc087d811ec105494"
+  url "https://github.com/tools/godep/archive/v80.tar.gz"
+  sha256 "029adc1a0ce5c63cd40b56660664e73456648e5c031ba6c214ba1e1e9fc86cf6"
+  revision 2
   head "https://github.com/tools/godep.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "241da4d518b01883be656c1d08891371b5f419e46cc515a4b1c564ec7e46fb01" => :sierra
-    sha256 "d9c70e8befc0ab8749bb99631d3baa93589fa4d1be26d4f63efd4151ea4c5e05" => :el_capitan
-    sha256 "6a947f4380a8f85ee1420023043e26fb4e5a97ebb9922242df960efd45a50713" => :yosemite
+    sha256 "e277d8960232b592bf175d6dc79b0114e05c7e6ac085dd7549646486b669f02a" => :high_sierra
+    sha256 "8efedffd982c75683addc2eab2bff2f85eb0e50dc7386154fa515ebbbd97f698" => :sierra
+    sha256 "b9654c7016ad767ae1675a9f65c37047cdeed129fc0230f6de8302f27364aa6f" => :el_capitan
   end
 
   depends_on "go"
@@ -17,24 +18,28 @@ class Godep < Formula
   def install
     ENV["GOPATH"] = buildpath
     (buildpath/"src/github.com/tools/godep").install buildpath.children
-    cd("src/github.com/tools/godep") { system "go", "build", "-o", bin/"godep" }
+    cd buildpath/"src/github.com/tools/godep" do
+      system "go", "build", "-o", bin/"godep"
+      prefix.install_metafiles
+    end
   end
 
   test do
     ENV["GOPATH"] = testpath.realpath
-    (testpath/"Godeps/Godeps.json").write <<-EOS.undent
+    (testpath/"Godeps/Godeps.json").write <<~EOS
       {
         "ImportPath": "github.com/tools/godep",
-        "GoVersion": "go1.7",
+        "GoVersion": "go1.8",
         "Deps": [
           {
-            "ImportPath": "go.googlesource.com/tools",
+            "ImportPath": "golang.org/x/tools/cover",
             "Rev": "3fe2afc9e626f32e91aff6eddb78b14743446865"
           }
         ]
       }
     EOS
     system bin/"godep", "restore"
-    assert File.exist?("src/go.googlesource.com/tools/README")
+    assert_predicate testpath/"src/golang.org/x/tools/README", :exist?,
+                     "Failed to find 'src/golang.org/x/tools/README!' file"
   end
 end

@@ -1,16 +1,15 @@
 class Twemcache < Formula
   desc "Twitter fork of memcached"
   homepage "https://github.com/twitter/twemcache"
-  url "https://github.com/twitter/twemcache/archive/v2.6.2.tar.gz"
-  sha256 "49905ceb89bf5d0fde25fa4b8843b2fe553915c0dc75c813de827bd9c0c85e26"
+  url "https://github.com/twitter/twemcache/archive/v2.6.3.tar.gz"
+  sha256 "ab05927f7d930b7935790450172187afedca742ee7963d5db1e62164e7f4c92b"
   head "https://github.com/twitter/twemcache.git"
 
   bottle do
     cellar :any
-    sha256 "a5d1e1367c163d3741461f66bcef4cca410133ad5905655c744e24898e4f8025" => :sierra
-    sha256 "8257030de4e6251c2899c235cf860b8aae1def40922d0ebd474bba5b92133982" => :el_capitan
-    sha256 "458cedc005b03da5a0dbbc2bdc916b30f04b1dc37916dbcaf38b6270712b4bd2" => :yosemite
-    sha256 "4489ad8862e470f2c9ccab1bdf5ac072ab42133283a6f89b4f2cd831af902e67" => :mavericks
+    sha256 "7992ac700ca1044335e84a77d09152b2b4a214dd595064f462049dd0ad65d92e" => :high_sierra
+    sha256 "cd20b77b8e04478fb459fcd3b31bb49f4c6015362420b8ffd726305af9763895" => :sierra
+    sha256 "fd57a26c75cb67d097894a9c757bd50b2799b1a6e8ba20510345a1f1ef5eee61" => :el_capitan
   end
 
   option "with-debug", "Debug mode with assertion panics enabled"

@@ -1,19 +1,18 @@
 class Coreutils < Formula
   desc "GNU File, Shell, and Text utilities"
   homepage "https://www.gnu.org/software/coreutils"
-  url "https://ftpmirror.gnu.org/coreutils/coreutils-8.25.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz"
-  sha256 "31e67c057a5b32a582f26408c789e11c2e8d676593324849dcf5779296cdce87"
+  url "https://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz"
+  mirror "https://ftpmirror.gnu.org/coreutils/coreutils-8.29.tar.xz"
+  sha256 "92d0fa1c311cacefa89853bdb53c62f4110cdfda3820346b59cbd098f40f955e"
 
   bottle do
-    sha256 "1714a4893ba37f9fb1a908e5bd79e45594034daa3ff08d8273713030498d5c1b" => :sierra
-    sha256 "3b278ce91252784e43d2f16fc813e72a7bd04e637627bf2916c9f847ef600d89" => :el_capitan
-    sha256 "dadb2d672a6b412d03b2470459d0ccb229bf7aa1c587b04809e7f19a439a640e" => :yosemite
-    sha256 "1b68974d496006908a2f538a6a7e35b3bee7eba2247afec4e1568b28d0d83c5c" => :mavericks
+    sha256 "20e12e8aaa50778db12accc12fc2ae5e29cdd58988064dbc912bcfb10a106272" => :high_sierra
+    sha256 "83cb185057a6add9b9289504801240f33020494c4b85af07272a85050cd99f65" => :sierra
+    sha256 "0c25b2cebfd54bf325360b6ab566df78a6711f5526fd44fc244558748bd27475" => :el_capitan
   end
 
   head do
-    url "git://git.sv.gnu.org/coreutils"
+    url "https://git.savannah.gnu.org/git/coreutils.git"
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
@@ -27,21 +26,27 @@ class Coreutils < Formula
   depends_on "gmp" => :optional
 
   conflicts_with "ganglia", :because => "both install `gstat` binaries"
+  conflicts_with "gegl", :because => "both install `gcut` binaries"
   conflicts_with "idutils", :because => "both install `gid` and `gid.1`"
   conflicts_with "aardvark_shell_utils", :because => "both install `realpath` binaries"
 
   def install
-    # Work around unremovable, nested dirs bug that affects lots of
-    # GNU projects. See:
-    # https://github.com/Homebrew/homebrew/issues/45273
-    # https://github.com/Homebrew/homebrew/issues/44993
-    # This is thought to be an el_capitan bug:
-    # https://lists.gnu.org/archive/html/bug-tar/2015-10/msg00017.html
     if MacOS.version == :el_capitan
+      # Work around unremovable, nested dirs bug that affects lots of
+      # GNU projects. See:
+      # https://github.com/Homebrew/homebrew/issues/45273
+      # https://github.com/Homebrew/homebrew/issues/44993
+      # This is thought to be an el_capitan bug:
+      # https://lists.gnu.org/archive/html/bug-tar/2015-10/msg00017.html
       ENV["gl_cv_func_getcwd_abort_bug"] = "no"
+
+      # renameatx_np and RENAME_EXCL are available at compile time from Xcode 8
+      # (10.12 SDK), but the former is not available at runtime.
+      inreplace "lib/renameat2.c", "defined RENAME_EXCL", "defined UNDEFINED_GIBBERISH"
     end
 
     system "./bootstrap" if build.head?
+
     args = %W[
       --prefix=#{prefix}
       --program-prefix=g
@@ -64,7 +69,7 @@ class Coreutils < Formula
     man1.install_symlink "grealpath.1" => "realpath.1"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     All commands have been installed with the prefix 'g'.
 
     If you really need to use these commands with their normal names, you
@@ -92,6 +97,7 @@ class Coreutils < Formula
   test do
     (testpath/"test").write("test")
     (testpath/"test.sha1").write("a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 test")
-    system "#{bin}/gsha1sum", "-c", "test.sha1"
+    system bin/"gsha1sum", "-c", "test.sha1"
+    system bin/"gln", "-f", "test", "test.sha1"
   end
 end

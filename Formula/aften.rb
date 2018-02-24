@@ -1,11 +1,12 @@
 class Aften < Formula
   desc "Audio encoder which generates ATSC A/52 compressed audio streams"
-  homepage "http://aften.sourceforge.net/"
+  homepage "https://aften.sourceforge.io/"
   url "https://downloads.sourceforge.net/aften/aften-0.0.8.tar.bz2"
   sha256 "87cc847233bb92fbd5bed49e2cdd6932bb58504aeaefbfd20ecfbeb9532f0c0a"
 
   bottle do
     cellar :any
+    sha256 "b1b8facf243da3872f4ddf2fbefb4879228cb5b390f883794b8b115d06e4c6a6" => :high_sierra
     sha256 "535ef47b08163c8d1d7a66ffda7d3f280c0569a74d9feedbcfc93cd3c55194ca" => :sierra
     sha256 "68b4983cc843e2d57854a263038a965a2dd6c473c98111f482ec1c69d09ace83" => :el_capitan
     sha256 "4f785f04a3bbde677452f2c5d1c04f77605e156b4020294c5799c85d0b8586d3" => :yosemite
@@ -15,7 +16,7 @@ class Aften < Formula
   depends_on "cmake" => :build
 
   resource "sample_wav" do
-    url "http://www.mediacollege.com/audio/tone/files/1kHz_44100Hz_16bit_05sec.wav"
+    url "https://www.mediacollege.com/audio/tone/files/1kHz_44100Hz_16bit_05sec.wav"
     sha256 "949dd8ef74db1793ac6174b8d38b1c8e4c4e10fb3ffe7a15b4941fa0f1fbdc20"
   end
 

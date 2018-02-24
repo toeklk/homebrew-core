@@ -1,15 +1,14 @@
 class Gtkspell3 < Formula
   desc "Gtk widget for highlighting and replacing misspelled words"
-  homepage "http://gtkspell.sourceforge.net/"
-  url "http://gtkspell.sourceforge.net/download/gtkspell3-3.0.7.tar.gz"
-  sha256 "13f2e6d3e2554cc24253ef592074b28c117db33b7a4465c98c69a3e0a4fa3cc2"
+  homepage "https://gtkspell.sourceforge.io/"
+  url "https://downloads.sourceforge.net/project/gtkspell/3.0.9/gtkspell3-3.0.9.tar.xz"
+  sha256 "a4f4a4a2789f7499563e26d96b22d8085222ebe278da47d026b2de782b8b4d26"
+  revision 2
 
   bottle do
-    sha256 "2485ef850a39072ed1848a6f6426750963913f80f4785dac2d13cd2937d9d1af" => :sierra
-    sha256 "a308614008162f5bb8e93e1cbe88394e4f39185fc5616075d46bcce4390ebe0d" => :el_capitan
-    sha256 "68bb9cc7e7772731552b06a0496e79754658eedab6f81b6609a4c1d1a23f9b1b" => :yosemite
-    sha256 "d1d6fbec19ca11ddaebf3d445dbaf04d98981650a08043d0e369fba2f44a9160" => :mavericks
-    sha256 "a33273b5ae3190d67028acdd991a848c9089f1819d3781c4b19dbd7a20358421" => :mountain_lion
+    sha256 "99ab6b48f8bb322a1e51b21fc6a7eccfb3f6156b9dae4e9afdf3e17b6528bba0" => :high_sierra
+    sha256 "1c12cb8f34a5756bba53ce51a3fed9e599f3cfdb57fbe0a6e4426730dc0335a5" => :sierra
+    sha256 "54127ae6c02def6d85ee4ecc142c9dd10ef0d94f2774d8fdae6fa9a0736835b5" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -23,7 +22,7 @@ class Gtkspell3 < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gtkspell/gtkspell.h>
 
       int main(int argc, char *argv[]) {
@@ -47,7 +46,7 @@ class Gtkspell3 < Formula
     flags = %W[
       -I#{atk.opt_include}/atk-1.0
       -I#{cairo.opt_include}/cairo
-      -I#{enchant.opt_include}/enchant
+      -I#{enchant.opt_include}/enchant-2
       -I#{fontconfig.opt_include}
       -I#{freetype.opt_include}/freetype2
       -I#{gdk_pixbuf.opt_include}/gdk-pixbuf-2.0
@@ -74,7 +73,7 @@ class Gtkspell3 < Formula
       -latk-1.0
       -lcairo
       -lcairo-gobject
-      -lenchant
+      -lenchant-2
       -lgdk-3
       -lgdk_pixbuf-2.0
       -lgio-2.0

@@ -1,19 +1,20 @@
 class Libwbxml < Formula
   desc "Library and tools to parse and encode WBXML documents"
   homepage "https://sourceforge.net/projects/libwbxml/"
-  url "https://downloads.sourceforge.net/project/libwbxml/libwbxml/0.11.4/libwbxml-0.11.4.tar.bz2"
-  sha256 "8057998042b8a724328346a50c326010ba011a40e18e2df7043e87498a679c28"
+  url "https://downloads.sourceforge.net/project/libwbxml/libwbxml/0.11.6/libwbxml-0.11.6.tar.bz2"
+  sha256 "2f5ffe6f59986b34f9032bfbf013e32cabf426e654c160d208a99dc1b6284d29"
   head "https://github.com/libwbxml/libwbxml.git"
 
   bottle do
     cellar :any
-    sha256 "9d2026a484bf34361af070e8a3d16f7cbab2dd24003b4c7c1302dac114bb3273" => :sierra
-    sha256 "8dea99c05944dcc9b28a3494d00ff32d136669c6bb49ad3eb6640f7a2601f879" => :el_capitan
-    sha256 "3a3c54f55e3ca674f6e8cc993519b3988d174a642ad25bcbf3e540e35d541d90" => :yosemite
-    sha256 "cc821ee98e3af666012edf1abfbce6cf1816e3609a1fcf679519c2f883a84000" => :mavericks
+    sha256 "d9793123d4fde1307610f37fe64251bd4d92da7bbb531289868867a9b5bc1fdf" => :high_sierra
+    sha256 "137d796ea2bcd0263c51d4d92ce96527ce73c23e933d66f226270baa97d1359f" => :sierra
+    sha256 "56dd0a5203520961413655ecbc8d60058b639179ac5c704848005a3a5179d78f" => :el_capitan
+    sha256 "6d3e97ce2d8a218780186f5be0005682768eb823ed0aec2c2275dabca8caafe3" => :yosemite
   end
 
   option "with-docs", "Build the documentation with Doxygen and Graphviz"
+  option "with-verbose", "Build with verbose logging support"
   deprecated_option "docs" => "with-docs"
 
   depends_on "cmake" => :build
@@ -32,6 +33,7 @@ class Libwbxml < Formula
     mkdir "build" do
       args = std_cmake_args
       args << "-DBUILD_DOCUMENTATION=ON" if build.with? "docs"
+      args << "-DWBXML_LIB_VERBOSE=ON" if build.with? "verbose"
       system "cmake", "..", *args
       system "make", "install"
     end

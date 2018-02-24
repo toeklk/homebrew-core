@@ -1,30 +1,28 @@
 class Fish < Formula
   desc "User-friendly command-line shell for UNIX-like operating systems"
   homepage "https://fishshell.com"
-
-  stable do
-    url "https://fishshell.com/files/2.4.0/fish-2.4.0.tar.gz"
-    mirror "https://github.com/fish-shell/fish-shell/releases/download/2.4.0/fish-2.4.0.tar.gz"
-    sha256 "06bbb2323360439c4044da762d114ec1aa1aba265cec71c0543e6a0095c9efc5"
-  end
+  url "https://github.com/fish-shell/fish-shell/releases/download/2.7.1/fish-2.7.1.tar.gz"
+  mirror "https://fishshell.com/files/2.7.1/fish-2.7.1.tar.gz"
+  sha256 "e42bb19c7586356905a58578190be792df960fa81de35effb1ca5a5a981f0c5a"
 
   bottle do
-    sha256 "0935641436db91447c2ebfa271df82a39ae0be428044a59aab9a41992d12e57f" => :sierra
-    sha256 "1f9faaa90bb1200db70221c8c5a79bcb524dd4b09808276f93315353b06af493" => :el_capitan
-    sha256 "36f144331928e5a9dcd612b303457ae6b4ae2d6afb17b873b709c1f80369d359" => :yosemite
+    sha256 "b75d873885ecfe3a6e28e8de9a7f292b03c3fb3ebedd3d6ac7a74219148af04e" => :high_sierra
+    sha256 "20e6c49692cef13eaadd8ee94e9831557130d449405fe12bfd9403659865f5b3" => :sierra
+    sha256 "017610f146a161b4383b905a675ac935568a721ed042c3f41f97aaa7f4b5037b" => :el_capitan
   end
 
   head do
     url "https://github.com/fish-shell/fish-shell.git", :shallow => false
 
     depends_on "autoconf" => :build
+    depends_on "automake" => :build
     depends_on "doxygen" => :build
   end
 
   depends_on "pcre2"
 
   def install
-    system "autoconf" if build.head?
+    system "autoreconf", "--no-recursive" if build.head?
 
     # In Homebrew's 'superenv' sed's path will be incompatible, so
     # the correct path is passed into configure here.
@@ -39,7 +37,7 @@ class Fish < Formula
     system "make", "install"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     You will need to add:
       #{HOMEBREW_PREFIX}/bin/fish
     to /etc/shells.

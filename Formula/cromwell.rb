@@ -1,8 +1,8 @@
 class Cromwell < Formula
   desc "Workflow Execution Engine using Workflow Description Language"
   homepage "https://github.com/broadinstitute/cromwell"
-  url "https://github.com/broadinstitute/cromwell/releases/download/0.22/cromwell-0.22.jar"
-  sha256 "2949e2d5eb6b32430b83e7587a94d8238b332aefe47c6b2e068b2650bcdec734"
+  url "https://github.com/broadinstitute/cromwell/releases/download/30.2/cromwell-30.2.jar"
+  sha256 "dfdc60966807899f6a1d82c6929e26f66aecfdce0f556b8f1918a58f8e523299"
 
   head do
     url "https://github.com/broadinstitute/cromwell.git"
@@ -14,19 +14,28 @@ class Cromwell < Formula
   depends_on :java => "1.8+"
   depends_on "akka"
 
+  resource "womtool" do
+    url "https://github.com/broadinstitute/cromwell/releases/download/30.2/womtool-30.2.jar"
+    sha256 "c2dc455a50585a17318ca5b818015f7b2cf9ef99961555650dd7844a928dffc2"
+  end
+
   def install
     if build.head?
       system "sbt", "assembly"
       libexec.install Dir["target/scala-*/cromwell-*.jar"][0]
-      bin.write_jar_script Dir[libexec/"cromwell-*.jar"][0], "cromwell"
+      libexec.install Dir["womtool/target/scala-2.12/womtool-*.jar"][0]
     else
-      libexec.install "cromwell-#{version}.jar"
-      bin.write_jar_script libexec/"cromwell-#{version}.jar", "cromwell"
+      libexec.install Dir["cromwell-*.jar"][0]
+      resource("womtool").stage do
+        libexec.install Dir["womtool-*.jar"][0]
+      end
     end
+    bin.write_jar_script Dir[libexec/"cromwell-*.jar"][0], "cromwell", "$JAVA_OPTS"
+    bin.write_jar_script Dir[libexec/"womtool-*.jar"][0], "womtool"
   end
 
   test do
-    (testpath/"hello.wdl").write <<-EOS
+    (testpath/"hello.wdl").write <<~EOS
       task hello {
         String name
 
@@ -43,14 +52,14 @@ class Cromwell < Formula
       }
     EOS
 
-    (testpath/"hello.json").write <<-EOS
+    (testpath/"hello.json").write <<~EOS
       {
         "test.hello.name": "world"
       }
     EOS
 
-    result = shell_output("#{bin}/cromwell run hello.wdl hello.json")
+    result = shell_output("#{bin}/cromwell run --inputs hello.json hello.wdl")
 
-    assert_match /test\.hello\.response/, result
+    assert_match "test.hello.response", result
   end
 end

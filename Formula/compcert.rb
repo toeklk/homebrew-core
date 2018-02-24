@@ -1,20 +1,21 @@
 class Compcert < Formula
   desc "Formally verified C compiler"
   homepage "http://compcert.inria.fr"
-  url "http://compcert.inria.fr/release/compcert-2.7.1.tgz"
-  sha256 "446199fb66c1e6e47eb464f2549d847298f3d7dcce9be6718da2a75c5dd00bee"
+  url "https://github.com/AbsInt/CompCert/archive/v3.2.tar.gz"
+  sha256 "23b1a9585e6e9fa211dccae40fc9053c75e7f5519e4b698751bb67a083080487"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "8eb897fde9bbb8c3180f702f2140f6301f404ce46adcb3008fb2f1aa15559716" => :sierra
-    sha256 "2e3d7fd8752d28a19427d1f194d664afee935652f2643a76ed8cb2aee0ad8785" => :el_capitan
-    sha256 "9659ca41c9ebe8ec673e47b140d8a78ec68610e77e9be34b322d7c8c058c881c" => :yosemite
-    sha256 "0194247311a58c8bb09107bc42b9971566c1a64dbb5457dc841b703ed884c7f8" => :mavericks
+    sha256 "365f0f9df5be211dd090d112d659fbcc01b0dc145f2ec493e17301aa8c3b471b" => :high_sierra
+    sha256 "af8952aa293ca948c04646eaadbf4acbc1c606686e244b1eff47fca447f7bab8" => :sierra
+    sha256 "3a5d5d6de9c4ca77739dd44776e664f4b551524a285036343aa6d5b39d1b7571" => :el_capitan
   end
 
+  option "with-config-x86_64", "Build Compcert with ./configure 'x86_64'"
+
   depends_on "coq" => :build
-  depends_on "ocaml" => :build
   depends_on "menhir" => :build
+  depends_on "ocaml" => :build
 
   def install
     ENV.permit_arch_flags
@@ -25,13 +26,15 @@ class Compcert < Formula
     # causes problems with the compcert compiler at runtime.
     inreplace "configure", "${toolprefix}gcc", "${toolprefix}#{ENV.cc}"
 
-    system "./configure", "-prefix", prefix, "ia32-macosx"
+    args = ["-prefix", prefix]
+    args << (build.with?("config-x86_64") ? "x86_64-macosx" : "ia32-macosx")
+    system "./configure", *args
     system "make", "all"
     system "make", "install"
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       int printf(const char *fmt, ...);
       int main(int argc, char** argv) {
         printf("Hello, world!\\n");

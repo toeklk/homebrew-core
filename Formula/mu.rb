@@ -4,28 +4,44 @@
 class Mu < Formula
   desc "Tool for searching e-mail messages stored in the maildir-format"
   homepage "https://www.djcbsoftware.nl/code/mu/"
-  url "https://github.com/djcb/mu-releases/raw/master/mu-0.9.16.tar.gz"
-  sha256 "55dff47f1ec2ea5a409a882009888c4f1b2b6ef2d81ee29753a649654752ee7e"
-  head "https://github.com/djcb/mu.git"
-  revision 1
+  url "https://github.com/djcb/mu/releases/download/v1.0/mu-1.0.tar.xz"
+  sha256 "966adc4db108f8ddf162891f9c3c24ba27f78c31f86575a0e05fbf14e857a513"
 
   bottle do
-    sha256 "e3635a6d29ca425c9c720a36fce436c535757b7c288d2b7edd9099630d9fbf9b" => :sierra
-    sha256 "aaff2f3b1a501a7f12adb5e61014bc8ef6c7ca70c6b0908f502609110a55e931" => :el_capitan
-    sha256 "971849ef3dee4bf59e2ec4b9fe141e2d786f65c41bfa17b474defbb705dbd011" => :yosemite
+    sha256 "d6d58dc0b9fc5d5454c0bf68230f6f8fb8cb973821de3e41ec267ce2614d8ec3" => :high_sierra
+    sha256 "0a818cbcfa365710bd48a97092218042dc8d00afd73b3f781c0982f8668a8410" => :sierra
+    sha256 "588ebfb6e7d577e8efd4a38ca1ae598998c8e015dd1101db8785641bdea17f6a" => :el_capitan
+  end
+
+  head do
+    url "https://github.com/djcb/mu.git"
+
+    depends_on "autoconf-archive" => :build
   end
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool" => :build
   depends_on "pkg-config" => :build
+  depends_on "libgpg-error" => :build
   depends_on "gettext"
   depends_on "glib"
-  depends_on "gmime"
   depends_on "xapian"
-  depends_on :emacs => ["23", :optional]
+  depends_on "emacs" => :optional
+
+  # Currently requires gmime 2.6.x
+  resource "gmime" do
+    url "https://download.gnome.org/sources/gmime/2.6/gmime-2.6.23.tar.xz"
+    sha256 "7149686a71ca42a1390869b6074815106b061aaeaaa8f2ef8c12c191d9a79f6a"
+  end
 
   def install
+    resource("gmime").stage do
+      system "./configure", "--prefix=#{prefix}/gmime", "--disable-introspection"
+      system "make", "install"
+      ENV.append_path "PKG_CONFIG_PATH", "#{prefix}/gmime/lib/pkgconfig"
+    end
+
     # Explicitly tell the build not to include emacs support as the version
     # shipped by default with macOS is too old.
     ENV["EMACS"] = "no" if build.without? "emacs"
@@ -38,7 +54,7 @@ class Mu < Formula
     system "make", "install"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Existing mu users are recommended to run the following after upgrading:
 
       mu index --rebuild
@@ -52,7 +68,7 @@ class Mu < Formula
   test do
     mkdir (testpath/"cur")
 
-    (testpath/"cur/1234567890.11111_1.host1!2,S").write <<-EOS.undent
+    (testpath/"cur/1234567890.11111_1.host1!2,S").write <<~EOS
       From: "Road Runner" <fasterthanyou@example.com>
       To: "Wile E. Coyote" <wile@example.com>
       Date: Mon, 4 Aug 2008 11:40:49 +0200
@@ -61,7 +77,7 @@ class Mu < Formula
       Beep beep!
     EOS
 
-    (testpath/"cur/0987654321.22222_2.host2!2,S").write <<-EOS.undent
+    (testpath/"cur/0987654321.22222_2.host2!2,S").write <<~EOS
       From: "Wile E. Coyote" <wile@example.com>
       To: "Road Runner" <fasterthanyou@example.com>
       Date: Mon, 4 Aug 2008 12:40:49 +0200

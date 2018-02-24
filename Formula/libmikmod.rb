@@ -1,24 +1,21 @@
 class Libmikmod < Formula
   desc "Portable sound library"
   homepage "http://mikmod.shlomifish.org"
-  url "https://downloads.sourceforge.net/project/mikmod/libmikmod/3.3.8/libmikmod-3.3.8.tar.gz"
-  sha256 "4acf6634a477d8b95f18b55a3e2e76052c149e690d202484e8b0ac7589cf37a2"
+  url "https://downloads.sourceforge.net/project/mikmod/libmikmod/3.3.11.1/libmikmod-3.3.11.1.tar.gz"
+  sha256 "ad9d64dfc8f83684876419ea7cd4ff4a41d8bcd8c23ef37ecb3a200a16b46d19"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "ec5f612dffeab778e8aaa78478a2157291b9e4a9f0601344123d5d421692023e" => :sierra
-    sha256 "d4ab73d546746bec04cd6b46458457d5c8fb35244acc8289deaba2d27ea4d1aa" => :el_capitan
-    sha256 "aa439fc42772f79091390244f084476def518280ba53699b8d540cfefa311778" => :yosemite
-    sha256 "3bc07cf9d3295a6888ada8b508834246d26981e8f2935ac2d9847f7038c3f8c3" => :mavericks
+    sha256 "062f1a9e2c4d5ebc6cfb08e70abbdf4ebd85b06519345ed8bde301e62d0cd860" => :high_sierra
+    sha256 "f7785b9a4f95ff28d55ffd022780ed1cd9bde139b3482cc4f52b862cd9abf247" => :sierra
+    sha256 "202b59906b8113d694f9c1e81df7a5f00f8afbc9e66a2b1188674058a64ae206" => :el_capitan
+    sha256 "8276808d976d108dd2768cacb5b54bf570ef6662b8855e7d3537e0ffaaeb1a19" => :yosemite
   end
 
   option "with-debug", "Enable debugging symbols"
-  option :universal
 
   def install
     ENV.O2 if build.with? "debug"
-    ENV.universal_binary if build.universal?
 
     # macOS has CoreAudio, but ALSA is not for this OS nor is SAM9407 nor ULTRA.
     args = %W[

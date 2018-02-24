@@ -1,13 +1,13 @@
 class Mkvtoolnix < Formula
   desc "Matroska media files manipulation tools"
   homepage "https://www.bunkus.org/videotools/mkvtoolnix/"
-  url "https://www.bunkus.org/videotools/mkvtoolnix/sources/mkvtoolnix-9.5.0.tar.xz"
-  sha256 "dde9969c43ad04d03ded73934e52388d978d5947fc5d5528d1eb4dc722dc86c0"
+  url "https://mkvtoolnix.download/sources/mkvtoolnix-20.0.0.tar.xz"
+  sha256 "6f4b86a16af1f979ce2e83e64223b1bb8635ac8f81863d8ce46014a82c8bf500"
 
   bottle do
-    sha256 "f172a706e1c22c1005c360e4f1745723660355295e92f8b53597a84316d8d12c" => :sierra
-    sha256 "ea3fdddfcf8eea4666fc4ab07c301b1a4c9d696c99067024119a55d1bb222e22" => :el_capitan
-    sha256 "0dc919ad1911a698deec4273ab4b79f40f6c5b06dbc47ada060b75c886498a22" => :yosemite
+    sha256 "36081c1268bfe99a5349f158eb29bfe16d1a8dada1aa31f59218b4b8502d06a1" => :high_sierra
+    sha256 "2cb43d0ef9a83b0b4a3545e67c6e2b052c768ab5611ec9aa507b2ff0c321eb1b" => :sierra
+    sha256 "aab65265f17ee544656e500594f63193cb616066b0d80068615000ea0e310309" => :el_capitan
   end
 
   head do
@@ -17,75 +17,75 @@ class Mkvtoolnix < Formula
     depends_on "libtool" => :build
   end
 
-  option "with-qt5", "Build with QT GUI"
+  option "with-qt", "Build with Qt GUI"
 
+  deprecated_option "with-qt5" => "with-qt"
+
+  depends_on "docbook-xsl" => :build
   depends_on "pkg-config" => :build
-  depends_on :ruby => ["1.9", :build]
+  depends_on "pugixml" => :build
+  depends_on "ruby" => :build if MacOS.version <= :mountain_lion
+  depends_on "boost"
+  depends_on "libebml"
+  depends_on "libmatroska"
   depends_on "libogg"
   depends_on "libvorbis"
   depends_on "flac" => :recommended
   depends_on "libmagic" => :recommended
-  depends_on "qt5" => :optional
   depends_on "gettext" => :optional
-
-  # On Mavericks, the bottle (without c++11) can be used
-  # because mkvtoolnix is linked against libc++ by default
-  if MacOS.version >= "10.9"
-    depends_on "boost"
-    depends_on "libmatroska"
-    depends_on "libebml"
-  else
-    depends_on "boost" => "c++11"
-    depends_on "libmatroska" => "c++11"
-    depends_on "libebml" => "c++11"
-  end
+  depends_on "qt" => :optional
+  depends_on "cmark" if build.with? "qt"
 
   needs :cxx11
 
   def install
     ENV.cxx11
 
-    boost = Formula["boost"]
-    ogg = Formula["libogg"]
-    vorbis = Formula["libvorbis"]
-    ebml = Formula["libebml"]
-    matroska = Formula["libmatroska"]
+    features = %w[libogg libvorbis libebml libmatroska]
+    features << "flac" if build.with? "flac"
+    features << "libmagic" if build.with? "libmagic"
+
+    extra_includes = ""
+    extra_libs = ""
+    features.each do |feature|
+      extra_includes << "#{Formula[feature].opt_include};"
+      extra_libs << "#{Formula[feature].opt_lib};"
+    end
+    extra_includes.chop!
+    extra_libs.chop!
 
     args = %W[
       --disable-debug
       --prefix=#{prefix}
-      --without-curl
-      --with-boost=#{boost.opt_prefix}
-      --with-extra-includes=#{ogg.opt_include};#{vorbis.opt_include};#{ebml.opt_include};#{matroska.opt_include}
-      --with-extra-libs=#{ogg.opt_lib};#{vorbis.opt_lib};#{ebml.opt_lib};#{matroska.opt_lib}
+      --with-boost=#{Formula["boost"].opt_prefix}
+      --with-docbook-xsl-root=#{Formula["docbook-xsl"].opt_prefix}/docbook-xsl
+      --with-extra-includes=#{extra_includes}
+      --with-extra-libs=#{extra_libs}
     ]
 
-    if build.with?("qt5")
-      qt5 = Formula["qt5"]
+    if build.with?("qt")
+      qt = Formula["qt"]
 
-      args << "--with-moc=#{qt5.opt_bin}/moc"
-      args << "--with-uic=#{qt5.opt_bin}/uic"
-      args << "--with-rcc=#{qt5.opt_bin}/rcc"
+      args << "--with-moc=#{qt.opt_bin}/moc"
+      args << "--with-uic=#{qt.opt_bin}/uic"
+      args << "--with-rcc=#{qt.opt_bin}/rcc"
       args << "--enable-qt"
     else
       args << "--disable-qt"
     end
 
-    args << "--without-flac" if build.without? "flac"
-    args << "--disable-magic" if build.without? "libmagic"
-
     system "./autogen.sh" if build.head?
 
     system "./configure", *args
 
-    system "./drake", "-j#{ENV.make_jobs}"
-    system "./drake", "install"
+    system "rake", "-j#{ENV.make_jobs}"
+    system "rake", "install"
   end
 
   test do
     mkv_path = testpath/"Great.Movie.mkv"
     sub_path = testpath/"subtitles.srt"
-    sub_path.write <<-EOS.undent
+    sub_path.write <<~EOS
       1
       00:00:10,500 --> 00:00:13,000
       Homebrew

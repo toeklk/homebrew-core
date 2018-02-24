@@ -1,23 +1,32 @@
 class Xqilla < Formula
   desc "XQuery and XPath 2 command-line interpreter"
-  homepage "http://xqilla.sourceforge.net/"
-  url "https://downloads.sourceforge.net/project/xqilla/XQilla-2.3.2.tar.gz"
-  sha256 "5ae0aed4091521d5c2f541093e02a81ebe55a9087ba735f80b110068584e217c"
+  homepage "https://xqilla.sourceforge.io/"
+  url "https://downloads.sourceforge.net/project/xqilla/XQilla-2.3.3.tar.gz"
+  sha256 "8f76b9b4f966f315acc2a8e104e426d8a76ba4ea3441b0ecfdd1e39195674fd6"
+  revision 1
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "c5ddfea1f0e15d8dda3af57bc20add4e986eec8fa1afc22541b48492bdbf5a78" => :sierra
-    sha256 "467093e2e7aa5d27ef6fbb4b38b4272847b58f0034a274dee32a47d03269a4fc" => :el_capitan
-    sha256 "25adad84e1e9c8aef23c2acde2a7848a1899d291628ffbe6c03c6296fbeb39f4" => :yosemite
-    sha256 "29918d50fd8318817ddea7f7e99ee9f6e144c631fcbeaa19c5b0f478223b1d39" => :mavericks
+    sha256 "dd50c76bcc99f8dd8d2ceb62a7e8379198e0a5e6986c233bca1a935aa34223d3" => :high_sierra
+    sha256 "d2120862cf3ad0dda28c6c90589f87c49b98376b543f3c0fd1aa1446282a7194" => :sierra
+    sha256 "23b0237d4a917ac6e91d4d1957f676e466b3e218d2abffb671503d982f827a83" => :el_capitan
   end
 
   depends_on "xerces-c"
 
   conflicts_with "zorba", :because => "Both supply xqc.h"
 
+  needs :cxx11
+
+  # See https://sourceforge.net/p/xqilla/bugs/48/
+  patch do
+    url "https://raw.githubusercontent.com/Homebrew/formula-patches/master/xqilla/xerces-containing-node.patch"
+    sha256 "36ffb2dff579e5610ca3be2a962942433127b24a78ca454647059d6d54b8e014"
+  end
+
   def install
+    ENV.cxx11
+
     system "./configure", "--disable-debug", "--disable-dependency-tracking",
                           "--with-xerces=#{HOMEBREW_PREFIX}",
                           "--prefix=#{prefix}"
@@ -25,7 +34,7 @@ class Xqilla < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <iostream>
       #include <xqilla/xqilla-simple.hpp>
 

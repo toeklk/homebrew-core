@@ -1,6 +1,6 @@
 class Sdedit < Formula
-  desc "Tool for generating sequence diagrams very quickly."
-  homepage "http://sdedit.sourceforge.net"
+  desc "Tool for generating sequence diagrams very quickly"
+  homepage "https://sdedit.sourceforge.io"
   url "https://downloads.sourceforge.net/project/sdedit/sdedit/4.0/sdedit-4.01.jar"
   sha256 "060576f9fe79bda0a65f2cfa0b041fceaf7846f034a7519ef939b73ae82673f1"
 
@@ -14,7 +14,7 @@ class Sdedit < Formula
   end
 
   test do
-    (testpath/"test.sd").write <<-EOS.undent
+    (testpath/"test.sd").write <<~EOS
       #![SD ticket order]
       ext:External[pe]
       user:Actor

@@ -1,18 +1,17 @@
 class Ejdb < Formula
   desc "C library based on modified version of Tokyo Cabinet"
   homepage "http://ejdb.org"
-  url "https://github.com/Softmotions/ejdb/archive/v1.2.10.tar.gz"
-  sha256 "3a6d4a487e02c05dd67e72a77ee6082fbb1f5a19d4f7f15d14e1c891bbfe520e"
+  url "https://github.com/Softmotions/ejdb/archive/v1.2.12.tar.gz"
+  sha256 "858b58409a2875eb2b0c812ce501661f1c8c0378f7756d2467a72a1738c8a0bf"
 
   head "https://github.com/Softmotions/ejdb.git"
 
   bottle do
     cellar :any
-    sha256 "a8b8caef51716f75017c119a66d43cb82bab6dc5c9722c5d20d4b63f59c7e380" => :sierra
-    sha256 "d001784780d47984c2172aba208c881d884153c96c0aedecb3a35efd4c08710d" => :el_capitan
-    sha256 "15c0f59354c39a9481591bbfad7e46f8c87cfeda8371e27728009b0fc20fc923" => :yosemite
-    sha256 "4afc62e8452bc92ebd72c89b134b16f5d9781f56eee2b7b75e1ab03698ca5fc7" => :mavericks
-    sha256 "246e34413c364ce13accac4c23169ebf42daaba94f1aa90c770fafd6aa74a6b0" => :mountain_lion
+    rebuild 1
+    sha256 "75817c5481e57bdbf55d29289f2d22dabf162810cf94308826a2c40d40904f52" => :high_sierra
+    sha256 "1ef9acee32b25883f868a7148e72f5b22303b504c347711f0509d2324425fdae" => :sierra
+    sha256 "6d470ca361e813d40dbff0e27ef7589d5062bba9a7b005f5b360bd595c343ded" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -25,7 +24,7 @@ class Ejdb < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <ejdb/ejdb.h>
 
       static EJDB *jb;
@@ -60,7 +59,8 @@ class Ejdb < Formula
           uint32_t count;
           TCLIST *res = ejdbqryexecute(coll, q1, &count, 0, NULL);
 
-          for (int i = 0; i < TCLISTNUM(res); ++i) {
+          int i;
+          for (i = 0; i < TCLISTNUM(res); ++i) {
               void *bsdata = TCLISTVALPTR(res, i);
               bson_print_raw(bsdata, 0);
           }
@@ -74,8 +74,7 @@ class Ejdb < Formula
           return 0;
       }
     EOS
-    system ENV.cc, "-I#{include}", "-L#{lib}", "-lejdb",
-           "test.c", "-o", testpath/"test"
+    system ENV.cc, "-I#{include}", "test.c", "-L#{lib}", "-lejdb", "-o", testpath/"test"
     system "./test"
   end
 end

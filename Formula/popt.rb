@@ -6,6 +6,7 @@ class Popt < Formula
 
   bottle do
     rebuild 1
+    sha256 "242ffcbf7f9796f970d45612b025d8be787f739aa5f16a02ce097196d3f56941" => :high_sierra
     sha256 "ceae94fc8e588309670a7a045186eee8ff3a9966a68650f044a14d101267b7b2" => :sierra
     sha256 "60a7f19e8fecafd92a5beb7d6438efac915e8f3afe3d83575fb64bb4a6190aab" => :el_capitan
     sha256 "56d1104516e23bb314a248904b8ec85afe2fdbf71555417eb8f91edc1286e6da" => :yosemite
@@ -13,10 +14,7 @@ class Popt < Formula
     sha256 "6d95c3530a7bd4d7099d91f448669b53bb51a071c5e9a8b9915cdc750bd72aec" => :mountain_lion
   end
 
-  option :universal
-
   def install
-    ENV.universal_binary if build.universal?
     system "./configure", "--disable-debug", "--disable-dependency-tracking",
                           "--prefix=#{prefix}"
     system "make", "install"

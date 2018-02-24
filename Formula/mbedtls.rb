@@ -1,23 +1,21 @@
 class Mbedtls < Formula
   desc "Cryptographic & SSL/TLS library"
   homepage "https://tls.mbed.org/"
-  url "https://tls.mbed.org/download/mbedtls-2.4.0-apache.tgz"
-  sha256 "c1c3559ed39f7a1b1550c4cf4ccb918bf239301a3311d98dda92bed8a25b7f0d"
+  url "https://tls.mbed.org/download/mbedtls-2.7.0-apache.tgz"
+  sha256 "aeb66d6cd43aa1c79c145d15845c655627a7fc30d624148aaafbb6c36d7f55ef"
   head "https://github.com/ARMmbed/mbedtls.git", :branch => "development"
 
   bottle do
     cellar :any
-    sha256 "95524591b12e3581f0196522fa2c89853f997af0a2a6c19c132027e7e8042443" => :sierra
-    sha256 "18d42d8a25cdae7255ff7feda52db50870bd6107fb365c01206eb86fad4c1715" => :el_capitan
-    sha256 "0cf28716564c785ff409dc0d73bbbe77f084b2ac8f341c0f3df222d866eee703" => :yosemite
+    sha256 "dca503826b9183c68dcdbdf620a2b687b49c18ff18d60f8386c1f15af33bda44" => :high_sierra
+    sha256 "ec1d4762f786b3633c4ad8e6443fecb195c9c87fae16275c7232c9c686f3f4ac" => :sierra
+    sha256 "2f1daabe90f5a505b8fc145ce5134e4773cb73e017f9edd2ab5bf2b0f169cee0" => :el_capitan
   end
 
   depends_on "cmake" => :build
 
   def install
     inreplace "include/mbedtls/config.h" do |s|
-      # disable support for SSL 3.0
-      s.gsub! "#define MBEDTLS_SSL_PROTO_SSL3", "//#define MBEDTLS_SSL_PROTO_SSL3"
       # enable pthread mutexes
       s.gsub! "//#define MBEDTLS_THREADING_PTHREAD", "#define MBEDTLS_THREADING_PTHREAD"
       # allow use of mutexes within mbed TLS

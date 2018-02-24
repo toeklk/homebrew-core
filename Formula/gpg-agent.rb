@@ -1,20 +1,17 @@
-# This formula tracks GnuPG stable. You can find GnuPG Modern via:
-# brew install homebrew/versions/gnupg21
-# At the moment GnuPG Modern causes too many incompatibilities to be in core.
 class GpgAgent < Formula
   desc "GPG key agent"
   homepage "https://www.gnupg.org/"
-  url "https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.30.tar.bz2"
-  mirror "https://www.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/gnupg/gnupg-2.0.30.tar.bz2"
-  sha256 "e329785a4f366ba5d72c2c678a7e388b0892ac8440c2f4e6810042123c235d71"
-  revision 1
+  url "https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2"
+  mirror "https://www.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/gnupg/gnupg-2.0.31.tar.bz2"
+  sha256 "095558cfbba52fba582963e97b0c016889570b4712d6b871abeef2cf93e62293"
 
   bottle do
-    sha256 "e6f23c208f3e2776d3df42389c14d46bb2d9114441c5c2eb8e4224a96e0f225d" => :sierra
-    sha256 "d13f81eed299b09bb12bc3d9cb3a85af17e28662c9353c6928d90efbd01556d5" => :el_capitan
-    sha256 "d495205bb284b493fcc5cdbcbda32d9d9c0408532e99ce9d4f13ed6e3f74d969" => :yosemite
-    sha256 "cbcab34d6357423d93904bc3f80b552519291852e1bc87e3fbfb70628237f094" => :mavericks
+    sha256 "aad65c67de59226ab94dcd307f75dfd007cb4a8d3050863d23c9c39f72dd4b87" => :high_sierra
+    sha256 "7767c0f021cfab5e062d18069bd7bbbfd82249e1a0d80b5bfbf4eee125c617d4" => :sierra
+    sha256 "6f07d8e495b5eee2d0b13d0b1397c543ac710d5416fbb3571ec67a5937650bab" => :el_capitan
   end
+
+  keg_only "GPG 2.1.x ships an internal gpg-agent which it must use"
 
   depends_on "libgpg-error"
   depends_on "libgcrypt"
@@ -38,11 +35,12 @@ class GpgAgent < Formula
                           "--prefix=#{prefix}",
                           "--enable-agent-only",
                           "--with-pinentry-pgm=#{Formula["pinentry"].opt_bin}/pinentry",
-                          "--with-scdaemon-pgm=#{Formula["gnupg2"].opt_libexec}/scdaemon"
+                          "--with-scdaemon-pgm=#{Formula["gnupg@2.0"].opt_libexec}/scdaemon"
     system "make", "install"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats
+    <<~EOS
       Remember to add "use-standard-socket" to your ~/.gnupg/gpg-agent.conf
       file.
     EOS

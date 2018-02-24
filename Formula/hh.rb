@@ -1,15 +1,15 @@
 class Hh < Formula
   desc "Bash and zsh history suggest box"
   homepage "https://github.com/dvorka/hstr"
-  url "https://github.com/dvorka/hstr/archive/1.21.tar.gz"
-  sha256 "f0e9762f2a9587f0995bbd51cb64526ae852c2425ceb8ceee0747efba80ac6b3"
+  url "https://github.com/dvorka/hstr/archive/1.24.tar.gz"
+  sha256 "6c130afd8ca570ee1988a0c7d6a96efeeabd21be7e05ce1f3144bb3c86c74441"
   head "https://github.com/dvorka/hstr.git"
 
   bottle do
     cellar :any
-    sha256 "39cbce5e5288725d6fbf686163e5609fe41eaf212565481ec53836cab87d0610" => :sierra
-    sha256 "f1ea86ec9b53d0de43a3880e0db700584e272e8e3ff9c5e552e2c11d48c47b7e" => :el_capitan
-    sha256 "c9223089815736888069cb8bb168a8dfe1332bae8e2293b0736ad74772ec589b" => :yosemite
+    sha256 "90be269fa8ed7ed3538f91d34cccc5fe87e4ce3e328b64a6c74f558d5f2d0633" => :high_sierra
+    sha256 "3a194279a8c4eda33d00398e6c3a2a854c9c15194449d1d0e813e57b17993cae" => :sierra
+    sha256 "4bbad864545de6e4f2a8e914fc20495983c0bde0feb2e2da9353a8169cfaa3fa" => :el_capitan
   end
 
   depends_on "autoconf" => :build

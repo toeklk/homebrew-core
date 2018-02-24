@@ -4,33 +4,30 @@ class Idris < Formula
   include Language::Haskell::Cabal
 
   desc "Pure functional programming language with dependent types"
-  homepage "http://www.idris-lang.org"
-  url "https://github.com/idris-lang/Idris-dev/archive/v0.12.3.tar.gz"
-  sha256 "c6f410cddddbc53c4779d3612be40ef4e4f1f11ce8083a811825763daf30ee4d"
+  homepage "https://www.idris-lang.org/"
+  url "https://github.com/idris-lang/Idris-dev/archive/v1.2.0.tar.gz"
+  sha256 "a5160da66cdfb376df0ed87f0abb9dbc7feaa4efe77bcc7f9cc3b97425bc57f7"
   head "https://github.com/idris-lang/Idris-dev.git"
 
   bottle do
-    sha256 "a69b23764bb5f9a78f4fbd1791f939e86407d8ed2d01e01aabf5c6dc835feccf" => :sierra
-    sha256 "33a358eb043be6aa3ff9ca76e060f13281d72e8777874fbd22a1625fc8ccb84a" => :el_capitan
-    sha256 "304ea6fef86027134d9ae75c6563a9fb28812af60d05d04d68e0ecffd140bd6f" => :yosemite
+    sha256 "7d878126d8a6317d8325f3f434884eb52fadb6dd712433e18437979531e1e2df" => :high_sierra
+    sha256 "2944aae8e9baf286e1c46814d88e0487f08a0bdd8279859475de0a9128f772df" => :sierra
+    sha256 "6e9af20653598297ee21e83c9b7cb44240b7a8797d22bf918548a8cde6f45fdf" => :el_capitan
   end
 
-  depends_on "ghc" => :build
   depends_on "cabal-install" => :build
+  depends_on "ghc" => :build
   depends_on "pkg-config" => :build
-
-  depends_on "gmp"
-  depends_on "libffi" => :recommended
+  depends_on "libffi"
 
   def install
-    args = []
-    args << "-f FFI" if build.with? "libffi"
-    args << "-f release" if build.stable?
+    args = ["-f", "FFI"]
+    args << "-f" << "release" if build.stable?
     install_cabal_package *args
   end
 
   test do
-    (testpath/"hello.idr").write <<-EOS.undent
+    (testpath/"hello.idr").write <<~EOS
       module Main
       main : IO ()
       main = putStrLn "Hello, Homebrew!"
@@ -40,7 +37,7 @@ class Idris < Formula
     assert_equal "Hello, Homebrew!", shell_output("./hello").chomp
 
     if build.with? "libffi"
-      (testpath/"ffi.idr").write <<-EOS.undent
+      (testpath/"ffi.idr").write <<~EOS
         module Main
         puts: String -> IO ()
         puts x = foreign FFI_C "puts" (String -> IO ()) x

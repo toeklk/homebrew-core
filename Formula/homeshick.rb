@@ -14,7 +14,7 @@ class Homeshick < Formula
     inreplace "bin/homeshick", /^homeshick=.*/, "homeshick=#{opt_prefix}"
 
     prefix.install "lib", "homeshick.sh"
-    prefix.install "homeshick.fish" if build.with? "fish"
+    fish_function.install "homeshick.fish" if build.with? "fish"
     bin.install "bin/homeshick"
     bin.install "bin/homeshick.csh" if build.with? "csh"
     zsh_completion.install "completions/_homeshick"
@@ -25,22 +25,15 @@ class Homeshick < Formula
   end
 
   def caveats
-    s = <<-EOS.undent
+    s = <<~EOS
       To enable the `homeshick cd <CASTLE>` command, you need to
       `export HOMESHICK_DIR=#{opt_prefix}`
       and
       `source "#{opt_prefix}/homeshick.sh"`
       in your $HOME/.bashrc
     EOS
-    if build.with? "fish"
-      s += <<-EOS.undent
-        and
-        `#{opt_prefix}.fish`
-        in your $HOME/.config/fish/config.fish
-      EOS
-    end
     if build.with? "csh"
-      s += <<-EOS.undent
+      s += <<~EOS
         and
         `alias homeshick source "#{opt_bin}/homeshick.csh"`
         in your $HOME/.cshrc
@@ -50,7 +43,7 @@ class Homeshick < Formula
   end
 
   test do
-    (testpath/"test.sh").write <<-EOS.undent
+    (testpath/"test.sh").write <<~EOS
       #!/bin/sh
       export HOMESHICK_DIR="#{opt_prefix}"
       source "#{opt_prefix}/homeshick.sh"

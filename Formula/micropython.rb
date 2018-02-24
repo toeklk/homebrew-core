@@ -2,29 +2,35 @@ class Micropython < Formula
   desc "Python implementation for microcontrollers and constrained systems"
   homepage "https://www.micropython.org/"
   url "https://github.com/micropython/micropython.git",
-    :tag => "v1.8.6",
-    :revision => "5a1d63fc14dae788f705403a43c2d8639b7dd9cd"
+      :tag => "v1.9.3",
+      :revision => "fe45d78b1edd6d2202c3544797885cb0b12d4f03"
+  revision 1
 
   bottle do
     cellar :any
-    sha256 "1fa57e4d571f8a36358a28318a4f56d78783ff4ddb7487c89d826aa30e3fa0b3" => :sierra
-    sha256 "484eb47c223be42fdad80de0e946c95e0611b1b6cff47cb798153903a9823e13" => :el_capitan
-    sha256 "81a4250412985d5a3a47f790e8bf8a33706071217c183d14f63930555ca580a2" => :yosemite
+    sha256 "e071d65ec654f528a26cf020a94072b17aeaf08385115d524e6c6139d16b6ab3" => :high_sierra
+    sha256 "14cd46105046e82ede775f2fd1eab21dbb4a8a7506361f5de98845791b56b106" => :sierra
+    sha256 "a485feb6b215857d7870d56c21bceab55e16bfd85ad48d296f3a79842388d7e8" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "libffi" # Requires libffi v3 closure API; macOS version is too old
 
   def install
-    cd "unix" do
+    cd "ports/unix" do
       system "make", "axtls"
-      system "make", "install", "PREFIX=#{prefix}", "V=1"
+      system "make", "install", "PREFIX=#{prefix}"
+    end
+
+    cd "mpy-cross" do
+      system "make"
+      bin.install "mpy-cross"
     end
   end
 
   test do
     # Test the FFI module
-    (testpath/"ffi-hello.py").write <<-EOS.undent
+    (testpath/"ffi-hello.py").write <<~EOS
       import ffi
 
       libc = ffi.open("libc.dylib")
@@ -32,6 +38,7 @@ class Micropython < Formula
       printf("Hello!\\n")
     EOS
 
+    system bin/"mpy-cross", "ffi-hello.py"
     system bin/"micropython", "ffi-hello.py"
   end
 end

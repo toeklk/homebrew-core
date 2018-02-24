@@ -1,13 +1,13 @@
 class RakudoStar < Formula
   desc "Perl 6 compiler"
   homepage "http://rakudo.org/"
-  url "http://rakudo.org/downloads/star/rakudo-star-2016.10.tar.gz"
-  sha256 "00fb63c1e0475213960298fac82a53906f1bfa8d431ca8c00ef278f58bf1d14b"
+  url "https://rakudo.perl6.org/downloads/star/rakudo-star-2018.01.tar.gz"
+  sha256 "8f0290f409307c45a107360e7883f2fad3c19aa995133ab53e6f36ae9452d351"
 
   bottle do
-    sha256 "b63ee3f5622da6180abfa8bc172253a9c5f84fae97733df5e666ed5e75ff3cc5" => :sierra
-    sha256 "4d944fad4fb0a5e91433038ed40c1a9df9956abc86fb7231ab1610c7e9626bf7" => :el_capitan
-    sha256 "6f1f51602759579a958a00049ee5509711cbd91a17b2ae65f9dfdd4bf6cbf827" => :yosemite
+    sha256 "e90c8e08dc6236adbef651d7767fe9230c13cceacee39655707fadc7c92965f4" => :high_sierra
+    sha256 "7fafda1950b60283b2b85b607f2251e42917c727775d7c47cdeeed5feef2fe87" => :sierra
+    sha256 "c5bf17dcfa36cd061fc70b7a5a5ae7e46273ecc87d84bdf65412f98105da135b" => :el_capitan
   end
 
   option "with-jvm", "Build also for jvm as an alternate backend."
@@ -24,13 +24,7 @@ class RakudoStar < Formula
     ENV.remove "CPPFLAGS", "-I#{libffi.include}"
     ENV.prepend "CPPFLAGS", "-I#{libffi.lib}/libffi-#{libffi.version}/include"
 
-    # Work around to prevent MoarVM from using clock_gettime
-    # Reported 2016-10-27: https://github.com/MoarVM/MoarVM/issues/437
-    if MacOS.version == "10.11" && MacOS::Xcode.installed? && MacOS::Xcode.version >= "8.0"
-      inreplace "MoarVM/src/platform/posix/time.c", "CLOCK_REALTIME", "UNDEFINED_XCODE8_HACK"
-    end
-
-    ENV.j1 # An intermittent race condition causes random build failures.
+    ENV.deparallelize # An intermittent race condition causes random build failures.
 
     backends = ["moar"]
     generate = ["--gen-moar"]
@@ -47,14 +41,12 @@ class RakudoStar < Formula
     # Move the man pages out of the top level into share.
     # Not all backends seem to generate man pages at this point (moar does not, parrot does),
     # so we need to check if the directory exists first.
-    if File.directory?("#{prefix}/man")
-      mv "#{prefix}/man", share
-    end
+    mv "#{prefix}/man", share if File.directory?("#{prefix}/man")
   end
 
   test do
     out = `#{bin}/perl6 -e 'loop (my $i = 0; $i < 10; $i++) { print $i }'`
     assert_equal "0123456789", out
-    assert_equal 0, $?.exitstatus
+    assert_equal 0, $CHILD_STATUS.exitstatus
   end
 end

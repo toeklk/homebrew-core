@@ -1,28 +1,34 @@
 class Netpbm < Formula
   desc "Image manipulation"
-  homepage "http://netpbm.sourceforge.net"
+  homepage "https://netpbm.sourceforge.io/"
   # Maintainers: Look at https://sourceforge.net/p/netpbm/code/HEAD/tree/
-  # for versions and matching revisions
-  url "http://svn.code.sf.net/p/netpbm/code/advanced", :revision => 2825
-  version "10.76"
-  head "http://svn.code.sf.net/p/netpbm/code/trunk"
+  # for stable versions and matching revisions.
+  url "svn://svn.code.sf.net/p/netpbm/code/stable", :revision => 3154
+  version "10.73.18"
+  version_scheme 1
+
+  head "https://svn.code.sf.net/p/netpbm/code/trunk"
 
   bottle do
     cellar :any
-    sha256 "8a2d966ab4668144f3f9ebaf69b170e9efa81ce399dc6d26977b953d7be2b44f" => :sierra
-    sha256 "a592a25f28c8f150f16e73e6c72c7fa5c91feccf2948c1fe2d9e3e558b793785" => :el_capitan
-    sha256 "17a4e01fbf68d771b2a862a6279d2e61d1f9e9a683ed4c03b16eb21214ecd7f7" => :yosemite
+    sha256 "9b067be48ab266bf848ce40ca6537c47a9b3289d6efd68f571f0b8740ba77a59" => :high_sierra
+    sha256 "643dd3415c96de3201ee9ed1856672690e18a5db8206c302dfbda59a4aa92bd4" => :sierra
+    sha256 "d12e3868feb8ff8b161d2b46896875d510fac2bf71ac715558fb222a0c461187" => :el_capitan
   end
-
-  option :universal
 
   depends_on "libtiff"
   depends_on "jasper"
   depends_on "jpeg"
   depends_on "libpng"
 
+  conflicts_with "jbigkit", :because => "both install `pbm.5` and `pgm.5` files"
+
   def install
-    ENV.universal_binary if build.universal?
+    # Fix file not found errors for /usr/lib/system/libsystem_symptoms.dylib and
+    # /usr/lib/system/libsystem_darwin.dylib on 10.11 and 10.12, respectively
+    if MacOS.version == :sierra || MacOS.version == :el_capitan
+      ENV["SDKROOT"] = MacOS.sdk_path
+    end
 
     cp "config.mk.in", "config.mk"
 
@@ -55,7 +61,7 @@ class Netpbm < Formula
       # do man pages explicitly; otherwise a junk file is installed in man/web
       man1.install Dir["man/man1/*.1"]
       man5.install Dir["man/man5/*.5"]
-      lib.install Dir["link/*.a"]
+      lib.install Dir["link/*.a"], Dir["link/*.dylib"]
       (lib/"pkgconfig").install "pkgconfig_template" => "netpbm.pc"
     end
 
@@ -66,6 +72,6 @@ class Netpbm < Formula
     fwrite = Utils.popen_read("#{bin}/pngtopam #{test_fixtures("test.png")} -alphapam")
     (testpath/"test.pam").write fwrite
     system "#{bin}/pamdice", "test.pam", "-outstem", testpath/"testing"
-    assert File.exist?("testing_0_0.")
+    assert_predicate testpath/"testing_0_0.", :exist?
   end
 end

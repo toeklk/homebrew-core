@@ -1,6 +1,6 @@
 class Fmpp < Formula
-  desc "Text file preprocessing tool using FreeMarker templates."
-  homepage "http://fmpp.sourceforge.net/"
+  desc "Text file preprocessing tool using FreeMarker templates"
+  homepage "https://fmpp.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/fmpp/fmpp/0.9.15/fmpp_0.9.15.tar.gz"
   sha256 "b893451b5450a7f35fe680e934f6903ec8143d88959dcfca5d17467fbe4142f9"
   head "https://github.com/freemarker/fmpp.git"
@@ -17,7 +17,7 @@ class Fmpp < Formula
   test do
     (testpath/"input").write '<#assign foo="bar"/>${foo}'
     system bin/"fmpp", "input", "-o", "output"
-    assert File.exist? "output"
+    assert_predicate testpath/"output", :exist?
     assert_equal("bar", File.read("output"))
   end
 end

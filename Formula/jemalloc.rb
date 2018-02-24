@@ -1,32 +1,46 @@
 class Jemalloc < Formula
   desc "malloc implementation emphasizing fragmentation avoidance"
-  homepage "http://www.canonware.com/jemalloc/"
-  url "https://github.com/jemalloc/jemalloc/releases/download/4.3.1/jemalloc-4.3.1.tar.bz2"
-  sha256 "f7bb183ad8056941791e0f075b802e8ff10bd6e2d904e682f87c8f6a510c278b"
-  head "https://github.com/jemalloc/jemalloc.git"
+  homepage "http://jemalloc.net/"
+  url "https://github.com/jemalloc/jemalloc/releases/download/5.0.1/jemalloc-5.0.1.tar.bz2"
+  sha256 "4814781d395b0ef093b21a08e8e6e0bd3dab8762f9935bbfb71679b0dea7c3e9"
 
   bottle do
     cellar :any
-    sha256 "d856fb9367ed1b8bd8edf5da64a161e77c01c617f918c6d065accfde865ebfad" => :sierra
-    sha256 "df966e457b7953b26a6dafbb85305f0d5b359e2f79bba4e9227a1c4fa5f45eb8" => :el_capitan
-    sha256 "02fe447b5597efeed4c16daa355ba7d8bbc99607a89aafba9c4a914c90f3dd3b" => :yosemite
+    sha256 "4046a803c804dac204126e10acd158e5a996c5bc8117917979ff495a5e07fcb3" => :high_sierra
+    sha256 "0ae7f33eda0547fd2eacad3f84c3c7cc6ebfb76ea02e8a4bac542ba60ba6ef07" => :sierra
+    sha256 "1e49d486784c64dccee6e43d61ecb201adf6ac8b5cc02465ac9ea5b492a56d01" => :el_capitan
+    sha256 "49a8f071338b3ec42cd89280681c338ad2e1d242a389e65f63f64e60257c5733" => :yosemite
+  end
+
+  head do
+    url "https://github.com/jemalloc/jemalloc.git"
+
+    depends_on "autoconf" => :build
+    depends_on "docbook-xsl" => :build
   end
 
   def install
-    # dyld: lazy symbol binding failed: Symbol not found: _os_unfair_lock_lock
-    # Reported 6 Nov 2016 https://github.com/jemalloc/jemalloc/issues/494
-    if MacOS.version == :el_capitan && MacOS::Xcode.installed? && MacOS::Xcode.version >= "8.0"
-      ENV["je_cv_os_unfair_lock"] = "no"
+    args = %W[
+      --disable-debug
+      --prefix=#{prefix}
+      --with-jemalloc-prefix=
+    ]
+
+    if build.head?
+      args << "--with-xslroot=#{Formula["docbook-xsl"].opt_prefix}/docbook-xsl"
+      system "./autogen.sh", *args
+      system "make", "dist"
+    else
+      system "./configure", *args
     end
 
-    system "./configure", "--disable-debug", "--prefix=#{prefix}", "--with-jemalloc-prefix="
     system "make"
     system "make", "check"
     system "make", "install"
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <stdlib.h>
       #include <jemalloc/jemalloc.h>
 

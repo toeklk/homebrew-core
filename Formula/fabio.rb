@@ -1,27 +1,27 @@
 class Fabio < Formula
   desc "Zero-conf load balancing HTTP(S) router"
-  homepage "https://github.com/eBay/fabio"
-  url "https://github.com/eBay/fabio/archive/v1.3.4.tar.gz"
-  sha256 "c7ec0ec770aff7ad0ee570a0b30d2df9a8d85f1591e8e82f5ba0c70b909ed786"
-  head "https://github.com/eBay/fabio.git"
+  homepage "https://github.com/fabiolb/fabio"
+  url "https://github.com/fabiolb/fabio/archive/v1.5.8.tar.gz"
+  sha256 "3771bb92f5542d48b90b13407cc6c0c1aa9bed2c169daa34921a2aa75c4be22f"
+  head "https://github.com/fabiolb/fabio.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "6bd1f24d8f48ac75148e2d0c872b64b57ae58e4613eebe9038337f62d96dbf88" => :sierra
-    sha256 "7b7da5648a3f81ce1ffb43abff72f8d53e73547bf4907ffd5026304860c37ccb" => :el_capitan
-    sha256 "b68a01ac933bf2534b9e90ff02a99dad9760e314969b9de65852cd57c86e8439" => :yosemite
+    sha256 "e3992e6f1134682772d9b97348927ce1db4474da75945e2aec39a1ce0cc5ed79" => :high_sierra
+    sha256 "e6a469390fbad94d412e9ac1622c28d750aa190b2dec00c0137b061943dde2ad" => :sierra
+    sha256 "f660aaed1a2a7c164238feae3008555873c9b50baec9a9d0613a0c0f3a489a6a" => :el_capitan
   end
 
   depends_on "go" => :build
   depends_on "consul" => :recommended
 
   def install
-    mkdir_p buildpath/"src/github.com/eBay"
-    ln_s buildpath, buildpath/"src/github.com/eBay/fabio"
+    mkdir_p buildpath/"src/github.com/fabiolb"
+    ln_s buildpath, buildpath/"src/github.com/fabiolb/fabio"
 
     ENV["GOPATH"] = buildpath.to_s
 
-    system "go", "install", "github.com/eBay/fabio"
+    system "go", "install", "github.com/fabiolb/fabio"
     bin.install "#{buildpath}/bin/fabio"
   end
 
@@ -52,7 +52,7 @@ class Fabio < Formula
           exec "consul agent -dev -bind 127.0.0.1"
           puts "consul started"
         end
-        sleep 15
+        sleep 30
       else
         puts "Consul already running"
       end
@@ -60,7 +60,7 @@ class Fabio < Formula
         exec "#{bin}/fabio &>fabio-start.out&"
         puts "fabio started"
       end
-      sleep 5
+      sleep 10
       assert_equal true, port_open?(LOCALHOST_IP, FABIO_DEFAULT_PORT)
       system "killall", "fabio" # fabio forks off from the fork...
       system "consul", "leave"

@@ -1,15 +1,15 @@
 class Govendor < Formula
-  desc "Go vendor tool that works with the standard vendor file."
+  desc "Go vendor tool that works with the standard vendor file"
   homepage "https://github.com/kardianos/govendor"
-  url "https://github.com/kardianos/govendor/archive/v1.0.8.tar.gz"
-  sha256 "7e887b84c7a9278473f39ae8a74440ffc17b329aa193e9304d170d458f8785c7"
+  url "https://github.com/kardianos/govendor/archive/v1.0.9.tar.gz"
+  sha256 "d303abf194838792234a1451c3a1e87885d1b2cd21774867b592c1f7db00551e"
   head "https://github.com/kardianos/govendor.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "47607859fcb87a51ac05640433c659a94cf211e533eb6d391075a6c0033498c1" => :sierra
-    sha256 "d3be3c95b074b3ff08858854e8124955a26892df928b9fca4e15d342412def28" => :el_capitan
-    sha256 "407185a36b0203b208c509404cb81599534c3919ab0a978f199f08623bd88551" => :yosemite
+    sha256 "38df7324a3a5292636a57c8c17cbdda94a0d529fa42f2e446f372a49b5697f26" => :high_sierra
+    sha256 "5708cee7e053271235d433cc1f7450f10540129810016095db622652621dc528" => :sierra
+    sha256 "52e2dd5debbd16a4da952ce16dd37d2697e16ba8509ff1e9a9551e7303ec6949" => :el_capitan
   end
 
   depends_on "go"
@@ -33,7 +33,7 @@ class Govendor < Formula
 
     cd "src/github.com/project/testing" do
       system bin/"govendor", "init"
-      assert File.exist?("vendor"), "Failed to init!"
+      assert_predicate Pathname.pwd/"vendor", :exist?, "Failed to init!"
       system bin/"govendor", "fetch", "-tree", "golang.org/x/crypto@#{commit}"
       assert_match commit, File.read("vendor/vendor.json")
       assert_match "golang.org/x/crypto/blowfish", shell_output("#{bin}/govendor list")

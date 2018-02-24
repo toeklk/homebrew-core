@@ -1,25 +1,45 @@
 class OpenSp < Formula
   desc "SGML parser"
-  homepage "http://openjade.sourceforge.net"
+  homepage "https://openjade.sourceforge.io"
   url "https://downloads.sourceforge.net/project/openjade/opensp/1.5.2/OpenSP-1.5.2.tar.gz"
   sha256 "57f4898498a368918b0d49c826aa434bb5b703d2c3b169beb348016ab25617ce"
 
   bottle do
-    rebuild 2
-    sha256 "65c3648bd7ce48bef4803ea608fc27cd3fe78fccbf3a329a2670f84af4124d4d" => :sierra
-    sha256 "fb795bc471277017e309d2f869dc2a06d61d643545a75d03f40534c600ab92ab" => :el_capitan
-    sha256 "bc70e3434884459a653d26f2f58772def6a819132c7ef247326745faede0196f" => :yosemite
-    sha256 "b1a305eed7f53817549187981a3916ebecdf76aba4b9003ed20d703f7dfc6b99" => :mavericks
+    rebuild 4
+    sha256 "41deb89bf8fd39c9d99eb171039a949fba4e82eb86d674d2584ae70a0e3ecc73" => :high_sierra
+    sha256 "77f282ed97f428763c7952365353a6b915ff3315d7808db73a51e785961e989c" => :sierra
+    sha256 "03629f243a1598b2b26fc07f8b747c77b62efe88ce435d8e018167140d22b86e" => :el_capitan
   end
 
+  depends_on "docbook" => :build
+  depends_on "ghostscript" => :build
+  depends_on "xmlto" => :build
+
   def install
+    ENV["XML_CATALOG_FILES"] = "#{etc}/xml/catalog"
+
     system "./configure", "--disable-debug", "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
                           "--mandir=#{man}",
-                          "--disable-doc-build",
                           "--enable-http",
-                          "--enable-default-catalog=#{HOMEBREW_PREFIX}/share/sgml/catalog",
-                          "--enable-default-search-path=#{HOMEBREW_PREFIX}/share/sgml"
+                          "--enable-default-catalog=#{etc}/sgml/catalog"
+
     system "make", "pkgdatadir=#{share}/sgml/opensp", "install"
+  end
+
+  test do
+    (testpath/"eg.sgml").write <<~EOS
+      <!DOCTYPE TESTDOC [
+
+      <!ELEMENT TESTDOC - - (TESTELEMENT)+>
+      <!ELEMENT TESTELEMENT - - (#PCDATA)>
+
+      ]>
+      <TESTDOC>
+        <TESTELEMENT>Hello</TESTELEMENT>
+      </TESTDOC>
+    EOS
+
+    system "#{bin}/onsgmls", "--warning=type-valid", "eg.sgml"
   end
 end

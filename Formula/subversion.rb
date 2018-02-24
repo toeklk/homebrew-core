@@ -1,51 +1,39 @@
 class Subversion < Formula
   desc "Version control system designed to be a better CVS"
   homepage "https://subversion.apache.org/"
-  url "https://www.apache.org/dyn/closer.cgi?path=subversion/subversion-1.9.4.tar.bz2"
-  mirror "https://archive.apache.org/dist/subversion/subversion-1.9.4.tar.bz2"
-  sha256 "1267f9e2ab983f260623bee841e6c9cc458bf4bf776238ed5f100983f79e9299"
+  url "https://www.apache.org/dyn/closer.cgi?path=subversion/subversion-1.9.7.tar.bz2"
+  mirror "https://archive.apache.org/dist/subversion/subversion-1.9.7.tar.bz2"
+  sha256 "c3b118333ce12e501d509e66bb0a47bcc34d053990acab45559431ac3e491623"
+  revision 2
 
   bottle do
-    sha256 "a2f80a24261a9236accccb4d54c8cb611eca11d1f6df7fee0128ed6833663817" => :sierra
-    sha256 "90181167e17df6fae630aff2523dc4aebded7fca1fb74bdd2ca1bd6f86287cc8" => :el_capitan
-    sha256 "f54a431445d81b80c9e0b5b04a733f7242f004feb94105afe76fb40068f8e4c5" => :yosemite
-    sha256 "a75716d92711bc92aaeda892cc2c4d47d4e718cd3c888948bd41587a2f022b00" => :mavericks
+    sha256 "2de1e1d3691d8adc101cdb39a62792907f879fe5462c9870f07edef6c3c4160c" => :high_sierra
+    sha256 "ee2be3846eca442aea461878da9f5ef208092836b91bc38bd13fa5572040f5a5" => :sierra
+    sha256 "9445c1341c69187a4a28c5ff8ab341539beff082923729629abcc2699efda095" => :el_capitan
   end
 
   deprecated_option "java" => "with-java"
   deprecated_option "perl" => "with-perl"
   deprecated_option "ruby" => "with-ruby"
 
-  option :universal
   option "with-java", "Build Java bindings"
-  option "with-perl", "Build Perl bindings"
-  option "with-ruby", "Build Ruby bindings"
+  option "without-ruby", "Build without Ruby bindings"
+  option "without-perl", "Build without Perl bindings"
   option "with-gpg-agent", "Build with support for GPG Agent"
 
   depends_on "pkg-config" => :build
-
-  # macOS Sierra ships the APR libraries & headers, but has removed the
-  # apr-1-config & apu-1-config executables which serf demands to find
-  # those elements. We may need to adopt a broader solution if this problem
-  # expands, but currently subversion is the only breakage as a result.
-  if MacOS.version >= :sierra
-    depends_on "apr-util"
-    depends_on "apr"
-  else
-    depends_on :apr => :build
-  end
-
-  resource "serf" do
-    url "https://archive.apache.org/dist/serf/serf-1.3.8.tar.bz2"
-    sha256 "e0500be065dbbce490449837bb2ab624e46d64fc0b090474d9acaa87c82b2590"
-  end
+  depends_on "apr-util"
+  depends_on "apr"
 
   # Always build against Homebrew versions instead of system versions for consistency.
   depends_on "sqlite"
-  depends_on :python => :optional
+  depends_on "perl" => :recommended
+  depends_on "python" => :optional
 
   # Bindings require swig
-  depends_on "swig" if build.with?("perl") || build.with?("python") || build.with?("ruby")
+  if build.with?("perl") || build.with?("python") || build.with?("ruby")
+    depends_on "swig" => :build
+  end
 
   # For Serf
   depends_on "scons" => :build
@@ -55,17 +43,18 @@ class Subversion < Formula
   depends_on "gpg-agent" => :optional
   depends_on :java => :optional
 
+  resource "serf" do
+    url "https://www.apache.org/dyn/closer.cgi?path=serf/serf-1.3.9.tar.bz2"
+    mirror "https://archive.apache.org/dist/serf/serf-1.3.9.tar.bz2"
+    sha256 "549c2d21c577a8a9c0450facb5cca809f26591f048e466552240947bdf7a87cc"
+  end
+
   # Fix #23993 by stripping flags swig can't handle from SWIG_CPPFLAGS
   # Prevent "-arch ppc" from being pulled in from Perl's $Config{ccflags}
   # Prevent linking into a Python Framework
   patch :DATA
 
   if build.with?("perl") || build.with?("ruby")
-    # If building bindings, allow non-system interpreters
-    # Currently the serf -> scons dependency forces stdenv, so this isn't
-    # strictly necessary
-    env :userpaths
-
     # When building Perl or Ruby bindings, need to use a compiler that
     # recognizes GCC-style switches, since that's what the system languages
     # were compiled against.
@@ -79,24 +68,14 @@ class Subversion < Formula
     serf_prefix = libexec/"serf"
 
     resource("serf").stage do
-      # SConstruct merges in gssapi linkflags using scons's MergeFlags,
-      # but that discards duplicate values - including the duplicate
-      # values we want, like multiple -arch values for a universal build.
-      # Passing 0 as the `unique` kwarg turns this behaviour off.
-      inreplace "SConstruct", "unique=1", "unique=0"
-
-      ENV.universal_binary if build.universal?
-
       # scons ignores our compiler and flags unless explicitly passed
-      args = %W[PREFIX=#{serf_prefix} GSSAPI=/usr CC=#{ENV.cc}
-                CFLAGS=#{ENV.cflags} LINKFLAGS=#{ENV.ldflags}
-                OPENSSL=#{Formula["openssl"].opt_prefix}]
-
-      if MacOS.version >= :sierra || !MacOS::CLT.installed?
-        args << "APR=#{Formula["apr"].opt_prefix}"
-        args << "APU=#{Formula["apr-util"].opt_prefix}"
-      end
-
+      args = %W[
+        PREFIX=#{serf_prefix} GSSAPI=/usr CC=#{ENV.cc}
+        CFLAGS=#{ENV.cflags} LINKFLAGS=#{ENV.ldflags}
+        OPENSSL=#{Formula["openssl"].opt_prefix}
+        APR=#{Formula["apr"].opt_prefix}
+        APU=#{Formula["apr-util"].opt_prefix}
+      ]
       scons(*args)
       scons "install"
     end
@@ -105,26 +84,20 @@ class Subversion < Formula
       # Java support doesn't build correctly in parallel:
       # https://github.com/Homebrew/homebrew/issues/20415
       ENV.deparallelize
-
-      unless build.universal?
-        opoo "A non-Universal Java build was requested."
-        puts <<-EOS.undent
-        To use Java bindings with various Java IDEs, you might need a universal build:
-          `brew install subversion --universal --java`
-        EOS
-      end
     end
-
-    ENV.universal_binary if build.universal?
 
     # Use existing system zlib
     # Use dep-provided other libraries
     # Don't mess with Apache modules (since we're not sudo)
     args = %W[
-      --disable-debug
       --prefix=#{prefix}
+      --disable-debug
+      --enable-optimize
       --with-zlib=/usr
       --with-sqlite=#{Formula["sqlite"].opt_prefix}
+      --with-apr=#{Formula["apr"].opt_prefix}
+      --with-apr-util=#{Formula["apr-util"].opt_prefix}
+      --with-apxs=no
       --with-serf=#{serf_prefix}
       --disable-mod-activation
       --disable-nls
@@ -135,26 +108,10 @@ class Subversion < Formula
     args << "--enable-javahl" << "--without-jikes" if build.with? "java"
     args << "--without-gpg-agent" if build.without? "gpg-agent"
 
-    if MacOS::CLT.installed? && MacOS.version < :sierra
-      args << "--with-apr=/usr"
-      args << "--with-apr-util=/usr"
-    else
-      args << "--with-apr=#{Formula["apr"].opt_prefix}"
-      args << "--with-apr-util=#{Formula["apr-util"].opt_prefix}"
-      args << "--with-apxs=no"
-    end
-
     if build.with? "ruby"
       args << "--with-ruby-sitedir=#{lib}/ruby"
       # Peg to system Ruby
       args << "RUBY=/usr/bin/ruby"
-    end
-
-    # If Python is built universally, then extensions built with that Python
-    # are too. This default behaviour is not desired when building an extension
-    # for a single architecture.
-    if build.with?("python") && (which "python").universal? && !build.universal?
-      ENV["ARCHFLAGS"] = "-arch #{MacOS.preferred_arch}"
     end
 
     # The system Python is built with llvm-gcc, so we override this
@@ -182,30 +139,23 @@ class Subversion < Formula
     if build.with? "perl"
       # In theory SWIG can be built in parallel, in practice...
       ENV.deparallelize
-      # Remove hard-coded ppc target, add appropriate ones
-      if build.universal?
-        arches = Hardware::CPU.universal_archs.as_arch_flags
-      elsif MacOS.version <= :leopard
-        arches = "-arch #{Hardware::CPU.arch_32_bit}"
-      else
-        arches = "-arch #{Hardware::CPU.arch_64_bit}"
-      end
 
-      perl_core = Pathname.new(`perl -MConfig -e 'print $Config{archlib}'`)+"CORE"
-      unless perl_core.exist?
-        onoe "perl CORE directory does not exist in '#{perl_core}'"
-      end
+      archlib = Utils.popen_read("perl -MConfig -e 'print $Config{archlib}'")
+      perl_core = Pathname.new(archlib)/"CORE"
+      onoe "'#{perl_core}' does not exist" unless perl_core.exist?
 
       inreplace "Makefile" do |s|
         s.change_make_var! "SWIG_PL_INCLUDES",
-          "$(SWIG_INCLUDES) #{arches} -g -pipe -fno-common -DPERL_DARWIN -fno-strict-aliasing -I/usr/local/include -I#{perl_core}"
+          "$(SWIG_INCLUDES) -arch #{MacOS.preferred_arch} -g -pipe -fno-common -DPERL_DARWIN -fno-strict-aliasing -I#{HOMEBREW_PREFIX}/include -I#{perl_core}"
       end
       system "make", "swig-pl"
       system "make", "install-swig-pl"
 
-      # Some of the libraries get installed into the wrong place, they end up having the
-      # prefix in the directory name twice.
-      lib.install Dir["#{prefix}/#{lib}/*"]
+      # This is only created when building against system Perl, but it isn't
+      # purged by Homebrew's post-install cleaner because that doesn't check
+      # "Library" directories. It is however pointless to keep around as it
+      # only contains the perllocal.pod installation file.
+      rm_rf prefix/"Library/Perl"
     end
 
     if build.with? "java"
@@ -221,30 +171,31 @@ class Subversion < Formula
   end
 
   def caveats
-    s = <<-EOS.undent
+    s = <<~EOS
       svntools have been installed to:
         #{opt_libexec}
     EOS
 
     if build.with? "perl"
-      s += <<-EOS.undent
-
+      s += "\n"
+      s += <<~EOS
         The perl bindings are located in various subdirectories of:
-          #{prefix}/Library/Perl
+          #{opt_lib}/perl5
       EOS
     end
 
     if build.with? "ruby"
-      s += <<-EOS.undent
-
-        You may need to add the Ruby bindings to your RUBYLIB from:
+      s += "\n"
+      s += <<~EOS
+        If you wish to use the Ruby bindings you may need to add:
           #{HOMEBREW_PREFIX}/lib/ruby
+        to your RUBYLIB.
       EOS
     end
 
     if build.with? "java"
-      s += <<-EOS.undent
-
+      s += "\n"
+      s += <<~EOS
         You may need to link the Java bindings into the Java Extensions folder:
           sudo mkdir -p /Library/Java/Extensions
           sudo ln -s #{HOMEBREW_PREFIX}/lib/libsvnjavahl-1.dylib /Library/Java/Extensions/libsvnjavahl-1.dylib
@@ -265,7 +216,7 @@ diff --git a/configure b/configure
 index 445251b..6ff4332 100755
 --- a/configure
 +++ b/configure
-@@ -25366,6 +25366,8 @@ fi
+@@ -26153,6 +26153,8 @@ fi
  SWIG_CPPFLAGS="$CPPFLAGS"
  
    SWIG_CPPFLAGS=`echo "$SWIG_CPPFLAGS" | $SED -e 's/-no-cpp-precomp //'`
@@ -273,7 +224,7 @@ index 445251b..6ff4332 100755
 +  SWIG_CPPFLAGS=`echo "$SWIG_CPPFLAGS" | $SED -e 's/-isystem\/[^ ]* //'`
  
  
- 
+   SWIG_CPPFLAGS=`echo "$SWIG_CPPFLAGS" | $SED -e 's/-Wdate-time //'`
 diff --git a/subversion/bindings/swig/perl/native/Makefile.PL.in b/subversion/bindings/swig/perl/native/Makefile.PL.in
 index a60430b..bd9b017 100644
 --- a/subversion/bindings/swig/perl/native/Makefile.PL.in

@@ -3,13 +3,13 @@ class Libspectre < Formula
   homepage "https://wiki.freedesktop.org/www/Software/libspectre/"
   url "https://libspectre.freedesktop.org/releases/libspectre-0.2.8.tar.gz"
   sha256 "65256af389823bbc4ee4d25bfd1cc19023ffc29ae9f9677f2d200fa6e98bc7a8"
+  revision 3
 
   bottle do
     cellar :any
-    sha256 "048d8746852724a7827998a26487fab440a7f75876f6394f9ba2d88be5344241" => :sierra
-    sha256 "94c040c805847bf56bccaf077a0e7bf0632bb0340a1a62e1f491c8520a5d8236" => :el_capitan
-    sha256 "0ddfdf1223b3cefd8aeecb4f9b83ae2a51e6786258d574f6f6da0e7f98be2456" => :yosemite
-    sha256 "5ac963d62d71162de892a06d3e3b140592ade0096bd9a33cf0ad8644e78e7104" => :mavericks
+    sha256 "6d90834ff843d4a0b840c4f82ef3c0736386558692789200c13aaadbdd846bf3" => :high_sierra
+    sha256 "1ead4df8edaa47068abb6b1df50bfd85a8129bfe141018253fe1ba79296cbc59" => :sierra
+    sha256 "4c7da5b7cd4ca0b4cfa86c822629dc8bfaba34815c0ed940b655e19328d0dedd" => :el_capitan
   end
 
   depends_on "ghostscript"
@@ -29,7 +29,7 @@ class Libspectre < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <libspectre/spectre.h>
 
       int main(int argc, char *argv[]) {

@@ -1,10 +1,11 @@
 class Timidity < Formula
   desc "Software synthesizer"
-  homepage "http://timidity.sourceforge.net/"
+  homepage "https://timidity.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/timidity/TiMidity++/TiMidity++-2.14.0/TiMidity++-2.14.0.tar.bz2"
   sha256 "f97fb643f049e9c2e5ef5b034ea9eeb582f0175dce37bc5df843cc85090f6476"
 
   bottle do
+    sha256 "5db392f0e53371e29fdca1ebeee3fdad24043f038c943314e991a06765d102a5" => :high_sierra
     sha256 "b45b1df69ab87563a77e1163114160f66679fde5548bac0ae81acb7fae86ab80" => :sierra
     sha256 "0b26a98c3e8e3706f8ff1fb2e21c014ac7245c01510799172e7f3ebdc71602ac" => :el_capitan
     sha256 "2bfaec5aaaacf7ed13148f437cbeba6bb793f9eacdab739b7202d151031253b4" => :yosemite
@@ -13,7 +14,7 @@ class Timidity < Formula
   end
 
   option "without-darwin", "Build without Darwin CoreAudio support"
-  option "without-freepats", "Build without the Freepats instrument patches from http://freepats.zenvoid.org/"
+  option "without-freepats", "Build without the Freepats instrument patches from https://freepats.zenvoid.org/"
 
   depends_on "libogg" => :recommended
   depends_on "libvorbis" => :recommended
@@ -22,7 +23,7 @@ class Timidity < Formula
   depends_on "libao" => :recommended
 
   resource "freepats" do
-    url "http://freepats.zenvoid.org/freepats-20060219.zip"
+    url "https://freepats.zenvoid.org/freepats-20060219.zip"
     sha256 "532048a5777aea717effabf19a35551d3fcc23b1ad6edd92f5de1d64600acd48"
   end
 
@@ -39,18 +40,16 @@ class Timidity < Formula
     formats << "speex" if build.with? "speex"
     formats << "ao" if build.with? "libao"
 
-    if formats.any?
-      args << "--enable-audio=" + formats.join(",")
-    end
+    args << "--enable-audio=" + formats.join(",") if formats.any?
 
     system "./configure", *args
     system "make", "install"
 
     if build.with? "freepats"
       (share/"freepats").install resource("freepats")
-      (share/"timidity").install_symlink share/"freepats/Tone_000",
-                                         share/"freepats/Drum_000",
-                                         share/"freepats/freepats.cfg" => "timidity.cfg"
+      pkgshare.install_symlink share/"freepats/Tone_000",
+                               share/"freepats/Drum_000",
+                               share/"freepats/freepats.cfg" => "timidity.cfg"
     end
   end
 

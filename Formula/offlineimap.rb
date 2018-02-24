@@ -1,23 +1,32 @@
 class Offlineimap < Formula
   desc "Synchronizes emails between two repositories"
-  homepage "http://offlineimap.org/"
-  url "https://github.com/OfflineIMAP/offlineimap/archive/v7.0.9.tar.gz"
-  sha256 "aec349b97fe41681ebad48d03cac62dc84e405ad136ac92067ecfcd640bf6a12"
+  homepage "https://www.offlineimap.org/"
+  url "https://github.com/OfflineIMAP/offlineimap/archive/v7.1.5.tar.gz"
+  sha256 "8e28e786a00768e8a97d9f049406744829212cffb69903ffbb15faa1479d43e1"
   head "https://github.com/OfflineIMAP/offlineimap.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "67908de62f5dfd70371848495180f16b3146b1b30fc3f3d3ea6dfe1350a75bbf" => :sierra
-    sha256 "67908de62f5dfd70371848495180f16b3146b1b30fc3f3d3ea6dfe1350a75bbf" => :el_capitan
-    sha256 "67908de62f5dfd70371848495180f16b3146b1b30fc3f3d3ea6dfe1350a75bbf" => :yosemite
+    sha256 "e87e7653a818b5dad3d406f66a059c84e7bd4c9f97570cccee3abb5317df0c98" => :high_sierra
+    sha256 "e87e7653a818b5dad3d406f66a059c84e7bd4c9f97570cccee3abb5317df0c98" => :sierra
+    sha256 "e87e7653a818b5dad3d406f66a059c84e7bd4c9f97570cccee3abb5317df0c98" => :el_capitan
   end
 
+  depends_on "asciidoc" => :build
+  depends_on "docbook-xsl" => :build
+  depends_on "sphinx-doc" => :build
+
   resource "six" do
-    url "https://files.pythonhosted.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-1.10.0.tar.gz"
-    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
+    url "https://files.pythonhosted.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"
+    sha256 "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
   end
 
   def install
+    ENV["XML_CATALOG_FILES"] = "#{etc}/xml/catalog"
+    system "make", "docs"
+    man1.install "docs/offlineimap.1"
+    man7.install "docs/offlineimapui.7"
+
     ENV.prepend_create_path "PYTHONPATH", libexec/"vendor/lib/python2.7/site-packages"
     resource("six").stage do
       system "python", *Language::Python.setup_install_args(libexec/"vendor")
@@ -29,7 +38,7 @@ class Offlineimap < Formula
       :PYTHONPATH => ENV["PYTHONPATH"])
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     To get started, copy one of these configurations to ~/.offlineimaprc:
     * minimal configuration:
         cp -n #{etc}/offlineimap.conf.minimal ~/.offlineimaprc
@@ -41,7 +50,7 @@ class Offlineimap < Formula
 
   plist_options :manual => "offlineimap"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -58,6 +67,9 @@ class Offlineimap < Formula
         <key>ProgramArguments</key>
         <array>
           <string>#{opt_bin}/offlineimap</string>
+          <string>-q</string>
+          <string>-u</string>
+          <string>basic</string>
         </array>
         <key>StartInterval</key>
         <integer>300</integer>

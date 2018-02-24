@@ -1,15 +1,14 @@
 class Mcabber < Formula
   desc "Console Jabber client"
   homepage "https://mcabber.com/"
-  url "https://lilotux.net/~mikael/mcabber/files/mcabber-1.0.1.tar.bz2"
-  sha256 "579a45a2bc944455012ca9b308f7f3454efabbe0c36c6723af761aa1f3092d93"
+  url "https://mcabber.com/files/mcabber-1.1.0.tar.bz2"
+  sha256 "04fc2c22c36da75cf4b761b5deccd074a19836368f38ab9d03c1e5708b41f0bd"
 
   bottle do
-    rebuild 1
-    sha256 "460e270af0a1e05b242197a2c967d6065680830376f845409062fdc9377485ec" => :sierra
-    sha256 "f582dc53fe2e9b1f317885d069ccc1b5ebea671f992bd373223a2d37c998ba23" => :el_capitan
-    sha256 "9077d7c748da6ef614f8f0a7c472c32dd9b529c3f759645439f90436215650a5" => :yosemite
-    sha256 "edf7c7f55d5d688594052203aa0341285faa4c128cf4274a525520d41f50a3e5" => :mavericks
+    sha256 "c95601a98c1c0a3ee247ccfef25d77b52d49ebd535840761916225571a9c3ebe" => :high_sierra
+    sha256 "b3bdcaf2f025e9b8844fd8b0be4ccbb742b088987658724d1599714fb053b9ca" => :sierra
+    sha256 "221b163a3c4634bad784d29c7590a87984d662de7a38ea1fc2d5fc2ff3306eb4" => :el_capitan
+    sha256 "3bfcbb80e1e4bebe963f88b8045a1dcea0cd3e3bed2e79a62b69d7cafc9c7e21" => :yosemite
   end
 
   head do
@@ -50,14 +49,18 @@ class Mcabber < Formula
     system "./configure", *args
     system "make", "install"
 
-    (share+"mcabber").install %w[mcabberrc.example contrib]
+    pkgshare.install %w[mcabberrc.example contrib]
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     A configuration file is necessary to start mcabber.  The template is here:
-      #{share}/mcabber/mcabberrc.example
+      #{opt_pkgshare}/mcabberrc.example
     And there is a Getting Started Guide you will need to setup Mcabber:
-      http://wiki.mcabber.com/index.php/Getting_started
+      https://wiki.mcabber.com/#index2h1
     EOS
+  end
+
+  test do
+    system "#{bin}/mcabber", "-V"
   end
 end

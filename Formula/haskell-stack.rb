@@ -5,65 +5,49 @@ class HaskellStack < Formula
 
   desc "The Haskell Tool Stack"
   homepage "https://haskellstack.org/"
-  url "https://github.com/commercialhaskell/stack/releases/download/v1.2.0/stack-1.2.0-sdist-0.tar.gz"
-  version "1.2.0"
-  sha256 "872d29a37fe9d834c023911a4f59b3bee11e1f87b3cf741a0db89dd7f6e4ed64"
-  revision 2
-
+  url "https://github.com/commercialhaskell/stack/releases/download/v1.6.5/stack-1.6.5-sdist-1.tar.gz"
+  version "1.6.5"
+  sha256 "71d02e2a3b507dcde7596f51d9a342865020aa74ebe79847d7bf815e1c7f2abb"
   head "https://github.com/commercialhaskell/stack.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "ae291ccd731aef2bea506a0b172d82321096cd2102a2f377938cea0bde8f5a0a" => :sierra
-    sha256 "ae291ccd731aef2bea506a0b172d82321096cd2102a2f377938cea0bde8f5a0a" => :el_capitan
-    sha256 "a959a9f22a4e2500e0e9b58520d2f28fec82797bde2810d6d32152b7e73d7f6b" => :yosemite
+    sha256 "db238d3a7882f2daf3db591d299a4cdb61aa686dd98689dd067ec5ceb1f238d9" => :high_sierra
+    sha256 "89b99c0ecd45ce787072ddebb0bf50abdb131714ff68d83e9d0f0bf67126fa71" => :sierra
+    sha256 "3709f279175426311d54a8096dd7058bcd470e7dd8c4164d8cb2d3ef5f1be9f9" => :el_capitan
   end
 
   option "without-bootstrap", "Don't bootstrap a stage 2 stack"
 
-  # malformed mach-o: load commands size (40192) > 32768
-  depends_on MaximumMacOSRequirement => :el_capitan if build.bottle?
-
-  depends_on "ghc" => :build
   depends_on "cabal-install" => :build
+  depends_on "ghc" => :build
+
+  # Remove when stack.yaml uses GHC 8.2.x
+  resource "stack_nightly_yaml" do
+    url "https://raw.githubusercontent.com/commercialhaskell/stack/v1.6.5/stack-nightly.yaml"
+    version "1.6.5"
+    sha256 "07ef0e20d4ba52a02d94f9809ffbd6980fbc57c66316620ba6a4cacfa4c9a7dd"
+  end
 
   def install
-    if MacOS.version >= :sierra
-      raise <<-EOS.undent
-        This formula does not compile on macOS Sierra due to an upstream GHC
-        incompatiblity. Please use the pre-built bottle binary instead of attempting to
-        build from source. For more details see
-          https://ghc.haskell.org/trac/ghc/ticket/12479
-          https://github.com/commercialhaskell/stack/issues/2577
-      EOS
-    end
+    buildpath.install resource("stack_nightly_yaml")
 
-    if build.with? "bootstrap"
-      cabal_sandbox do
+    cabal_sandbox do
+      cabal_install "happy"
+
+      if build.with? "bootstrap"
         cabal_install
+
         # Let `stack` handle its own parallelization
         # Prevents "install: mkdir ... ghc-7.10.3/lib: File exists"
         jobs = ENV.make_jobs
-        ENV.deparallelize do
-          system "stack", "-j#{jobs}", "setup"
-          system "stack", "-j#{jobs}", "--local-bin-path=#{bin}", "install"
-        end
-      end
-    else
-      install_cabal_package
-    end
+        ENV.deparallelize
 
-    # Remove the unneeded rpaths so that the binary works on Sierra
-    rpaths = Utils.popen_read("otool -l #{bin}/stack").split("\n")
-    rpaths = rpaths.inject([]) do |r, e|
-      if e =~ /^ +path (.*) \(offset.*/
-        r << $~[1]
+        system "stack", "-j#{jobs}", "--stack-yaml=stack-nightly.yaml", "setup"
+        system "stack", "-j#{jobs}", "--local-bin-path=#{bin}", "install"
       else
-        r
+        install_cabal_package
       end
-    end
-    rpaths.each do |r|
-      system "install_name_tool", "-delete_rpath", r, bin/"stack"
     end
   end
 

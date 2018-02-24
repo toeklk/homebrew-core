@@ -1,22 +1,21 @@
 class Nss < Formula
   desc "Libraries for security-enabled client and server applications"
   homepage "https://developer.mozilla.org/docs/NSS"
-  url "https://archive.mozilla.org/pub/security/nss/releases/NSS_3_26_RTM/src/nss-3.26.tar.gz"
-  sha256 "91783a570ab953693eb977ce47c501f04c104cec287fa011c91bcc8970d1c564"
+  url "https://ftp.mozilla.org/pub/security/nss/releases/NSS_3_35_RTM/src/nss-3.35.tar.gz"
+  sha256 "f4127de09bede39f5fd0f789d33c3504c5d261e69ea03022d46b319b3e32f6fa"
 
   bottle do
     cellar :any
-    sha256 "7db4330722c97406505202e980b88404f40d0681ff9c45743e1f45026353e132" => :sierra
-    sha256 "ce81ad577a16bbba49cb3a321406375fc79151f6519fa6151d8d420ef87165ba" => :el_capitan
-    sha256 "590974e701f2e85d8b7758033dac2771698310d15c57b53e42d9556a52dfa7db" => :yosemite
-    sha256 "95640808178dac41720b84d1953eb2c3efb811f757a57692f83d893eef8cb25c" => :mavericks
+    sha256 "78743b2395b18d5224edd8436e4ca0414ba277885493cfc7d0cd64c09b6e82a6" => :high_sierra
+    sha256 "2e3bb9ce22484d0f3f50198464ab8f67e305c0b11656c88a7bd16eab00367ffb" => :sierra
+    sha256 "851fa4c8c061df509c8ee1129d80887cce8a954927030510ea86ffeac7f0f0a2" => :el_capitan
   end
 
-  keg_only <<-EOS.undent
-    Having this library symlinked makes Firefox pick it up instead of built-in,
-    so it then randomly crashes without meaningful explanation.
+  keg_only <<~EOS
+    Firefox can pick this up instead of the built-in library, resulting in
+    random crashes without meaningful explanation.
 
-    Please see https://bugzilla.mozilla.org/show_bug.cgi?id=1142646 for details.
+    Please see https://bugzilla.mozilla.org/show_bug.cgi?id=1142646 for details
   EOS
 
   depends_on "nspr"
@@ -77,7 +76,7 @@ class Nss < Formula
 
   # A very minimal nss-config for configuring firefox etc. with this nss,
   # see https://bugzil.la/530672 for the progress of upstream inclusion.
-  def config_file; <<-EOS.undent
+  def config_file; <<~EOS
     #!/bin/sh
     for opt; do :; done
     case "$opt" in
@@ -89,7 +88,7 @@ class Nss < Formula
     EOS
   end
 
-  def pc_file; <<-EOS.undent
+  def pc_file; <<~EOS
     prefix=#{prefix}
     exec_prefix=${prefix}
     libdir=${exec_prefix}/lib

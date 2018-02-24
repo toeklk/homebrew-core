@@ -3,16 +3,16 @@ class Redland < Formula
   homepage "http://librdf.org/"
   url "http://download.librdf.org/source/redland-1.0.17.tar.gz"
   sha256 "de1847f7b59021c16bdc72abb4d8e2d9187cd6124d69156f3326dd34ee043681"
+  revision 1
 
   bottle do
+    sha256 "407f9f1bd2a8682684660826fce445077c33fe3e7f1bfb05e7c0e265e2edacfe" => :high_sierra
     sha256 "0ed03c897836946cbadf2e390bd25c79eeb6ad34ea1144ef69d8bf1dfbfaf2eb" => :sierra
     sha256 "38eac3bae25aa65cbb7b688ecfaae91ab79c0c292e7505596ffc3b409bc8ca3b" => :el_capitan
     sha256 "6047842b51137c968df4787bbfcf2080b4f32b73bb9d3412fa117ee9c1ff22d2" => :yosemite
     sha256 "06d1c7c81a9803ad37cd40303987b90456fb565f4305965388bc8faff54c6db7" => :mavericks
     sha256 "bbe8f82451695648adb66ab2766413e938f8f4ffdc318ba946e210d23e637dd2" => :mountain_lion
   end
-
-  revision 1
 
   option "with-php", "Build with php support"
   option "with-ruby", "Build with ruby support"
@@ -23,15 +23,11 @@ class Redland < Formula
   depends_on "unixodbc"
   depends_on "sqlite" => :recommended
   depends_on "berkeley-db" => :optional
-  depends_on :python => :optional
+  depends_on "python" => :optional
 
   resource "bindings" do
     url "http://download.librdf.org/source/redland-bindings-1.0.17.1.tar.gz"
     sha256 "ff72b587ab55f09daf81799cb3f9d263708fad5df7a5458f0c28566a2563b7f5"
-  end
-
-  fails_with :llvm do
-    build 2334
   end
 
   def install
@@ -72,8 +68,8 @@ class Redland < Formula
 
         if build.with? "ruby"
           `ruby --version` =~ /ruby (\d\.\d).\d \(.*\) \[(.*)\]/
-          ruby_install_dir = lib + "ruby/site_ruby/" + $1
-          ruby_arch_install_dir = ruby_install_dir + $2
+          ruby_install_dir = lib + "ruby/site_ruby/" + Regexp.last_match(1)
+          ruby_arch_install_dir = ruby_install_dir + Regexp.last_match(2)
           ruby_install_dir.mkpath
           ruby_arch_install_dir.mkpath
           args << "--with-ruby"
@@ -108,14 +104,14 @@ class Redland < Formula
     s = ""
 
     if build.with? "php"
-      s += <<-EOS.undent
+      s += <<~EOS
         You may need to add the following line to php.ini:
           extension="#{HOMEBREW_PREFIX}/lib/php/extensions/redland.dylib"
       EOS
     end
 
     if build.with? "ruby"
-      s += <<-EOS.undent
+      s += <<~EOS
         You may need to add the Ruby bindings to your RUBYLIB from:
           #{HOMEBREW_PREFIX}/lib/ruby/site_ruby
       EOS

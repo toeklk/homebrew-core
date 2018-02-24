@@ -1,14 +1,14 @@
 class Squid < Formula
   desc "Advanced proxy caching server for HTTP, HTTPS, FTP, and Gopher"
   homepage "http://www.squid-cache.org/"
-  url "http://www.squid-cache.org/Versions/v3/3.5/squid-3.5.20.tar.xz"
-  sha256 "37db73bd33ddd3503fe375bc3f2b47d9fb7309042e439ad3651f21d5dcf2d395"
+  url "http://www.squid-cache.org/Versions/v3/3.5/squid-3.5.27.tar.xz"
+  sha256 "5ddb4367f2dc635921f9ca7a59d8b87edb0412fa203d1543393ac3c7f9fef0ec"
 
   bottle do
-    sha256 "e4b9afb090e9b5f3da61fb99b52703a2b04ce82d9d67834e390252b2dbb595df" => :sierra
-    sha256 "3495d3ce9598dedb90cf1a6bf7b26ddb713c5b2c720a0221e590116390e818b1" => :el_capitan
-    sha256 "7c2ff478971eec8aa0b140d009432589996d47b946d72ac31a73e8367529f34a" => :yosemite
-    sha256 "0de6b158cf3ce0db039d8855b991c821191954f12c3a06d7b20c68218cf42994" => :mavericks
+    sha256 "83fe784f48d6e179eeab4b5bd5a0b0e48196da897d4cc48da0903d16e32612bc" => :high_sierra
+    sha256 "72cb505a330571e0b9c246a05ff2fc053e3b77df1ce7c01ecb4b5e0d5ecb36b9" => :sierra
+    sha256 "a6ceac5be681efa27778955cf30a8c042fef597c2340f8988a68b26f81b70585" => :el_capitan
+    sha256 "24582461236da90743f2d2af2a4147b0d5d6825e4dae2b187e763340db14e6a3" => :yosemite
   end
 
   head do
@@ -45,16 +45,14 @@ class Squid < Formula
       --enable-storeio=yes
     ]
 
-    if build.head?
-      system "./bootstrap.sh"
-    end
+    system "./bootstrap.sh" if build.head?
     system "./configure", *args
     system "make", "install"
   end
 
   plist_options :manual => "squid"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

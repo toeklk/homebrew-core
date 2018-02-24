@@ -1,36 +1,19 @@
 class Guile < Formula
   desc "GNU Ubiquitous Intelligent Language for Extensions"
   homepage "https://www.gnu.org/software/guile/"
-  url "https://ftpmirror.gnu.org/guile/guile-2.0.12.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/guile/guile-2.0.12.tar.xz"
-  sha256 "de8187736f9b260f2fa776ed39b52cb74dd389ccf7039c042f0606270196b7e9"
+  url "https://ftp.gnu.org/gnu/guile/guile-2.2.3.tar.xz"
+  mirror "https://ftpmirror.gnu.org/guile/guile-2.2.3.tar.xz"
+  sha256 "8353a8849cd7aa77be66af04bd6bf7a6207440d2f8722e46672232bb9f0a4086"
   revision 1
 
   bottle do
-    sha256 "fd19aadcaad4476771fd642b39e9e86e420bdcd999bbc16d27b0247dee956513" => :sierra
-    sha256 "425f1cc92d856748f23ce883642952f6f74391cd17788f3c37f38c8858a8edf2" => :el_capitan
-    sha256 "f54c9bbbedca192c45b27df21cf9ea2df6ff7dbcd098bdb049acae245b32dab1" => :yosemite
-  end
-
-  devel do
-    url "http://git.savannah.gnu.org/r/guile.git",
-        :tag => "v2.1.4",
-        :revision => "f9620e01c3d01abc2fd306ba5dc062a2f252eb97"
-
-    depends_on "autoconf" => :build
-    depends_on "automake" => :build
-    depends_on "gettext" => :build
-
-    # Fix "error: address argument to atomic operation must be a pointer to
-    # _Atomic type ('gl_uint32_t *' (aka 'unsigned int *') invalid)"
-    patch do
-      url "https://raw.githubusercontent.com/ilovezfs/formula-patches/d2798a4/guile/guile-atomic-type.patch"
-      sha256 "6cec784aa446e4485c79d75ed71c59d04d622293c858cd3d5d5edfe4b5e001ac"
-    end
+    sha256 "d61c8dd379af7d9a86b120994a936f135f4f83587dc2bf7ee3dfafcab363894c" => :high_sierra
+    sha256 "0743241f9804f6b64a851b50590bcd7384c77b9b6dfce4910d2eca64a9ede948" => :sierra
+    sha256 "c38c4edf9a4e91680c90940416013741a7b3ed2b97f588be238b1c9c27cf1311" => :el_capitan
   end
 
   head do
-    url "http://git.sv.gnu.org/r/guile.git"
+    url "https://git.savannah.gnu.org/git/guile.git"
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
@@ -45,27 +28,20 @@ class Guile < Formula
   depends_on "gmp"
   depends_on "readline"
 
-  fails_with :llvm do
-    build 2336
-    cause "Segfaults during compilation"
-  end
-
   fails_with :clang do
     build 211
     cause "Segfaults during compilation"
   end
 
-  # https://debbugs.gnu.org/cgi/bugreport.cgi?bug=23870
-  # https://github.com/Homebrew/homebrew-core/issues/1957#issuecomment-229347476
-  if MacOS.version >= :sierra
-    patch do
-      url "https://gist.githubusercontent.com/rahulg/baa500e84136f0965e9ade2fb36b90ba/raw/4f1081838972ac9621fc68bb571daaf99fc0c045/libguile-stime-sierra.patch"
-      sha256 "ff38aa01fe2447bc74ccb6297d2832d0a224ceeb8f00e3a1ca68446d6b1d0f6e"
-    end
-  end
-
   def install
     system "./autogen.sh" unless build.stable?
+
+    # Fixes "sed: -i may not be used with stdin"
+    # Reported 7 Jan 2018 https://debbugs.gnu.org/cgi/bugreport.cgi?bug=30011
+    inreplace "libguile/Makefile.in",
+      /-e 's,\[@\]GUILE_EFFECTIVE_VERSION\[@\],\$\(GUILE_EFFECTIVE_VERSION\),g'      \\\n         -i/,
+      "\\0 ''"
+
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
                           "--with-libreadline-prefix=#{Formula["readline"].opt_prefix}",
@@ -82,9 +58,9 @@ class Guile < Formula
 
   test do
     hello = testpath/"hello.scm"
-    hello.write <<-EOS.undent
-    (display "Hello World")
-    (newline)
+    hello.write <<~EOS
+      (display "Hello World")
+      (newline)
     EOS
 
     ENV["GUILE_AUTO_COMPILE"] = "0"

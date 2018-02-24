@@ -1,8 +1,8 @@
 class Transcrypt < Formula
   desc "Configure transparent encryption of files in a Git repo"
   homepage "https://github.com/elasticdog/transcrypt"
-  url "https://github.com/elasticdog/transcrypt/archive/v0.9.9.tar.gz"
-  sha256 "ff8ec9227b2d5a881b31c5ed9f7d8190e507f0f0ad80751a29a8d8aa8272ece2"
+  url "https://github.com/elasticdog/transcrypt/archive/v1.0.3.tar.gz"
+  sha256 "ce5c080045c7ca817d8de9298783a31b8643afeeb5e0fed9832658c71861c8a4"
   head "https://github.com/elasticdog/transcrypt.git"
 
   bottle :unneeded
@@ -18,7 +18,7 @@ class Transcrypt < Formula
     system "git", "init"
     system bin/"transcrypt", "--password", "guest", "--yes"
 
-    (testpath/".gitattributes").atomic_write <<-EOS.undent
+    (testpath/".gitattributes").atomic_write <<~EOS
       sensitive_file  filter=crypt diff=crypt
     EOS
     (testpath/"sensitive_file").write "secrets"

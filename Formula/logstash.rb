@@ -1,19 +1,13 @@
 class Logstash < Formula
   desc "Tool for managing events and logs"
   homepage "https://www.elastic.co/products/logstash"
-
-  stable do
-    url "https://artifacts.elastic.co/downloads/logstash/logstash-5.0.1.tar.gz"
-    sha256 "d4cb9a624e12f8e4cf852a251c96b371094009b84a85231c9604ba7d6523da4d"
-  end
-
-  head do
-    url "https://github.com/elastic/logstash.git"
-  end
+  url "https://artifacts.elastic.co/downloads/logstash/logstash-6.2.2.tar.gz"
+  sha256 "40ec30d14e14dde4664a625f410d9d93b1d80abb4235334bf680a35f1f0c4b9d"
+  head "https://github.com/elastic/logstash.git"
 
   bottle :unneeded
 
-  depends_on :java => "1.8+"
+  depends_on :java => "1.8"
 
   def install
     if build.head?
@@ -25,30 +19,64 @@ class Logstash < Formula
       cd "tar"
     end
 
-    inreplace %w[bin/logstash], %r{^\. "\$\(cd `dirname \$SOURCEPATH`\/\.\.; pwd\)\/bin\/logstash\.lib\.sh\"}, ". #{libexec}/bin/logstash.lib.sh"
+    inreplace %w[bin/logstash], %r{^\. "\$\(cd `dirname \${SOURCEPATH}`\/\.\.; pwd\)\/bin\/logstash\.lib\.sh\"}, ". #{libexec}/bin/logstash.lib.sh"
     inreplace %w[bin/logstash-plugin], %r{^\. "\$\(cd `dirname \$0`\/\.\.; pwd\)\/bin\/logstash\.lib\.sh\"}, ". #{libexec}/bin/logstash.lib.sh"
     inreplace %w[bin/logstash.lib.sh], /^LOGSTASH_HOME=.*$/, "LOGSTASH_HOME=#{libexec}"
     libexec.install Dir["*"]
-    bin.install_symlink libexec/"bin/logstash"
-    bin.install_symlink libexec/"bin/logstash-plugin"
+    bin.install libexec/"bin/logstash", libexec/"bin/logstash-plugin"
+    bin.env_script_all_files(libexec/"bin", Language::Java.java_home_env("1.8"))
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Please read the getting started guide located at:
       https://www.elastic.co/guide/en/logstash/current/getting-started-with-logstash.html
     EOS
   end
 
-  test do
-    (testpath/"simple.conf").write <<-EOS.undent
-      input { stdin { type => stdin } }
-      output { stdout { codec => rubydebug } }
-    EOS
+  plist_options :manual => "logstash"
 
+  def plist
+    <<~EOS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+        <dict>
+          <key>KeepAlive</key>
+          <false/>
+          <key>Label</key>
+          <string>#{plist_name}</string>
+          <key>ProgramArguments</key>
+          <array>
+            <string>#{opt_bin}/logstash</string>
+          </array>
+          <key>EnvironmentVariables</key>
+          <dict>
+          </dict>
+          <key>RunAtLoad</key>
+          <true/>
+          <key>WorkingDirectory</key>
+          <string>#{var}</string>
+          <key>StandardErrorPath</key>
+          <string>#{var}/log/logstash.log</string>
+          <key>StandardOutPath</key>
+          <string>#{var}/log/logstash.log</string>
+        </dict>
+      </plist>
+    EOS
+  end
+
+  test do
+    # workaround https://github.com/elastic/logstash/issues/6378
+    mkdir testpath/"config"
+    ["jvm.options", "log4j2.properties", "startup.options"].each { |f| cp prefix/"libexec/config/#{f}", testpath/"config" }
+    (testpath/"config/logstash.yml").write <<~EOS
+      path.queue: #{testpath}/queue
+    EOS
     mkdir testpath/"data"
     mkdir testpath/"logs"
+    mkdir testpath/"queue"
 
-    output = pipe_output("#{bin}/logstash -f #{testpath}/simple.conf --path.data=#{testpath}/data --path.logs=#{testpath}/logs", "hello world\n")
+    output = pipe_output("#{bin}/logstash -e '' --path.data=#{testpath}/data --path.logs=#{testpath}/logs --path.settings=#{testpath}/config --log.level=fatal", "hello world\n")
     assert_match /hello world/, output
   end
 end

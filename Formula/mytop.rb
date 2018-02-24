@@ -3,39 +3,38 @@ class Mytop < Formula
   homepage "http://www.mysqlfanboy.com/mytop-3/"
   url "http://www.mysqlfanboy.com/mytop-3/mytop-1.9.1.tar.gz"
   mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/m/mytop/mytop_1.9.1.orig.tar.gz"
-  mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/mytop/mytop_1.9.1.orig.tar.gz"
+  mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/m/mytop/mytop_1.9.1.orig.tar.gz"
   sha256 "179d79459d0013ab9cea2040a41c49a79822162d6e64a7a85f84cdc44828145e"
-  revision 2
+  revision 5
 
   bottle do
     cellar :any
-    sha256 "97141d4fee3c92c39263f48273cd459042d539c14c684bb89110f85eb7e58d18" => :sierra
-    sha256 "672c4f9115cc23baca9522bb4bca10908a3f45d527d176710d2bfa9c79e40758" => :el_capitan
-    sha256 "cf55483653ab53f64f6cd287a5b88e090f0f413229626f33f4f7533aa4580864" => :yosemite
-    sha256 "76f9ef9fb495f66d596dcec0f8ba9b2d2e43349432b164dddf6a2dde09e2632b" => :mavericks
+    sha256 "2d7ea53b0ae27d33d5106259b5c96fa878b4c2681af002e91d6432d151024918" => :high_sierra
+    sha256 "89536e5cdee657d9ea8a82d1940854ba52bfa4cf3e161aa148b31511f5268b14" => :sierra
+    sha256 "a7a00e844c2adb87eb4379faf0d3dd60443f9383cb295688ae2dac47051f3483" => :el_capitan
   end
 
-  depends_on :mysql
+  depends_on "mysql"
   depends_on "openssl"
 
   conflicts_with "mariadb", :because => "both install `mytop` binaries"
 
   resource "List::Util" do
-    url "https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.45.tar.gz"
-    mirror "http://search.cpan.org/CPAN/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.45.tar.gz"
-    sha256 "9e175535913af22d003ce1ef896d98d9bb6fc1d551782a3b512c066da5bd27dd"
+    url "https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.46.tar.gz"
+    mirror "http://search.cpan.org/CPAN/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.46.tar.gz"
+    sha256 "30662b1261364adb317e9a5bd686273d3dd731e3fda1b8e894802aa52e0052e7"
   end
 
   resource "Config::IniFiles" do
-    url "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-2.93.tar.gz"
-    mirror "http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/Config-IniFiles-2.93.tar.gz"
-    sha256 "2fc79e5616c176b97f49f3d57b8d8068695639209ff9de7aa7f28a550d0478e4"
+    url "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-2.94.tar.gz"
+    mirror "http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/Config-IniFiles-2.94.tar.gz"
+    sha256 "d6d38a416da79de874c5f1825221f22e972ad500b6527d190cc6e9ebc45194b4"
   end
 
   resource "DBD::mysql" do
-    url "https://cpan.metacpan.org/authors/id/M/MI/MICHIELB/DBD-mysql-4.035.tar.gz"
-    mirror "http://search.cpan.org/CPAN/authors/id/M/MI/MICHIELB/DBD-mysql-4.035.tar.gz"
-    sha256 "b7eca365ea16bcf4c96c2fc0221304ff9c4995e7a551886837804a8f66b61937"
+    url "https://cpan.metacpan.org/authors/id/C/CA/CAPTTOFU/DBD-mysql-4.046.tar.gz"
+    mirror "http://search.cpan.org/CPAN/authors/id/C/CA/CAPTTOFU/DBD-mysql-4.046.tar.gz"
+    sha256 "6165652ec959d05b97f5413fa3dff014b78a44cf6de21ae87283b28378daf1f7"
   end
 
   # Pick up some patches from Debian to improve functionality & fix

@@ -1,14 +1,13 @@
 class Pdnsrec < Formula
   desc "Non-authoritative/recursing DNS server"
   homepage "https://www.powerdns.com/recursor.html"
-  url "https://downloads.powerdns.com/releases/pdns-recursor-4.0.3.tar.bz2"
-  sha256 "ae9813a64d13d9ebe4b44e89e8e4e44fc438693b6ce4c3a98e4cab1af22d9627"
+  url "https://downloads.powerdns.com/releases/pdns-recursor-4.1.1.tar.bz2"
+  sha256 "8feb03c7141997775cb52c131579e8e34c9896ea8bb77276328f5f6cc4e1396b"
 
   bottle do
-    sha256 "f044aeacd64def9fa7f2bb0bd2c6dd601c324e3f030038a2f7914785552b3fbd" => :sierra
-    sha256 "448d129e699d87c89bbe28069ad4af8eb4f53a074ea6acbf6ffd71547af9f926" => :el_capitan
-    sha256 "a33ef50799e0c20945040d5ac6b1bb511f3d5b12825c61de4905334aaf28d5de" => :yosemite
-    sha256 "0168f90f28a6daea7175506219f671bda429c95d5daa112c3a695a6c3c1c5edb" => :mavericks
+    sha256 "acf3ac20e35b04e046d21f99f74e8301a14f16e8740ac0ab140d2979a5eb6d09" => :high_sierra
+    sha256 "ca5fca7f5c1f2ac202508bc09c11ceb34928e6f02363723f50c1da8ad985e6a6" => :sierra
+    sha256 "19c92e4a6b850eb8852640da9f10e5f71dbf272d22b17c1e78ad9dbe538c088a" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -24,29 +23,17 @@ class Pdnsrec < Formula
     cause "incomplete C++11 support"
   end
 
-  # Remove for > 4.0.3
-  # Upstream commit "rec: Fix Lua-enabled compilation on macOS and FreeBSD"
-  patch :p2 do
-    url "https://github.com/PowerDNS/pdns/commit/546d1fb.patch"
-    sha256 "9a7711596aebaf3eceaf8abcf723df12aa9c22583e6bb177b4eb0f90c8bb2ec3"
-  end
-
   def install
     ENV.cxx11
-
-    # Remove for > 4.0.3; using inreplace avoids Autotools dependencies
-    # Upstream PR "Fall back to SystemV ucontexts on boost >= 1.61"
-    # See https://github.com/PowerDNS/pdns/commit/fbf562c
-    inreplace "configure", "boost/context/detail/fcontext.hpp",
-                           "boost/context/fcontext.hpp"
 
     args = %W[
       --prefix=#{prefix}
       --sysconfdir=#{etc}/powerdns
       --disable-silent-rules
       --with-boost=#{Formula["boost"].opt_prefix}
-      --with-openssl=#{Formula["openssl"].opt_prefix}
+      --with-libcrypto=#{Formula["openssl"].opt_prefix}
       --with-lua
+      --without-net-snmp
     ]
 
     system "./configure", *args

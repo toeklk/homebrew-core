@@ -1,16 +1,14 @@
 class Dialog < Formula
-  desc "Display user-friendly dialog boxes from shell scripts"
-  homepage "http://invisible-island.net/dialog/"
-  url "ftp://invisible-island.net/dialog/dialog-1.3-20160209.tgz"
-  mirror "https://fossies.org/linux/misc/dialog-1.3-20160209.tgz"
-  sha256 "0314f7f2195edc58e7567a024dc1d658c2f8ea732796d8fa4b4927df49803f87"
+  desc "Display user-friendly message boxes from shell scripts"
+  homepage "https://invisible-island.net/dialog/"
+  url "https://invisible-mirror.net/archives/dialog/dialog-1.3-20171209.tgz"
+  sha256 "20139442119e2eff5c35236e8e5e313c901539008d9cccf8c8ab3851b41267e6"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "ee630bb7ae15cde86a4dd48a598b5eaf1151237bef9e0f1ffa9a120cc5fbd9ac" => :sierra
-    sha256 "8c12527b91df19529a580ff081621d30514119bfd999f76a763d59c406b32531" => :el_capitan
-    sha256 "89a8a52b64df7abe4aabfa9de1aa62523098154ae447da57fab3adce18b34a29" => :yosemite
-    sha256 "74626b6e18ebd0b4b755e04457be5a385bc10745cf08130f1330ab2b108a0550" => :mavericks
+    sha256 "0168f1b0060b33b57099f1dc5412d84620b6ae27a23c80ba0b7c8d8c7a6045ac" => :high_sierra
+    sha256 "16dcced9f6ffc983ce1aea72b562aae09fce59f9b380e9b593e03759e2e79537" => :sierra
+    sha256 "8d55d6e400627561189a0fb9785ae8e9d6fdc79ed81337edb9a4bd9a07d42a61" => :el_capitan
   end
 
   def install

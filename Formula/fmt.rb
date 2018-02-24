@@ -1,14 +1,14 @@
 class Fmt < Formula
   desc "Open-source formatting library for C++"
   homepage "https://fmtlib.github.io/"
-  url "https://github.com/fmtlib/fmt/archive/3.0.1.tar.gz"
-  sha256 "dce62ab75a161dd4353a98364feb166d35e7eea382169d59d9ce842c49c55bad"
+  url "https://github.com/fmtlib/fmt/archive/4.1.0.tar.gz"
+  sha256 "46628a2f068d0e33c716be0ed9dcae4370242df135aed663a180b9fd8e36733d"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "bac53b7d6efc3f09ddbb5e197aa6ea8f0337010b396f75bb51666bb9f1f4b250" => :sierra
-    sha256 "49151a813dd32732427993f0279620986b4371ec841ebdd506c77f4def10cd12" => :el_capitan
-    sha256 "91122df1a848016cf728ef1fe60fb18edae3f4fe99766eb93043bb6148b69259" => :yosemite
+    sha256 "b7ccb91ade299906ad02d49eb4f57fb3f3da9378ffd9344c7afe9cd37a18dd77" => :high_sierra
+    sha256 "1c7d0df7c374395d846eea1886de23efb62f285b9f35b5ba386e58ac5c6913c2" => :sierra
+    sha256 "12741d3c493511989b5492783249dab5d6f9306d71315a456db5513969f3325c" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -19,7 +19,7 @@ class Fmt < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <iostream>
       #include <string>
       #include <fmt/format.h>

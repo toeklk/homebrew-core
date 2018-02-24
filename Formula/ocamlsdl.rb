@@ -1,16 +1,15 @@
 class Ocamlsdl < Formula
   desc "OCaml interface with the SDL C library"
-  homepage "http://ocamlsdl.sourceforge.net/"
+  homepage "https://ocamlsdl.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/ocamlsdl/OCamlSDL/ocamlsdl-0.9.1/ocamlsdl-0.9.1.tar.gz"
   sha256 "abfb295b263dc11e97fffdd88ea1a28b46df8cc2b196777093e4fe7f509e4f8f"
-  revision 3
+  revision 9
 
   bottle do
     cellar :any
-    sha256 "9e204be255cb230219be35d48574b4ca8765ab612f072015a3a049e25afb473e" => :sierra
-    sha256 "63049f59ee0cb7ecb2ec879a6ba42d0257982a5e1496f766eb7a6af434316739" => :el_capitan
-    sha256 "e3c19d6e291f992746d2e97c3359926f31d1352c4c624e390832500376123f28" => :yosemite
-    sha256 "84e41d71d0d1325233ff60d1714bc4f2790c62ec2f770fb369b2c02447c347c7" => :mavericks
+    sha256 "8313d585edbdf92234128947a792ca26e2a0d2181d83ce1c2e90bc6c46d97f03" => :high_sierra
+    sha256 "8a40a90601e1f63f0a6ec5bf83cb5e78d401f8bd94bef4f5c2ca48d881bc961a" => :sierra
+    sha256 "6cd7f7cf05819e1109d24a678ee2f21a742c8f743a3d23b56a80e2b8897ead98" => :el_capitan
   end
 
   depends_on "sdl"
@@ -21,6 +20,7 @@ class Ocamlsdl < Formula
   depends_on "sdl_ttf" => :recommended
 
   def install
+    ENV["OCAMLPARAM"] = "safe-string=0,_" # OCaml 4.06.0 compat
     system "./configure", "--prefix=#{prefix}",
                           "OCAMLLIB=#{lib}/ocaml"
     system "make"
@@ -28,7 +28,7 @@ class Ocamlsdl < Formula
   end
 
   test do
-    (testpath/"test.ml").write <<-EOS.undent
+    (testpath/"test.ml").write <<~EOS
       let main () =
         Sdl.init [`VIDEO];
         Sdl.quit ()

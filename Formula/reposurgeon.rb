@@ -2,27 +2,23 @@ class Reposurgeon < Formula
   desc "Edit version-control repository history"
   homepage "http://www.catb.org/esr/reposurgeon/"
   url "https://gitlab.com/esr/reposurgeon.git",
-      :tag => "3.40",
-      :revision => "4e0e56e0773e5d00e000f12196642b83081ceb0d"
+      :tag => "3.43",
+      :revision => "a513685ebefd5f5dc78caff6272f5a7d2d692e1d"
   head "https://gitlab.com/esr/reposurgeon.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "7aa83bc38b108e896e2a9695b5855ada001679837151bf836c42297df419de4b" => :sierra
-    sha256 "b086a0dd9b192a9fd2d28b365f7e50e03ff5e26dd3d8e71e679ad2f2e569e97f" => :el_capitan
-    sha256 "78d370ef4e6b76b0fc02506f1c10253fa33caeeb01176bf7d2c444f6ec0bea12" => :yosemite
+    sha256 "e466c365599128dd3cf22a6c0b825d198bc3aca9b0ffa2363405e8074e355d1d" => :high_sierra
+    sha256 "54469dad50f8885739c659201f77b49b224de6e09dd4fbb558ca33f85caebc9d" => :sierra
+    sha256 "eb28acb491ef786f599c664e41a908ebc08b04bfe32362c18c6e76b6e1a958d3" => :el_capitan
   end
 
   option "without-cython", "Build without cython (faster compile)"
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "asciidoc" => :build
   depends_on "xmlto" => :build
-
-  resource "Cython" do
-    url "https://files.pythonhosted.org/packages/c6/fe/97319581905de40f1be7015a0ea1bd336a756f6249914b148a17eefa75dc/Cython-0.24.1.tar.gz"
-    sha256 "84808fda00508757928e1feadcf41c9f78e9a9b7167b6649ab0933b76f75e7b9"
-  end
+  depends_on "cython" => [:build, :recommended]
 
   def install
     ENV["XML_CATALOG_FILES"] = "#{etc}/xml/catalog"
@@ -30,19 +26,16 @@ class Reposurgeon < Formula
     elisp.install "reposurgeon-mode.el"
 
     if build.with? "cython"
-      resource("Cython").stage do
-        system "python", *Language::Python.setup_install_args(buildpath/"vendor")
-      end
-      ENV.prepend_path "PYTHONPATH", buildpath/"vendor/lib/python2.7/site-packages"
+      pyincludes = Utils.popen_read("python-config --cflags").chomp
+      pylib = Utils.popen_read("python-config --ldflags").chomp
       system "make", "install-cyreposurgeon", "prefix=#{prefix}",
-             "CYTHON=#{buildpath}/vendor/bin/cython",
-             "pyinclude=" + `python-config --cflags`.chomp,
-             "pylib=" + `python-config --ldflags`.chomp
+                     "CYTHON=#{Formula["cython"].opt_bin}/cython",
+                     "pyinclude=#{pyincludes}", "pylib=#{pylib}"
     end
   end
 
   test do
-    (testpath/".gitconfig").write <<-EOS.undent
+    (testpath/".gitconfig").write <<~EOS
       [user]
         name = Real Person
         email = notacat@hotmail.cat

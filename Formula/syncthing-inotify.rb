@@ -1,18 +1,18 @@
 class SyncthingInotify < Formula
   desc "File watcher intended for use with Syncthing"
   homepage "https://github.com/syncthing/syncthing-inotify"
-  url "https://github.com/syncthing/syncthing-inotify/archive/v0.8.4.tar.gz"
-  sha256 "c8215c8bc8a52a043ae3bcba6ff94ef572159ca5d7808b44deeb31eb3b2ce295"
+  url "https://github.com/syncthing/syncthing-inotify/archive/v0.8.7.tar.gz"
+  sha256 "bf7a71695206c765cf407d85656f6f0f8be1715af3d3bb7f81985f749162a6b2"
   head "https://github.com/syncthing/syncthing-inotify.git"
 
   bottle do
-    sha256 "9abaaa025ea4448c7f0a98a2fe4dd083640cf808a98192b878bdbd32e927dd43" => :sierra
-    sha256 "dca3eabfc41811d174fedf04301c3279418342fc9cbc39d1b33765e7e185df8a" => :el_capitan
-    sha256 "b53bf4dc4265aebdb7d536562224a34ed1dfa1637a110208c344e80b0587028d" => :yosemite
+    sha256 "2185ac4821dc09e211297aebb86ed7bf44e7fd6fed461d092e294c0862ed81c1" => :high_sierra
+    sha256 "442dd6b530e40bd18668f482f2071afa64fcf333892ae3b8a47f435d74396baa" => :sierra
+    sha256 "651c2857b6b05a2122123e520153db5605f5b89b255b6fd99e785e9465e64691" => :el_capitan
+    sha256 "da3e6893fd0d8b2a17f6bb486c1e9d23d3066a36faac1e845d8d373e2a5b32b5" => :yosemite
   end
 
   depends_on "go" => :build
-  depends_on "godep" => :build
 
   def install
     ENV["GOPATH"] = buildpath
@@ -20,15 +20,15 @@ class SyncthingInotify < Formula
     dir = buildpath/"src/github.com/syncthing/syncthing-inotify"
     dir.install buildpath.children
     cd dir do
-      system "godep", "restore"
       system "go", "build", "-ldflags", "-w -X main.Version=#{version}"
       bin.install name
+      prefix.install_metafiles
     end
   end
 
   plist_options :manual => "syncthing-inotify"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

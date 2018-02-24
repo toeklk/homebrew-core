@@ -2,13 +2,13 @@ class Zorba < Formula
   desc "NoSQL query processor"
   homepage "http://www.zorba.io/"
   url "https://github.com/28msec/zorba/archive/3.1.tar.gz"
-  sha256 "a27e8160aca5d3aa5a6525b930da7edde44f8824dd4fba39aaef3b9af2717b74"
-  revision 1
+  sha256 "05eed935c0ff3626934a5a70724a42410fd93bc96aba1fa4821736210c7f1dd8"
+  revision 6
 
   bottle do
-    sha256 "a42289309f9841d0a31face0a632eebe7d076437a4b5f42b4098daa2dcca6258" => :sierra
-    sha256 "7beb51d3f23e62f16b64ed6fdce8d03f6d4ffc7f1e5cc22f47ff79dd8e571e3f" => :el_capitan
-    sha256 "2a1dba60f65cd722870df5239bfe3cdb5d5a75b1315fe20342228907efdf1b00" => :yosemite
+    sha256 "f144539eb1107b00dbc7577439559bd18a80d5cc3f7679bba85ca272fa8e4234" => :high_sierra
+    sha256 "6cf0d3096e50121a1412582d6e30e80dfd01cae1a4502f50cc875c8363ebb9bc" => :sierra
+    sha256 "3cecf172b1c5ab6cd90fb83117de92715862424f7436166b2ad5abbcbfa2b168" => :el_capitan
   end
 
   option "with-big-integer", "Use 64 bit precision instead of arbitrary precision for performance"

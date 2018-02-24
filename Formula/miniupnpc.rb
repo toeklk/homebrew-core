@@ -1,18 +1,22 @@
 class Miniupnpc < Formula
   desc "UPnP IGD client library and daemon"
   homepage "https://miniupnp.tuxfamily.org"
-  url "https://miniupnp.tuxfamily.org/files/download.php?file=miniupnpc-2.0.tar.gz"
-  sha256 "d434ceb8986efbe199c5ca53f90ed53eab290b1e6d0530b717eb6fa49d61f93b"
+  url "https://miniupnp.tuxfamily.org/files/download.php?file=miniupnpc-2.0.20180222.tar.gz"
+  sha256 "587944686469d09f739744b3aed70c7ce753a79c40d6f1227f68a3e962665b75"
 
   bottle do
     cellar :any
-    sha256 "8434730606542a3b9c2a4e79d3fbcaf9bdf311aca79875a18d4274c79090056a" => :sierra
-    sha256 "15e81b0d06dc52291dd1146701bc0fed14ed9423fd182782f7538326fccc52cc" => :el_capitan
-    sha256 "40c1d6a4be66b1c5d69aa420ea33864f3330c68ff098571f6483e67c463fab42" => :yosemite
-    sha256 "f92562f92f51ab605904f4a540b107a526d16ddd1a4d9567f9c40ec4843ed125" => :mavericks
+    sha256 "f0a408131f3affc4fbfe838d624dc9993ac9f33b13172d53cd36d3ed84ad2ab5" => :high_sierra
+    sha256 "ab4234b5c43f6545de7a65f1f485811385b008aa8a3d7542012561f22b8e5801" => :sierra
+    sha256 "a1b75e51819d03ebddca3784145bf32efbf41daf2a6f407fe11755eadbd9185a" => :el_capitan
   end
 
   def install
     system "make", "INSTALLPREFIX=#{prefix}", "install"
+  end
+
+  test do
+    output = shell_output("#{bin}/upnpc --help 2>&1", 1)
+    assert_match version.to_s, output
   end
 end

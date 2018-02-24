@@ -4,14 +4,13 @@ class Nvi < Formula
   url "https://mirrors.ocf.berkeley.edu/debian/pool/main/n/nvi/nvi_1.81.6.orig.tar.gz"
   mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/n/nvi/nvi_1.81.6.orig.tar.gz"
   sha256 "8bc348889159a34cf268f80720b26f459dbd723b5616107d36739d007e4c978d"
-  revision 1
+  revision 4
 
   bottle do
     cellar :any
-    sha256 "0007956c286d70e71a6cf044e686e09ec56688d28f02ea4aabc41e80861349eb" => :sierra
-    sha256 "c4f15ed7ef7d6ca867cccf614823d03a0ffebfd1c303ae2625f64645b4b36b62" => :el_capitan
-    sha256 "2b6a728e143b8dbd0584d403e5c7b5138130a09177bd658ba3dc95f999420ddd" => :yosemite
-    sha256 "b86a3fc268f0b698e8218505bc257256d36c79f215e19fbaa72c8970995c402e" => :mavericks
+    sha256 "4ac03e9bc7afe7e7349a5c16f917d19ed3f0a27efdf71a4cf4163828232ea45b" => :high_sierra
+    sha256 "c2f50939879bea71f2c5463d68b8c26abb146997fe0f8c5206fcf8bb8a958f90" => :sierra
+    sha256 "c5401f6b0ad0e628ca973e902a9f59e9b5339eda80f4869dc1d183c1f4aae838" => :el_capitan
   end
 
   depends_on "xz" => :build # Homebrew bug. Shouldn't need declaring explicitly.
@@ -37,14 +36,15 @@ class Nvi < Formula
   # Upstream have been pretty inactive for a while, so we may want to kill this
   # formula at some point unless that changes. We're leaning hard on Debian now.
   patch do
-    url "https://mirrors.ocf.berkeley.edu/debian/pool/main/n/nvi/nvi_1.81.6-12.debian.tar.xz"
-    mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/n/nvi/nvi_1.81.6-12.debian.tar.xz"
-    sha256 "c86c9feac8410ffbf79bb8ddf85b34d2edcc00660d8f4cd131eb65e8e0d6156b"
+    url "https://mirrors.ocf.berkeley.edu/debian/pool/main/n/nvi/nvi_1.81.6-13.debian.tar.xz"
+    mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/n/nvi/nvi_1.81.6-13.debian.tar.xz"
+    sha256 "306c6059d386a161b9884535f0243134c8c9b5b15648e09e595fd1b349a7b9e1"
     apply "patches/03db4.patch",
           "patches/19include_term_h.patch",
           "patches/24fallback_to_dumb_term.patch",
           "patches/26trailing_tab_segv.patch",
-          "patches/27support_C_locale.patch"
+          "patches/27support_C_locale.patch",
+          "patches/31regex_heap_overflow.patch"
   end
 
   def install
@@ -53,8 +53,14 @@ class Nvi < Formula
                             "--program-prefix=n",
                             "--disable-dependency-tracking"
       system "make"
-      ENV.j1
+      ENV.deparallelize
       system "make", "install"
     end
+  end
+
+  test do
+    (testpath/"test").write("This is toto!\n")
+    pipe_output("#{bin}/nvi -e test", "%s/toto/tutu/g\nwq\n")
+    assert_equal "This is tutu!\n", File.read("test")
   end
 end

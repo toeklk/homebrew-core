@@ -1,31 +1,38 @@
 class Libical < Formula
   desc "Implementation of iCalendar protocols and data formats"
   homepage "https://libical.github.io/libical/"
-  url "https://github.com/libical/libical/releases/download/v1.0.1/libical-1.0.1.tar.gz"
-  sha256 "089ce3c42d97fbd7a5d4b3c70adbdd82115dd306349c1f5c46a8fb3f8c949592"
+  url "https://github.com/libical/libical/releases/download/v3.0.2/libical-3.0.2.tar.gz"
+  sha256 "0cbc3fd630966e1daed2dd1c38d236220d166c149f245bfda3c8ad745e2b640e"
 
   bottle do
-    sha256 "89a2b365a23f3d99a24f62c45d060daabc0aa06c07f613bf47997db2a5caeca5" => :sierra
-    sha256 "6ae0580e27fa630e88b8b460b82e3c995638e87d312c4e836425dbc321ae1bcb" => :el_capitan
-    sha256 "eaef148f778ac575b2e1c3223cd26c8865d3ae86e274b1cab7bcf9b575086c38" => :yosemite
-    sha256 "51288631d0f0656fdbe6d30eb333699e0f1c48a0b1defe72a9a7a3eeb0571a92" => :mavericks
-    sha256 "014c0160a5bc9030409e6459799e4b9ae3474ea86d4ca1557b9a3d5d89e31232" => :mountain_lion
+    sha256 "d3d1e7d0098735a2ccabad0a1d78a0f822ab462ef163b788c0f232a08213bdea" => :high_sierra
+    sha256 "3c245176c480cea929038591597a512c290b589209c5eaabcc7a687705980379" => :sierra
+    sha256 "1f517c80f40a1ef630f2c9312c3b8b7a28e5772d251211e27bbd3ef2cc272219" => :el_capitan
   end
 
   depends_on "cmake" => :build
-
-  option :universal
+  depends_on "pkg-config" => :build
+  depends_on "glib"
 
   def install
-    args = std_cmake_args
-    if build.universal?
-      ENV.universal_binary
-      args << "-DCMAKE_OSX_ARCHITECTURES=#{Hardware::CPU.universal_archs.as_cmake_arch_flags}"
-    end
+    system "cmake", ".", "-DBDB_LIBRARY=BDB_LIBRARY-NOTFOUND",
+                         "-DICU_LIBRARY=ICU_LIBRARY-NOTFOUND",
+                         "-DSHARED_ONLY=ON",
+                         *std_cmake_args
+    system "make", "install"
+  end
 
-    mkdir "build" do
-      system "cmake", "..", "-DSHARED_ONLY=true", *args
-      system "make", "install"
-    end
+  test do
+    (testpath/"test.c").write <<~EOS
+      #include <libical-glib/libical-glib.h>
+      int main(int argc, char *argv[]) {
+        ICalParser *parser = i_cal_parser_new();
+        return 0;
+      }
+    EOS
+    system ENV.cc, "test.c", "-o", "test", "-L#{lib}", "-lical-glib",
+           "-I#{Formula["glib"].opt_include}/glib-2.0",
+           "-I#{Formula["glib"].opt_lib}/glib-2.0/include"
+    system "./test"
   end
 end

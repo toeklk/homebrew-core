@@ -1,15 +1,15 @@
 class Webdis < Formula
   desc "Redis HTTP interface with JSON output"
   homepage "https://webd.is/"
-  url "https://github.com/nicolasff/webdis/archive/0.1.2.tar.gz"
-  sha256 "8e46093af006e35354f6b3d58a70e3825cd0c074893be318f1858eddbe1cda86"
+  url "https://github.com/nicolasff/webdis/archive/0.1.3.tar.gz"
+  sha256 "cfcfca786db8ccf6a7779945405d3591567f50bc78bde78a9624982575bc36f2"
 
   bottle do
     cellar :any
-    sha256 "17a9d8bb8fcc4f155d45b2a178fd9e23dade1375e8845579389fbbe5ed002e21" => :sierra
-    sha256 "39585b1ba1b3a8e34c2a2d08e6e347284fd3dceca217c83638dfb9fa8e684550" => :el_capitan
-    sha256 "053f0bf229a602f8fae49b654545826d4c95c5c020f50edd71bfc083a4152d93" => :yosemite
-    sha256 "93d36ebff19cbe0c7d50075a3c3c85d3542c105713728808c84bf0d5fa81828f" => :mavericks
+    sha256 "58a95727b9e25d21fbdd5d4547ec6a419fbde87990e6ce2cfc24b6707a512534" => :high_sierra
+    sha256 "19f382600f096b6787d6bacf561edf8e68100ff275bc4c4df157afaa91d8aa3b" => :sierra
+    sha256 "07d2d4499db3ad6dcccb16261d8c45e74a8ec4b9d23ecad9e60f31a06ca56559" => :el_capitan
+    sha256 "102e1b2a88158fb3ada215c432b1dbbf3d1f1d8a692e784baa9b5277f717dce9" => :yosemite
   end
 
   depends_on "libevent"
@@ -18,12 +18,44 @@ class Webdis < Formula
     system "make"
     bin.install "webdis"
 
-    inreplace "webdis.prod.json", "/var/log/webdis.log", "#{var}/log/webdis.log"
+    inreplace "webdis.prod.json" do |s|
+      s.gsub! "/var/log/webdis.log", "#{var}/log/webdis.log"
+      s.gsub! /daemonize":\s*true/, "daemonize\":\tfalse"
+    end
+
     etc.install "webdis.json", "webdis.prod.json"
   end
 
   def post_install
     (var/"log").mkpath
+  end
+
+  plist_options :manual => "webdis #{HOMEBREW_PREFIX}/etc/webdis.json"
+
+  def plist; <<~EOS
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+      <dict>
+        <key>Label</key>
+        <string>#{plist_name}</string>
+        <key>ProgramArguments</key>
+        <array>
+            <string>#{opt_bin}/webdis</string>
+            <string>#{etc}/webdis.prod.json</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>KeepAlive</key>
+        <dict>
+            <key>SuccessfulExit</key>
+            <false/>
+        </dict>
+        <key>WorkingDirectory</key>
+        <string>#{var}</string>
+      </dict>
+    </plist>
+    EOS
   end
 
   test do

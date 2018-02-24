@@ -3,43 +3,30 @@ class Pixman < Formula
   homepage "https://cairographics.org/"
   url "https://cairographics.org/releases/pixman-0.34.0.tar.gz"
   sha256 "21b6b249b51c6800dc9553b65106e1e37d0e25df942c90531d4c3997aa20a88e"
+  revision 1
 
   bottle do
     cellar :any
-    sha256 "345c55cb038be8ad3cea956647fcbe8f06db0df61b7dda1a8d7da2f40efc0c3b" => :sierra
-    sha256 "ce36799e5a38be394c20f7196f93c2bcfbf9a0a49c7964e59ab8980fb81cda26" => :el_capitan
-    sha256 "d9db47ff106386a945bc74d1717a9215a6de5bdcc848aea99ef10d31ae480ef4" => :yosemite
-    sha256 "810b4e5d428e6be2987e96767adf8bca06dd026fbcc5246f96d8d5ec4f64962c" => :mavericks
+    sha256 "8274aac0ad9775aaff37e1400d3659fdeec765db0381e142de873598075eb063" => :high_sierra
+    sha256 "5271f5c3bb4c524047aaa1aaafa183908b6fa8ea8c5224fd30a04c53cd6c317d" => :sierra
+    sha256 "47f660837d496427e5ff69f64d4b175f3dfa553580197dd06990803ba3eedc20" => :el_capitan
+    sha256 "f92c0d581ecb7f5679d047c7e03ba17bfe169163dff5d10ac8c9ef4cb609bb0c" => :yosemite
   end
 
   keg_only :provided_pre_mountain_lion
 
-  option :universal
-
   depends_on "pkg-config" => :build
 
-  fails_with :llvm do
-    build 2336
-    cause <<-EOS.undent
-      Building with llvm-gcc causes PDF rendering issues in Cairo.
-      https://trac.macports.org/ticket/30370
-      See Homebrew issues #6631, #7140, #7463, #7523.
-      EOS
-  end
-
   def install
-    ENV.universal_binary if build.universal?
-
     system "./configure", "--disable-dependency-tracking",
                           "--disable-gtk",
-                          "--disable-mmx", # MMX assembler fails with Xcode 7
                           "--disable-silent-rules",
                           "--prefix=#{prefix}"
     system "make", "install"
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <pixman.h>
 
       int main(int argc, char *argv[])

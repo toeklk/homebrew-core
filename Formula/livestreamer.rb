@@ -1,18 +1,19 @@
 class Livestreamer < Formula
-  desc "pipes video from streaming services into a player such as VLC"
+  desc "Pipes video from streaming services into a player such as VLC"
   homepage "http://livestreamer.io/"
   url "https://files.pythonhosted.org/packages/ee/d6/efbe3456160a2c62e3dd841c5d9504d071c94449a819148bb038b50d862a/livestreamer-1.12.2.tar.gz"
   sha256 "ef3e743d0cabc27d8ad906c356e74370799e25ba46c94d3b8d585af77a258de0"
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "84d580d9c9de044903fab8326349a0b3beb928a953c087de4ab9d94f76eab445" => :high_sierra
     sha256 "4830984511ba774a7047417ce2c304a79ef6c9c95170ef628f754300e081eab9" => :sierra
     sha256 "08751c90099fb817e5adb721dae3cb1e11852e975c731909baff4001bae4da2c" => :el_capitan
     sha256 "4f3e898e82718fb8c6fe9597cd0e7289388283c30cedd8c78d699989a0805977" => :yosemite
     sha256 "b91f4e0f5a293dbb12134bc5be6b2d4ec7c80e309fca8d4901376e15c8b5df87" => :mavericks
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
 
   resource "futures" do
     url "https://files.pythonhosted.org/packages/c0/12/927b89a24dcb336e5af18a8fbf581581c36e9620ae963a693a2522b2d340/futures-2.2.0.tar.gz"

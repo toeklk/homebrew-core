@@ -1,20 +1,18 @@
 class Libuv < Formula
   desc "Multi-platform support library with a focus on asynchronous I/O"
   homepage "https://github.com/libuv/libuv"
-  url "https://github.com/libuv/libuv/archive/v1.10.1.tar.gz"
-  sha256 "4b5f71939dd4272ebcfb8e04833e9a273a08b1bf1277d37d14085d7b04b19832"
+  url "https://github.com/libuv/libuv/archive/v1.19.2.tar.gz"
+  sha256 "ccc5f3b43ed171640513786e5e809508cb6308279b4d71a016e4550ad62f1686"
   head "https://github.com/libuv/libuv.git", :branch => "v1.x"
 
   bottle do
     cellar :any
-    sha256 "38da3291de9eef7f34247c67cc65be829d41fa26d3bf647199a91d6ddb06cb3a" => :sierra
-    sha256 "bb78cf5f3c51946e2b7faf3b6ef2671799041f8bdb7c31522cc089aa76bda723" => :el_capitan
-    sha256 "b6f8169844bf52aed6eb68e079f8b3f2ec714d2adb5e2fc17cc2a0aecdf99f0e" => :yosemite
+    sha256 "6c16910d6afdc5ee10afe47ec13a99358de48002bf0892a254c8ee981a0b8f85" => :high_sierra
+    sha256 "5813fbf134bf565002720a4a6a206525e397a4e541a0fd63049957d692981620" => :sierra
+    sha256 "f6761c76ade3060f57b8adc1c18d48250eecb32db3ff5b6a1f813b62e7595e81" => :el_capitan
   end
 
-  option "without-docs", "Don't build and install documentation"
   option "with-test", "Execute compile time checks (Requires Internet connection)"
-  option :universal
 
   deprecated_option "with-check" => "with-test"
 
@@ -22,19 +20,15 @@ class Libuv < Formula
   depends_on "automake" => :build
   depends_on "autoconf" => :build
   depends_on "libtool" => :build
-  depends_on "sphinx-doc" => :build if build.with? "docs"
+  depends_on "sphinx-doc" => :build
 
   def install
-    ENV.universal_binary if build.universal?
-
-    if build.with? "docs"
-      # This isn't yet handled by the make install process sadly.
-      cd "docs" do
-        system "make", "man"
-        system "make", "singlehtml"
-        man1.install "build/man/libuv.1"
-        doc.install Dir["build/singlehtml/*"]
-      end
+    # This isn't yet handled by the make install process sadly.
+    cd "docs" do
+      system "make", "man"
+      system "make", "singlehtml"
+      man1.install "build/man/libuv.1"
+      doc.install Dir["build/singlehtml/*"]
     end
 
     system "./autogen.sh"
@@ -47,7 +41,7 @@ class Libuv < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <uv.h>
       #include <stdlib.h>
 
@@ -60,7 +54,7 @@ class Libuv < Formula
         return 0;
       }
     EOS
-    system ENV.cc, "test.c", "-luv", "-o", "test"
+    system ENV.cc, "test.c", "-L#{lib}", "-luv", "-o", "test"
     system "./test"
   end
 end

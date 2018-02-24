@@ -1,43 +1,35 @@
 class Zsh < Formula
   desc "UNIX shell (command interpreter)"
   homepage "https://www.zsh.org/"
-
-  stable do
-    url "https://downloads.sourceforge.net/project/zsh/zsh/5.2/zsh-5.2.tar.gz"
-    mirror "https://www.zsh.org/pub/zsh-5.2.tar.gz"
-    sha256 "fa924c534c6633c219dcffdcd7da9399dabfb63347f88ce6ddcd5bb441215937"
-
-    # We cannot build HTML doc on HEAD, because yodl which is required for
-    # building zsh.texi is not available.
-    option "with-texi2html", "Build HTML documentation"
-    depends_on "texi2html" => [:build, :optional]
-
-    # apply patch that fixes nvcsformats which is broken in zsh-5.2 and will propably be fixed in 5.2.1
-    # See https://github.com/zsh-users/zsh/commit/4105f79a3a9b5a85c4ce167865e5ac661be160dc
-    patch do
-      url "https://raw.githubusercontent.com/Homebrew/formula-patches/master/zsh/nvcs-formats-fix.patch"
-      sha256 "f351cd67d38b9d8a9c2013ae47b77a753eca3ddeb6bfd807bd8b492516479d94"
-    end
-  end
+  url "https://downloads.sourceforge.net/project/zsh/zsh/5.4.2/zsh-5.4.2.tar.gz"
+  mirror "https://www.zsh.org/pub/zsh-5.4.2.tar.gz"
+  sha256 "957bcdb2c57f64c02f673693ea5a7518ef24b6557aeb3a4ce222cefa6d74acc9"
+  revision 3
 
   bottle do
-    rebuild 3
-    sha256 "d40ddb483bf98ba2bb1b829207607f288618a30ecf640a28151c3e922796b0f8" => :sierra
-    sha256 "2a860b90c4b47b034a6b8c2d6a70dccf479f56aebac38683790f2e4cd1da615b" => :el_capitan
-    sha256 "d140366f62354011a7de99949e847ae44d6aa70f2b51e1722028844e4fa0b252" => :yosemite
+    sha256 "9071f9ae246b1c2d577cf0e2115f38e3612994d456a1925918c9ea25218c202d" => :high_sierra
+    sha256 "daa5e14fd14dd3051ac99e29d3c8ec5954f99e613229c200c1898d8e682549af" => :sierra
+    sha256 "1dbc516e7193753876e2d1648cfb90c0d15fb3f0c6483a929fbcc4b129be0d46" => :el_capitan
   end
 
   head do
-    url "git://git.code.sf.net/p/zsh/code"
+    url "https://git.code.sf.net/p/zsh/code.git"
     depends_on "autoconf" => :build
   end
 
   option "without-etcdir", "Disable the reading of Zsh rc files in /etc"
+  option "with-unicode9", "Build with Unicode 9 character width support"
 
   deprecated_option "disable-etcdir" => "without-etcdir"
 
-  depends_on "gdbm"
-  depends_on "pcre"
+  depends_on "gdbm" => :optional
+  depends_on "pcre" => :optional
+
+  resource "htmldoc" do
+    url "https://downloads.sourceforge.net/project/zsh/zsh-doc/5.4.2/zsh-5.4.2-doc.tar.xz"
+    mirror "https://www.zsh.org/pub/zsh-5.4.2-doc.tar.xz"
+    sha256 "5229cc93ebe637a07deb5b386b705c37a50f4adfef788b3c0f6647741df4f6bd"
+  end
 
   def install
     system "Util/preconfig" if build.head?
@@ -52,10 +44,13 @@ class Zsh < Formula
       --enable-cap
       --enable-maildir-support
       --enable-multibyte
-      --enable-pcre
       --enable-zsh-secure-free
       --with-tcsetpgrp
     ]
+
+    args << "--disable-gdbm" if build.without? "gdbm"
+    args << "--enable-pcre" if build.with? "pcre"
+    args << "--enable-unicode9" if build.with? "unicode9"
 
     if build.without? "etcdir"
       args << "--disable-etcdir"
@@ -76,22 +71,15 @@ class Zsh < Formula
     else
       system "make", "install"
       system "make", "install.info"
-      system "make", "install.html" if build.with? "texi2html"
+
+      resource("htmldoc").stage do
+        (pkgshare/"htmldoc").install Dir["Doc/*.html"]
+      end
     end
   end
 
-  def caveats; <<-EOS.undent
-    In order to use this build of zsh as your login shell,
-    it must be added to /etc/shells.
-    Add the following to your zshrc to access the online help:
-      unalias run-help
-      autoload run-help
-      HELPDIR=#{HOMEBREW_PREFIX}/share/zsh/help
-    EOS
-  end
-
   test do
-    assert_equal "homebrew\n",
-      shell_output("#{bin}/zsh -c 'echo homebrew'")
+    assert_equal "homebrew", shell_output("#{bin}/zsh -c 'echo homebrew'").chomp
+    system bin/"zsh", "-c", "printf -v hello -- '%s'"
   end
 end

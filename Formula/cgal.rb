@@ -1,48 +1,40 @@
 class Cgal < Formula
-  desc "CGAL: Computational Geometry Algorithm Library"
+  desc "Computational Geometry Algorithm Library"
   homepage "https://www.cgal.org/"
-  url "https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.9/CGAL-4.9.tar.xz"
-  sha256 "63ac5df71f912f34f2f0f2e54a303578df51f4ec2627db593a65407d791f9039"
+  url "https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.11/CGAL-4.11.tar.xz"
+  sha256 "27a7762e5430f5392a1fe12a3a4abdfe667605c40224de1c6599f49d66cfbdd2"
+  revision 1
 
   bottle do
     cellar :any
-    sha256 "bc2d75f374a2b7b801a243937553cdaf23c4ec1f3f3cbce0910f0c5357ed7820" => :sierra
-    sha256 "1347cfad615b487b11e083e7114ac2e3e0d2fb271cb7a9413ed1531d03c92f1b" => :el_capitan
-    sha256 "0014c368e53254801a2a1233424027156e2bdf0c09c12b17246119c8337fd02a" => :yosemite
+    sha256 "fdf7c3c5890dfe0356d14ea2b9aca45497d5404e46c361f720a075196ebb8838" => :high_sierra
+    sha256 "ddb4bb8589310493a7eb13f4ad07d93fc642a203785e8eca48e13f791caca89a" => :sierra
+    sha256 "3142b4ac1d77db7d6fabc74d496b3f23c95498d950f97488ea91d2e0c0c5979e" => :el_capitan
   end
 
-  option :cxx11
-  option "with-qt5", "Build ImageIO and QT5 compoments of CGAL"
   option "with-eigen", "Build with Eigen3 support"
   option "with-lapack", "Build with LAPACK support"
+  option "with-qt", "Build ImageIO and Qt components of CGAL"
 
-  deprecated_option "imaging" => "with-qt5"
-  deprecated_option "with-imaging" => "with-qt5"
+  deprecated_option "imaging" => "with-qt"
+  deprecated_option "with-imaging" => "with-qt"
   deprecated_option "with-eigen3" => "with-eigen"
+  deprecated_option "with-qt5" => "with-qt"
 
   depends_on "cmake" => :build
+  depends_on "boost"
+  depends_on "gmp"
   depends_on "mpfr"
-
-  depends_on "qt5" => :optional
+  depends_on "qt" => :optional
   depends_on "eigen" => :optional
 
-  if build.cxx11?
-    depends_on "boost" => "c++11"
-    depends_on "gmp"   => "c++11"
-  else
-    depends_on "boost"
-    depends_on "gmp"
-  end
-
   def install
-    ENV.cxx11 if build.cxx11?
-
     args = std_cmake_args + %W[
       -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
       -DCMAKE_INSTALL_NAME_DIR=#{HOMEBREW_PREFIX}/lib
     ]
 
-    if build.without? "qt5"
+    if build.without? "qt"
       args << "-DWITH_CGAL_Qt5=OFF" << "-DWITH_CGAL_ImageIO=OFF"
     else
       args << "-DWITH_CGAL_Qt5=ON" << "-DWITH_CGAL_ImageIO=ON"
@@ -66,7 +58,7 @@ class Cgal < Formula
 
   test do
     # https://doc.cgal.org/latest/Algebraic_foundations/Algebraic_foundations_2interoperable_8cpp-example.html
-    (testpath/"surprise.cpp").write <<-EOS.undent
+    (testpath/"surprise.cpp").write <<~EOS
       #include <CGAL/basic.h>
       #include <CGAL/Coercion_traits.h>
       #include <CGAL/IO/io.h>

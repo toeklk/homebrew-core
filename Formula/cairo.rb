@@ -1,21 +1,14 @@
 class Cairo < Formula
   desc "Vector graphics library with cross-device output support"
   homepage "https://cairographics.org/"
-  url "https://cairographics.org/releases/cairo-1.14.6.tar.xz"
-  mirror "https://www.mirrorservice.org/sites/ftp.netbsd.org/pub/pkgsrc/distfiles/cairo-1.14.6.tar.xz"
-  sha256 "613cb38447b76a93ff7235e17acd55a78b52ea84a9df128c3f2257f8eaa7b252"
-  revision 1
+  url "https://cairographics.org/releases/cairo-1.14.12.tar.xz"
+  mirror "https://www.mirrorservice.org/sites/ftp.netbsd.org/pub/pkgsrc/distfiles/cairo-1.14.12.tar.xz"
+  sha256 "8c90f00c500b2299c0a323dd9beead2a00353752b2092ead558139bd67f7bf16"
 
   bottle do
-    sha256 "88383b86fdf914d59dcf249403d7358ff3bcc84098186dd10a58fbb1da07d98d" => :sierra
-    sha256 "dd4dc801ee427ca2d2305403cacf747a51b58d80a2cd2ebf20a9623229830278" => :el_capitan
-    sha256 "3ac3b4af558425ff4c3a9799bfb24ab70e41210d63323195db4a5e6feb790497" => :yosemite
-    sha256 "15ec1a777186dc6af988c9d1de94449ce730ec64a1588d63f3a1b95222d75a8d" => :mavericks
-  end
-
-  devel do
-    url "https://cairographics.org/snapshots/cairo-1.15.2.tar.xz"
-    sha256 "268cc265a7f807403582f440643064bf52896556766890c8df7bad02d230f6c9"
+    sha256 "5bdc28de8e5a615ab664d43f7f322ed02d58071171415bb6e2750f486b9465e2" => :high_sierra
+    sha256 "102847d74a0a11bb6143d93b9f32e1736e88036fb4c685d554a8bcd376bbd929" => :sierra
+    sha256 "bec85433a35605164bdbf5f8913e29eb6d9ceb5acc5569dd9d864706ae6c8d49" => :el_capitan
   end
 
   head do
@@ -27,10 +20,8 @@ class Cairo < Formula
 
   keg_only :provided_pre_mountain_lion
 
-  option :universal
-
   depends_on "pkg-config" => :build
-  depends_on :x11 => :optional if MacOS.version > :leopard
+  depends_on :x11 => :optional
   depends_on "freetype"
   depends_on "fontconfig"
   depends_on "libpng"
@@ -38,8 +29,6 @@ class Cairo < Formula
   depends_on "glib"
 
   def install
-    ENV.universal_binary if build.universal?
-
     args = %W[
       --disable-dependency-tracking
       --prefix=#{prefix}
@@ -64,7 +53,7 @@ class Cairo < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <cairo.h>
 
       int main(int argc, char *argv[]) {

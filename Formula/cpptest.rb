@@ -1,12 +1,13 @@
 class Cpptest < Formula
   desc "Unit testing framework handling automated tests in C++"
-  homepage "http://cpptest.sourceforge.net/"
+  homepage "https://cpptest.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/cpptest/cpptest/cpptest-1.1.2/cpptest-1.1.2.tar.gz"
   sha256 "9e4fdf156b709397308536eb6b921e3aea1f463c6613f9a0c1dfec9614386027"
 
   bottle do
     cellar :any
     rebuild 1
+    sha256 "bd7d2b0055d1de9cce94d3695aa7c160fbe3d0780e9650c73a7543bd5726162a" => :high_sierra
     sha256 "f243764e911fe4c056f782ebee8cd84316214d961b14322b4cedc92f60478d49" => :sierra
     sha256 "216442c844ddb2886e6877cd129fda3c589dadf8ac07572e6aa05c1c3cff4669" => :el_capitan
     sha256 "e6b364e203c882063362e4a0ef6e6482420ab57b1ec24699b6da31b50f792f14" => :yosemite
@@ -21,7 +22,7 @@ class Cpptest < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <assert.h>
       #include <cpptest.h>
 
@@ -40,7 +41,7 @@ class Cpptest < Formula
         return 0;
       }
     EOS
-    system ENV.cxx, "test.cpp", "-lcpptest", "-o", "test"
+    system ENV.cxx, "test.cpp", "-L#{lib}", "-lcpptest", "-o", "test"
     system "./test"
   end
 end

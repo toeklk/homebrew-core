@@ -1,32 +1,26 @@
 class Fpc < Formula
   desc "Free Pascal: multi-architecture Pascal compiler"
-  homepage "http://www.freepascal.org/"
-  url "https://downloads.sourceforge.net/project/freepascal/Source/3.0.0/fpc-3.0.0.source.tar.gz"
-  sha256 "46354862cefab8011bcfe3bc2942c435f96a8958b245c42e10283ec3e44be2dd"
+  homepage "https://www.freepascal.org/"
+  url "https://downloads.sourceforge.net/project/freepascal/Source/3.0.4/fpc-3.0.4.source.tar.gz"
+  sha256 "69b3b7667b72b6759cf27226df5eb54112ce3515ff5efb79d95ac14bac742845"
 
   bottle do
     cellar :any_skip_relocation
-    rebuild 2
-    sha256 "35b53c70f590c62145692322625cfd3a3701efb579e6ccc6b64a6983560617d2" => :sierra
-    sha256 "90bd14eab6b3f2acf161c6d80a4db97164ea42686a5d0cb8bf259c1ef3eeab27" => :el_capitan
-    sha256 "5bb1a1b7dcc76bb2fd5457df3a811f2db4f0c536ce5d1210aec64f27fd02ce44" => :yosemite
+    sha256 "82a121567c94e70b63f92873a6a269cb612a15b344d77218b88444febb3d4924" => :high_sierra
+    sha256 "c7ba05c852bbd1a5737f6b020239353708188f545fe9700159c5b8484fcfc568" => :sierra
+    sha256 "cae838ddb6452c345bcd3779c057a152071c12db666fe2d8a934c78c3d210244" => :el_capitan
   end
 
   resource "bootstrap" do
-    url "https://downloads.sourceforge.net/project/freepascal/Bootstrap/2.6.4/universal-macosx-10.5-ppcuniversal.tar.bz2"
-    sha256 "e7243e83e6a04de147ebab7530754ec92cd1fbabbc9b6b00a3f90a796312f3e9"
+    url "https://downloads.sourceforge.net/project/freepascal/Bootstrap/3.0.0/x86_64-macosx-10.7-ppcx64.tar.bz2"
+    sha256 "a67ef5def356d122a4692e21b209c328f6d46deef4539f4d4506c3dc1eecb4b0"
   end
 
   def install
-    # The bootstrap binary does not recognize anything above 10.9
-    # http://bugs.freepascal.org/view.php?id=30711
-    # https://github.com/Homebrew/homebrew-core/issues/5732
-    ENV["MACOSX_DEPLOYMENT_TARGET"] = "10.9"
-
     fpc_bootstrap = buildpath/"bootstrap"
     resource("bootstrap").stage { fpc_bootstrap.install Dir["*"] }
 
-    fpc_compiler = fpc_bootstrap/"ppcuniversal"
+    fpc_compiler = fpc_bootstrap/"ppcx64"
     system "make", "build", "PP=#{fpc_compiler}"
     system "make", "install", "PP=#{fpc_compiler}", "PREFIX=#{prefix}"
 
@@ -40,7 +34,7 @@ class Fpc < Formula
   end
 
   test do
-    hello = <<-EOS.undent
+    hello = <<~EOS
       program Hello;
       uses GL;
       begin

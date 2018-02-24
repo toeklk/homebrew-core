@@ -1,8 +1,8 @@
 class ZshCompletions < Formula
   desc "Additional completion definitions for zsh"
   homepage "https://github.com/zsh-users/zsh-completions"
-  url "https://github.com/zsh-users/zsh-completions/archive/0.22.0.tar.gz"
-  sha256 "cfb8c4af39c3df4c2d087f5829dc6f0c1cfcc2b2110bcc7e47b59cff5615a79f"
+  url "https://github.com/zsh-users/zsh-completions/archive/0.27.0.tar.gz"
+  sha256 "9b817b73e709aca0e7e5a41471b5b63467d1e7aa69ef755b6ce39b99e61cd47a"
 
   head "https://github.com/zsh-users/zsh-completions.git"
 
@@ -13,28 +13,28 @@ class ZshCompletions < Formula
   end
 
   def caveats
-    <<-EOS.undent
-    To activate these completions, add the following to your .zshrc:
+    <<~EOS
+      To activate these completions, add the following to your .zshrc:
 
-      fpath=(#{HOMEBREW_PREFIX}/share/zsh-completions $fpath)
+        fpath=(#{HOMEBREW_PREFIX}/share/zsh-completions $fpath)
 
-    You may also need to force rebuild `zcompdump`:
+      You may also need to force rebuild `zcompdump`:
 
-      rm -f ~/.zcompdump; compinit
+        rm -f ~/.zcompdump; compinit
 
-    Additionally, if you receive "zsh compinit: insecure directories" warnings when attempting
-    to load these completions, you may need to run this:
+      Additionally, if you receive "zsh compinit: insecure directories" warnings when attempting
+      to load these completions, you may need to run this:
 
-      chmod go-w '#{HOMEBREW_PREFIX}/share'
+        chmod go-w '#{HOMEBREW_PREFIX}/share'
     EOS
   end
 
   test do
-    (testpath/".zshrc").write <<-EOS.undent
-      fpath=(#{HOMEBREW_PREFIX}/share/zsh-completions $fpath)
-      autoload -U compinit
-      compinit
+    (testpath/"test.zsh").write <<~EOS
+      fpath=(#{pkgshare} $fpath)
+      autoload _ack
+      which _ack
     EOS
-    system "/bin/zsh", "--login", "-i", "-c", "which _ack"
+    assert_match /^_ack/, shell_output("/bin/zsh test.zsh")
   end
 end

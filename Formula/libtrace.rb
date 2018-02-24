@@ -1,16 +1,17 @@
 class Libtrace < Formula
   desc "Library for trace processing supporting multiple inputs"
-  homepage "http://research.wand.net.nz/software/libtrace.php"
-  url "http://research.wand.net.nz/software/libtrace/libtrace-3.0.22.tar.bz2"
-  sha256 "b8bbaa2054c69cc8f93066143e2601c09c8ed56e75c6e5e4e2c115d07952f8f8"
+  homepage "https://research.wand.net.nz/software/libtrace.php"
+  url "https://research.wand.net.nz/software/libtrace/libtrace-4.0.2.tar.bz2"
+  sha256 "ff3960bd45cb3d123d58b134e9dffcd529dca49f0fb4e3b278426c51ff51f32c"
 
   bottle do
-    sha256 "6447919d8e8463b070e05b6b28c6ff18fb0378dd89cc01b61eba1a6ffd604a27" => :sierra
-    sha256 "410e2bc8e025bed1cc3011ad7bbf0b0fbf1e585147fcbb64c237f3cd205fb558" => :el_capitan
-    sha256 "3b4b9e487c60283fa6de2def172493fbc5e78a856174ccfd8a2850adcf734dcc" => :yosemite
-    sha256 "1ad2c47d6b52a7b40760242f40e40f28730ef3baa26868a1f9300fece0532e0f" => :mavericks
-    sha256 "1e1115e10b3c226a49a3c29187327ba39cc5a83941736ed48a5cf866fae3da69" => :mountain_lion
+    sha256 "427c70d469e28a5ee2ac9dfec67610897b3eda93b65dc06e0c599e968130eafb" => :high_sierra
+    sha256 "900785f6ed8a1df032b06ca6047871703fb0b3a8c7744eceeaa589f60bf9cf9e" => :sierra
+    sha256 "1c25ab0cf4366d149611d8e29b613f1f4f827078427c5659dddceeb4dfd9440a" => :el_capitan
   end
+
+  depends_on "openssl"
+  depends_on "wandio"
 
   def install
     system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}"

@@ -1,15 +1,15 @@
 class Cmake < Formula
   desc "Cross-platform make"
   homepage "https://www.cmake.org/"
-  url "https://cmake.org/files/v3.7/cmake-3.7.0.tar.gz"
-  sha256 "ed63e05c41aeb6c036e503114ab15847f29c312f9f21f5f1a7060a4b4ec2fb31"
+  url "https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz"
+  sha256 "80d0faad4ab56de07aa21a7fc692c88c4ce6156d42b0579c6962004a70a3218b"
   head "https://cmake.org/cmake.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "00ad8d08a44f8a1784290bc4cfb60181ede4ef3ee7e148161fd097d1ffb4807d" => :sierra
-    sha256 "741f4c7869781dbdb87709a83c1476a7bb74962106f2894c21d809f48c72310b" => :el_capitan
-    sha256 "3c44c20cb51f6151d5ad0eeb7ab026d2b2cc5a70cfdc9acd5e339a56cc54aa79" => :yosemite
+    sha256 "7ad98f403e21c76cfd0789d83acffce92cb29aad3d2ea9b4fe8b2c05de8f33b9" => :high_sierra
+    sha256 "878aeaeda98df7a8940bdccc42b7ff22195980a62410428f8febc7cd03a1c681" => :sierra
+    sha256 "05efc0e612c16eabdf8e509545d18a7e1016de2c6cb6deb597b49ffd590dcc0a" => :el_capitan
   end
 
   option "without-docs", "Don't build man pages"
@@ -21,7 +21,11 @@ class Cmake < Formula
   # CMake is built with Qt support and Qt is built with MySQL support as MySQL uses CMake.
   # For the GUI application please instead use `brew cask install cmake`.
 
+  needs :cxx11
+
   def install
+    ENV.cxx11 if MacOS.version < :mavericks
+
     args = %W[
       --prefix=#{prefix}
       --no-system-libs
@@ -31,14 +35,8 @@ class Cmake < Formula
       --mandir=/share/man
       --system-zlib
       --system-bzip2
+      --system-curl
     ]
-
-    # https://github.com/Homebrew/legacy-homebrew/issues/45989
-    if MacOS.version <= :lion
-      args << "--no-system-curl"
-    else
-      args << "--system-curl"
-    end
 
     if build.with? "docs"
       # There is an existing issue around macOS & Python locale setting
@@ -47,7 +45,7 @@ class Cmake < Formula
       args << "--sphinx-man" << "--sphinx-build=#{Formula["sphinx-doc"].opt_bin}/sphinx-build"
     end
 
-    system "./bootstrap", *args
+    system "./bootstrap", *args, "--", "-DCMAKE_BUILD_TYPE=Release"
     system "make"
     system "make", "install"
 

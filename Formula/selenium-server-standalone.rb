@@ -1,8 +1,8 @@
 class SeleniumServerStandalone < Formula
   desc "Browser automation for testing purposes"
   homepage "http://seleniumhq.org/"
-  url "https://selenium-release.storage.googleapis.com/3.0/selenium-server-standalone-3.0.1.jar"
-  sha256 "1537b6d1b259191ed51586378791bc62b38b0cb18ae5ba1433009dc365e9f26b"
+  url "https://selenium-release.storage.googleapis.com/3.9/selenium-server-standalone-3.9.1.jar"
+  sha256 "b2445dab8ee073412d90aa6483a52a6362f6b4f049b3d7c45288481577203440"
 
   bottle :unneeded
 
@@ -13,7 +13,7 @@ class SeleniumServerStandalone < Formula
 
   plist_options :manual => "selenium-server -port 4444"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

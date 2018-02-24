@@ -1,15 +1,15 @@
 class Arping < Formula
   desc "Utility to check whether MAC addresses are already taken on a LAN"
   homepage "https://github.com/ThomasHabets/arping"
-  url "https://github.com/ThomasHabets/arping/archive/arping-2.17.tar.gz"
-  sha256 "ecb509561b33af07d9fae5401b5eef9a4ef4d3ffc9c906c1274aad172668907d"
+  url "https://github.com/ThomasHabets/arping/archive/arping-2.19.tar.gz"
+  sha256 "b1477892e19687a99fa4fb42e147d7478d96d0d3fc78ca4faade6392452414db"
 
   bottle do
     cellar :any
-    sha256 "82fcfcc23c7dbf049f3c93e91676c966914562300b4aedf5df23dc4346371a28" => :sierra
-    sha256 "a005ba2601051efc8d3f98ceccbb8cf77a8a08a5f1210e28bf5066b3f507bcad" => :el_capitan
-    sha256 "e92439451f6a02fa3b0898f077a2bd1b82dcced99336bf386d6dc56330de7bd4" => :yosemite
-    sha256 "9bada1138582acdab04c574ef4056cf8a0be259ba2bbfcd8b4db50aa4c18587f" => :mavericks
+    sha256 "10814e4189c25dd909346c39ab9b504244596a8b09dffc9d7ca91272decfded5" => :high_sierra
+    sha256 "fff7a3fa700564778114ad421446a48fedd06e252074c6be66e2c4102e538ec4" => :sierra
+    sha256 "e60c8221e95db34d5d2a66039d229e242f194b05e22aa4ebdefd7b06cd00fb74" => :el_capitan
+    sha256 "cca37d86bc0c93413cd9b1d9259113c21e7b512c780f1e74da71f981e3986c8b" => :yosemite
   end
 
   depends_on "autoconf" => :build

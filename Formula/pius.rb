@@ -3,21 +3,19 @@ class Pius < Formula
 
   desc "PGP individual UID signer"
   homepage "https://www.phildev.net/pius/"
-  url "https://github.com/jaymzh/pius/archive/v2.2.2.tar.gz"
-  sha256 "2a3a7f1c4ecaa7df46fa7c791387f2de5ef377a8f769fc325ba067d225ebfc79"
+  url "https://github.com/jaymzh/pius/archive/v2.2.4.tar.gz"
+  sha256 "876763c351ba8538d0c614c31f1873b5e821425927631139c83378532215516c"
   revision 1
-
   head "https://github.com/jaymzh/pius.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "19db3d8573539c391c13e4f168c61ccc07a8d275e397207e51d04fee4a2f695f" => :sierra
-    sha256 "47a73a40992522c5834b81bc8f6888db64b2ae381e6e2287fa1e1fac366347b7" => :el_capitan
-    sha256 "8d9e44165fa23aa04484118977188186ff0becd0fbf6cbd498ea88121322ac15" => :yosemite
-    sha256 "8879e7d0fc7970e838091dfaed8b1d36676528cc185cdda4908c63858b8b124b" => :mavericks
+    sha256 "3c04e58f291f4185c98d6cde4708c9b3f8c08563ba4d4555fcb32809b5c75916" => :high_sierra
+    sha256 "2fdc3d5b4fce9b55ab0c3b468ffd70ecb2e0f656a80609fb3178848082f83b27" => :sierra
+    sha256 "e0345dc516c520f5c2c14b1f06b7f147375ac91676991a47e523de0af4ce2e64" => :el_capitan
   end
 
-  depends_on :gpg => :run
+  depends_on "gnupg"
 
   def install
     # Replace hardcoded gpg path (WONTFIX)
@@ -25,7 +23,7 @@ class Pius < Formula
     virtualenv_install_with_resources
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     The path to gpg is hardcoded in pius as `/usr/bin/env gpg`.
     You can specify a different path by editing ~/.pius:
       gpg-path=/path/to/gpg

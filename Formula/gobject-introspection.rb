@@ -1,24 +1,19 @@
 class GobjectIntrospection < Formula
   desc "Generate introspection data for GObject libraries"
   homepage "https://live.gnome.org/GObjectIntrospection"
-  url "https://download.gnome.org/sources/gobject-introspection/1.50/gobject-introspection-1.50.0.tar.xz"
-  sha256 "1c6597c666f543c70ef3d7c893ab052968afae620efdc080c36657f4226337c5"
+  url "https://download.gnome.org/sources/gobject-introspection/1.54/gobject-introspection-1.54.1.tar.xz"
+  sha256 "b88ded5e5f064ab58a93aadecd6d58db2ec9d970648534c63807d4f9a7bb877e"
 
   bottle do
-    sha256 "c50540846431e361498c8912c8b6852c1547f94458cb080cad9754ac9ffa4129" => :sierra
-    sha256 "2999c2c6259c37a49600acd02f7330841756ee71df39fd8e8a88e406881a95f7" => :el_capitan
-    sha256 "cb851182a1a2c6bdd29ed88b8f186fc7f2453e0b3cbf2c36409e80c00c3a100c" => :yosemite
+    sha256 "af8872721600cf3b5c033bad125fcef08a59e3ddfde4093fe6bc6bce5331e004" => :high_sierra
+    sha256 "4f07bc2e12b9015a670a999744d8201c575ea9d49421ec617507aa01407d841e" => :sierra
+    sha256 "88736baecfbab3cf709cb6b09de85f9e4a4382ac1d1c59f33af22c522dab81a4" => :el_capitan
   end
-
-  option :universal
 
   depends_on "pkg-config" => :run
   depends_on "glib"
   depends_on "cairo"
   depends_on "libffi"
-  # System python in Mavericks or below has bug in distutils/sysconfig.py, which breaks the install.
-  #    Caught exception: <type 'exceptions.AttributeError'> AttributeError("'NoneType' object has no attribute 'get'",)
-  #    > /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/distutils/sysconfig.py(171)customize_compiler()
   depends_on "python" if MacOS.version <= :mavericks
 
   resource "tutorial" do
@@ -28,12 +23,12 @@ class GobjectIntrospection < Formula
 
   def install
     ENV["GI_SCANNER_DISABLE_CACHE"] = "true"
-    ENV.universal_binary if build.universal?
     inreplace "giscanner/transformer.py", "/usr/share", "#{HOMEBREW_PREFIX}/share"
     inreplace "configure" do |s|
       s.change_make_var! "GOBJECT_INTROSPECTION_LIBDIR", "#{HOMEBREW_PREFIX}/lib"
     end
 
+    ENV.prepend_path "PATH", Formula["python"].opt_libexec/"bin" if MacOS.version <= :mavericks
     system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}", "PYTHON=python"
     system "make"
     system "make", "install"
@@ -43,6 +38,6 @@ class GobjectIntrospection < Formula
     ENV.prepend_path "PKG_CONFIG_PATH", Formula["libffi"].opt_lib/"pkgconfig"
     resource("tutorial").stage testpath
     system "make"
-    assert (testpath/"Tut-0.1.typelib").exist?
+    assert_predicate testpath/"Tut-0.1.typelib", :exist?
   end
 end

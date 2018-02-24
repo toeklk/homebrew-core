@@ -1,15 +1,15 @@
 class GitArchiveAll < Formula
   desc "Archive a project and its submodules"
   homepage "https://github.com/Kentzo/git-archive-all"
-  url "https://github.com/Kentzo/git-archive-all/archive/1.15.tar.gz"
-  sha256 "6ee01d0cc6e25c8536c748e1661b7890ab4c05324e0386a7d46c663c3658bfba"
+  url "https://github.com/Kentzo/git-archive-all/archive/1.17.1.tar.gz"
+  sha256 "c5fb6de7fd105dbe25cce7500e5d3032a5530467848c5b6464224e327a954de6"
   head "https://github.com/Kentzo/git-archive-all.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "408658894300a2f7ae5026a96e59b3ed80525de3af038824b13c06b61a24fdfa" => :sierra
-    sha256 "408658894300a2f7ae5026a96e59b3ed80525de3af038824b13c06b61a24fdfa" => :el_capitan
-    sha256 "408658894300a2f7ae5026a96e59b3ed80525de3af038824b13c06b61a24fdfa" => :yosemite
+    sha256 "d4bfe6683cec5c08fbd701d4b431256cf42315746260e53a4655127e89df9048" => :high_sierra
+    sha256 "d4bfe6683cec5c08fbd701d4b431256cf42315746260e53a4655127e89df9048" => :sierra
+    sha256 "d4bfe6683cec5c08fbd701d4b431256cf42315746260e53a4655127e89df9048" => :el_capitan
   end
 
   def install
@@ -17,7 +17,7 @@ class GitArchiveAll < Formula
   end
 
   test do
-    (testpath/".gitconfig").write <<-EOS.undent
+    (testpath/".gitconfig").write <<~EOS
       [user]
         name = Real Person
         email = notacat@hotmail.cat

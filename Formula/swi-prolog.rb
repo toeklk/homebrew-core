@@ -1,19 +1,18 @@
 class SwiProlog < Formula
   desc "ISO/Edinburgh-style Prolog interpreter"
   homepage "http://www.swi-prolog.org/"
-  url "http://www.swi-prolog.org/download/stable/src/swipl-7.2.3.tar.gz"
-  sha256 "43657d51b7c5887bc2d2bced50a9822b86a08a6841399b8e76ee877f51d646b5"
-  revision 1
+  url "http://www.swi-prolog.org/download/stable/src/swipl-7.6.4.tar.gz"
+  sha256 "2d3d7aabd6d99a02dcc2da5d7604e3500329e541c6f857edc5aa06a3b1267891"
 
   bottle do
-    sha256 "549bcf8dd84fbcd140eecf80a43d01890046fff67094fd7da40e307ada01c61c" => :sierra
-    sha256 "39b666fe76f2262ee5fb42c06be30da14ad3171dd736cb09850e303e0ae5a0ca" => :el_capitan
-    sha256 "f3dba5bcde11ddc17feea987c1008b9d5800b6c7d48023cfa1e1d56aa3b90a25" => :yosemite
+    sha256 "7a1a76d4b9160e0fea1899a8af0dcd448f71efef8476b1732d75e8d0339ac419" => :high_sierra
+    sha256 "af00bfcc0da68a800dd50e608aabc6620db00de1a7bf1b986a7bc49ae58ea234" => :sierra
+    sha256 "2016d9b076b252805f48f705181d03cd26183b0f74a026c029cd34f9e8afb79d" => :el_capitan
   end
 
   devel do
-    url "http://www.swi-prolog.org/download/devel/src/swipl-7.3.30.tar.gz"
-    sha256 "6cbb1451466f449cf06c6855300b3b5f179e474a5dddf0e2531c456316496cec"
+    url "http://www.swi-prolog.org/download/devel/src/swipl-7.7.9.tar.gz"
+    sha256 "2d4b9c9b346c2d6df42e1cf399dee5cf1396ec381391292c65880e64a376ef97"
   end
 
   head do
@@ -39,17 +38,9 @@ class SwiProlog < Formula
     depends_on "jpeg"
   end
 
-  fails_with :llvm do
-    build 2335
-    cause "Exported procedure chr_translate:chr_translate_line_info/3 is not defined"
-  end
-
   def install
-    # The archive package hard-codes a check for MacPort libarchive
-    # Replace this with a check for Homebrew's libarchive, or nowhere
     if build.with? "libarchive"
-      inreplace "packages/archive/configure.in", "/opt/local",
-                                                 Formula["libarchive"].opt_prefix
+      ENV["ARPREFIX"] = Formula["libarchive"].opt_prefix
     else
       ENV.append "DISABLE_PKGS", "archive"
     end
@@ -79,7 +70,7 @@ class SwiProlog < Formula
   end
 
   test do
-    (testpath/"test.pl").write <<-EOS.undent
+    (testpath/"test.pl").write <<~EOS
       test :-
           write('Homebrew').
     EOS

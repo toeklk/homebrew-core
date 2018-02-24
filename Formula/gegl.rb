@@ -1,14 +1,13 @@
 class Gegl < Formula
   desc "Graph based image processing framework"
   homepage "http://www.gegl.org/"
-  url "https://download.gimp.org/pub/gegl/0.3/gegl-0.3.10.tar.bz2"
-  mirror "https://mirrors.kernel.org/debian/pool/main/g/gegl/gegl_0.3.10.orig.tar.bz2"
-  sha256 "26b4d6d0a8edb358ca2fbc097f9f97eec9d74e0ffe42f89fa1aff201728023d9"
+  url "https://download.gimp.org/pub/gegl/0.3/gegl-0.3.28.tar.bz2"
+  sha256 "152f87604a5a191775329dfb63764efa1d5c32403d1438da68e242f96b7d23ff"
 
   bottle do
-    sha256 "bbd227d4b5387e4a2531ba9f832230ea1101c0bc28d8dacabdc230f5c1f60b3a" => :sierra
-    sha256 "1f66b826e5c277f955fc1d57ea0d742c362e7b1f7ba89622807f34c83c449574" => :el_capitan
-    sha256 "c034ab5704fc55d27fd07fb8576ed3478a595c44809eadf226f35751c949696d" => :yosemite
+    sha256 "7580d3d2bbe103eaf350960b8a22ce5f63c8c029bab9dd861ca0fbf89376dd6d" => :high_sierra
+    sha256 "135f49765e4f34b06f8dbac9a84a7d35f53846fe009a8389564f0b33ce0d5d4e" => :sierra
+    sha256 "9e5f682bba155c4e95dd04cf42af1a4d7d59081e05007e4fc58ae465bdbab4ee" => :el_capitan
   end
 
   head do
@@ -20,48 +19,41 @@ class Gegl < Formula
     depends_on "libtool" => :build
   end
 
-  option :universal
-
   depends_on "intltool" => :build
   depends_on "pkg-config" => :build
   depends_on "babl"
   depends_on "gettext"
   depends_on "glib"
+  depends_on "jpeg"
   depends_on "json-glib"
   depends_on "libpng"
-  depends_on "jpeg"
   depends_on "cairo" => :optional
   depends_on "librsvg" => :optional
   depends_on "lua" => :optional
   depends_on "pango" => :optional
   depends_on "sdl" => :optional
 
-  def install
-    # ./configure breaks when optimization is enabled with llvm
-    ENV.no_optimization if ENV.compiler == :llvm
+  conflicts_with "coreutils", :because => "both install `gcut` binaries"
 
-    argv = %W[
+  def install
+    args = %W[
       --disable-debug
       --disable-dependency-tracking
       --prefix=#{prefix}
       --disable-docs
+      --without-jasper
+      --without-umfpack
     ]
 
-    if build.universal?
-      ENV.universal_binary
-      # ffmpeg's formula is currently not universal-enabled
-      argv << "--without-libavformat"
-
-      opoo "Compilation may fail at gegl-cpuaccel.c using gcc for a universal build" if ENV.compiler == :gcc
-    end
+    args << "--without-cairo" if build.without? "cairo"
 
     system "./autogen.sh" if build.head?
-    system "./configure", *argv
+    system "./configure", *args
     system "make", "install"
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gegl.h>
       gint main(gint argc, gchar **argv) {
         gegl_init(&argc, &argv);

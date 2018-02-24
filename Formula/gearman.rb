@@ -1,30 +1,25 @@
 class Gearman < Formula
   desc "Application framework to farm out work to other machines or processes"
   homepage "http://gearman.org/"
-  url "https://launchpad.net/gearmand/1.2/1.1.12/+download/gearmand-1.1.12.tar.gz"
-  sha256 "973d7a3523141a84c7b757c6f243febbc89a3631e919b532c056c814d8738acb"
+  url "https://github.com/gearman/gearmand/releases/download/1.1.18/gearmand-1.1.18.tar.gz"
+  sha256 "d789fa24996075a64c5af5fd2adef10b13f77d71f7d44edd68db482b349c962c"
 
   bottle do
-    rebuild 3
-    sha256 "50c9bebcb8f62390c795106c73e8aeba07e55a5cfa38bd7f64a8e674a6d74855" => :sierra
-    sha256 "041a348b18932ea911a56b8a5db68eb1d939f7a0c4d87ea470b461a4ea7ff5b6" => :el_capitan
-    sha256 "7218d3a80766394055de6107d84f84d32f383a9ba0f41795ce849c7db6c05541" => :yosemite
+    sha256 "ecabdc718b87f1c8772a86c5cdcbfb69c538891c842132ab2a88b92fb7ebe176" => :high_sierra
+    sha256 "1c1de51b9c2445c05df372a9e0f5c7d8595b4160df0515b96d014925e3e85ac8" => :sierra
+    sha256 "b2d1ba15ccdf0688decb8ecb0503ffa9fe507dccb5828de1007f130266ef98b1" => :el_capitan
   end
 
   option "with-mysql", "Compile with MySQL persistent queue enabled"
   option "with-postgresql", "Compile with Postgresql persistent queue enabled"
 
-  # https://bugs.launchpad.net/gearmand/+bug/1318151 - Still ongoing as of 1.1.12
-  # https://bugs.launchpad.net/gearmand/+bug/1236815 - Still ongoing as of 1.1.12
-  # https://github.com/Homebrew/homebrew/issues/33246 - Still ongoing as of 1.1.12
-  patch :DATA
-
   depends_on "pkg-config" => :build
+  depends_on "sphinx-doc" => :build
   depends_on "boost"
   depends_on "libevent"
   depends_on "libpqxx" if build.with? "postgresql"
-  depends_on :mysql => :optional
-  depends_on :postgresql => :optional
+  depends_on "mysql" => :optional
+  depends_on "postgresql" => :optional
   depends_on "hiredis" => :optional
   depends_on "libmemcached" => :optional
   depends_on "openssl" => :optional
@@ -32,6 +27,10 @@ class Gearman < Formula
   depends_on "tokyo-cabinet" => :optional
 
   def install
+    # Work around "error: no member named 'signbit' in the global namespace"
+    # encountered when trying to detect boost regex in configure
+    ENV.delete("SDKROOT") if DevelopmentTools.clang_build_version >= 900
+
     # https://bugs.launchpad.net/gearmand/+bug/1368926
     Dir["tests/**/*.cc", "libtest/main.cc"].each do |test_file|
       next unless /std::unique_ptr/ =~ File.read(test_file)
@@ -82,7 +81,7 @@ class Gearman < Formula
 
   plist_options :manual => "gearmand -d"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
     "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -98,74 +97,8 @@ class Gearman < Formula
     </plist>
     EOS
   end
+
+  test do
+    assert_match /gearman\s*Error in usage/, shell_output("#{bin}/gearman --version 2>&1", 1)
+  end
 end
-
-__END__
-diff --git a/libgearman-1.0/gearman.h b/libgearman-1.0/gearman.h
-index 7f6d5e7..8f7a8f0 100644
---- a/libgearman-1.0/gearman.h
-+++ b/libgearman-1.0/gearman.h
-@@ -50,7 +50,11 @@
- #endif
- 
- #ifdef __cplusplus
-+#ifdef _LIBCPP_VERSION
- #  include <cinttypes>
-+#else
-+#  include <tr1/cinttypes>
-+#endif
- #  include <cstddef>
- #  include <cstdlib>
- #  include <ctime>
-
-diff --git a/libgearman/byteorder.cc b/libgearman/byteorder.cc
-index 674fed9..96f0650 100644
---- a/libgearman/byteorder.cc
-+++ b/libgearman/byteorder.cc
-@@ -65,6 +65,8 @@ static inline uint64_t swap64(uint64_t in)
- }
- #endif
- 
-+#ifndef HAVE_HTONLL
-+
- uint64_t ntohll(uint64_t value)
- {
-   return swap64(value);
-@@ -74,3 +76,5 @@ uint64_t htonll(uint64_t value)
- {
-   return swap64(value);
- }
-+
-+#endif
-\ No newline at end of file
-diff --git a/libgearman/client.cc b/libgearman/client.cc
-index 3db2348..4363b36 100644
---- a/libgearman/client.cc
-+++ b/libgearman/client.cc
-@@ -599,7 +599,7 @@ gearman_return_t gearman_client_add_server(gearman_client_st *client_shell,
-   {
-     Client* client= client_shell->impl();
- 
--    if (gearman_connection_create(client->universal, host, port) == false)
-+    if (gearman_connection_create(client->universal, host, port) == NULL)
-     {
-       assert(client->error_code() != GEARMAN_SUCCESS);
-       return client->error_code();
-@@ -614,7 +614,7 @@ gearman_return_t gearman_client_add_server(gearman_client_st *client_shell,
- 
- gearman_return_t Client::add_server(const char *host, const char* service_)
- {
--  if (gearman_connection_create(universal, host, service_) == false)
-+  if (gearman_connection_create(universal, host, service_) == NULL)
-   {
-     assert(error_code() != GEARMAN_SUCCESS);
-     return error_code();
-@@ -946,7 +946,7 @@ gearman_return_t gearman_client_job_status(gearman_client_st *client_shell,
-       *denominator= do_task->impl()->denominator;
-     }
- 
--    if (is_known == false and is_running == false)
-+    if (! is_known and ! is_running)
-     {
-       if (do_task->impl()->options.is_running) 
-       {

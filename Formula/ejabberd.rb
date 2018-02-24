@@ -1,13 +1,13 @@
 class Ejabberd < Formula
   desc "XMPP application server"
   homepage "https://www.ejabberd.im"
-  url "https://www.process-one.net/downloads/ejabberd/16.09/ejabberd-16.09.tgz"
-  sha256 "7b44ab3af3310ca73624c47b65cf30a651d5a1398413e8af51c610d788fb8f14"
+  url "https://www.process-one.net/downloads/ejabberd/18.01/ejabberd-18.01.tgz"
+  sha256 "c632b29abbd6db73433a9a4bed77191529867072e204e29a1c49f0472bb22206"
 
   bottle do
-    sha256 "99fa482b8b0a05e93f31570cd495e8f9223c709e791df7e7f7b1fa5b0bf84faf" => :sierra
-    sha256 "3001214ca51ed9bb0f5b635b814f2bd664c6e7cd86d607d21e23e314f936f40e" => :el_capitan
-    sha256 "e2db4f46d85783f1d39d4acfca9bb6667dde47f463941e5efbda169a2487999b" => :yosemite
+    sha256 "af7324ea923072867e72ed9cf2f79739e68d45f8fc418c04581befceeac925eb" => :high_sierra
+    sha256 "a5c435eacebfe61d337c97b4dad547408fc74e85bb40a229324cd89ed461a61c" => :sierra
+    sha256 "cce65e1c3034d0a71d18fb112e39f683b46f6782552dbca91c03d3dabc6f7f17" => :el_capitan
   end
 
   head do
@@ -17,10 +17,9 @@ class Ejabberd < Formula
     depends_on "autoconf" => :build
   end
 
-  option "32-bit"
-
   depends_on "openssl"
   depends_on "erlang"
+  depends_on "gd"
   depends_on "libyaml"
   # for CAPTCHA challenges
   depends_on "imagemagick" => :optional
@@ -29,10 +28,6 @@ class Ejabberd < Formula
     ENV["TARGET_DIR"] = ENV["DESTDIR"] = "#{lib}/ejabberd/erlang/lib/ejabberd-#{version}"
     ENV["MAN_DIR"] = man
     ENV["SBIN_DIR"] = sbin
-
-    if build.build_32_bit?
-      ENV.append %w[CFLAGS LDFLAGS], "-arch #{Hardware::CPU.arch_32_bit}"
-    end
 
     args = ["--prefix=#{prefix}",
             "--sysconfdir=#{etc}",
@@ -45,6 +40,8 @@ class Ejabberd < Formula
     system "./autogen.sh" if build.head?
     system "./configure", *args
     system "make"
+
+    ENV.deparallelize
     system "make", "install"
 
     (etc/"ejabberd").mkpath
@@ -55,7 +52,7 @@ class Ejabberd < Formula
     (var/"spool/ejabberd").mkpath
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     If you face nodedown problems, concat your machine name to:
       /private/etc/hosts
     after 'localhost'.
@@ -64,7 +61,7 @@ class Ejabberd < Formula
 
   plist_options :manual => "#{HOMEBREW_PREFIX}/sbin/ejabberdctl start"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

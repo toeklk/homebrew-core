@@ -1,16 +1,16 @@
 class Re2 < Formula
   desc "Alternative to backtracking PCRE-style regular expression engines"
   homepage "https://github.com/google/re2"
-  url "https://github.com/google/re2/archive/2016-11-01.tar.gz"
-  version "20161101"
-  sha256 "01ee949f03e1c4057dc533cf139f967fb1b427015769d53b9ee07757631e9669"
+  url "https://github.com/google/re2/archive/2018-02-01.tar.gz"
+  version "20180201"
+  sha256 "c8ab833081c9766ef4e4d1e6397044ff3b20e42be109084b50d49c161f876184"
   head "https://github.com/google/re2.git"
 
   bottle do
     cellar :any
-    sha256 "a405751dc11641db25ca535d5eb9bc6ceb2f31055ec3d0d7e9655a8ad0cb2634" => :sierra
-    sha256 "d1435a3e4bf75166f2b68409fc77e003da29ab69cdf6395122bbbe4a0a3062df" => :el_capitan
-    sha256 "a4b8fd1bbff22f1552f88eb7694ac89caf8ce60695e5f5452a9bd7131e6f3e0c" => :yosemite
+    sha256 "3aaaba4cf90743849818298a2dd831d2a64b350d9a31bcb888c17d071b30db6b" => :high_sierra
+    sha256 "d1cb01d0c5a8e53a9cd2ce8595af2b6ee9528f7f305c91e069153a020d44cc86" => :sierra
+    sha256 "06cc788ba640a13a851b20505f4dd53bf44768683f64c1465ff99092a2213bef" => :el_capitan
   end
 
   needs :cxx11
@@ -19,13 +19,13 @@ class Re2 < Formula
     ENV.cxx11
 
     system "make", "install", "prefix=#{prefix}"
-    system "install_name_tool", "-id", "#{lib}/libre2.0.dylib", "#{lib}/libre2.0.0.0.dylib"
+    MachO::Tools.change_dylib_id("#{lib}/libre2.0.0.0.dylib", "#{lib}/libre2.0.dylib")
     lib.install_symlink "libre2.0.0.0.dylib" => "libre2.0.dylib"
     lib.install_symlink "libre2.0.0.0.dylib" => "libre2.dylib"
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <re2/re2.h>
       #include <assert.h>
       int main() {

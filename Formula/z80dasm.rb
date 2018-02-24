@@ -1,15 +1,14 @@
 class Z80dasm < Formula
   desc "Disassembler for the Zilog Z80 microprocessor and compatibles"
   homepage "https://www.tablix.org/~avian/blog/articles/z80dasm/"
-  url "https://www.tablix.org/~avian/z80dasm/z80dasm-1.1.3.tar.gz"
-  sha256 "1d6966bf7bddd0965421455e666872607019cfa43352188f5580304dd1039539"
+  url "https://www.tablix.org/~avian/z80dasm/z80dasm-1.1.5.tar.gz"
+  sha256 "91ecbfa43e5a9c15665560668fb1a9e3f0455f28a6f7478450bd61ff56d6b96e"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "7dbd01ac629412d53a486ea01543607ed9b3ebf00be6afe988eaa336181747f0" => :sierra
-    sha256 "498234696c7e8e4549d7b58b5f7f4dc11b8b044aa9c5461ada53d81c481ff93f" => :el_capitan
-    sha256 "9e6fc296fe40b206a8fb2b298e6a60733c7327ea8df8780285bd9720b785c923" => :yosemite
-    sha256 "161e72a9b0508dc6ea20d0d0340b3b95d840c15a0e1253dd7d7e472952c67d19" => :mavericks
+    sha256 "aa3f2ab337305b4dcbb37e868fcc537e04cac5fd4a2af7c8548347965f26a226" => :high_sierra
+    sha256 "527e7f1cd02531e634745086a7b74eafa57fa8e1f676c3ad60d552f0d6d9ef20" => :sierra
+    sha256 "35be0cbdb1c9abc7277c740d7da130bb8b8f7bc50f744ae8a8ea3965a228b9ed" => :el_capitan
   end
 
   def install

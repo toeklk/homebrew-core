@@ -1,31 +1,46 @@
 class Gom < Formula
   desc "GObject wrapper around SQLite"
   homepage "https://wiki.gnome.org/Projects/Gom"
-  url "https://download.gnome.org/sources/gom/0.3/gom-0.3.2.tar.xz"
-  sha256 "bce8f0f94af6ff7847b853580ba6baebbab8ae531cedb0c78a5c473f39c758fd"
+  url "https://download.gnome.org/sources/gom/0.3/gom-0.3.3.tar.xz"
+  sha256 "ac57e34b5fe273ed306efaeabb346712c264e341502913044a782cdf8c1036d8"
+  revision 1
 
   bottle do
-    sha256 "10ba2ee65e74ce7a7da2e4671c090b01a65d3c2cbeab153c1e80b6caf3997abc" => :sierra
-    sha256 "c0d7ef477da47db79a99241bf4e514a74a43f2390c5c90b3a8eb11851f6a4b44" => :el_capitan
-    sha256 "060cf100046bd8bedf1ba4df90527754102fea42c7b20ff6147f813bd3c5fb8b" => :yosemite
-    sha256 "1c67b623bf29a0dabedf0cf2c686d1b22f3b28ff0a227fe96624754a14feb88f" => :mavericks
+    cellar :any
+    sha256 "6f7a96ec76e481f0e6af7954ee498d011f4cadb8e476be85f551104d9d8df0ca" => :high_sierra
+    sha256 "882d4995285571d08bc7a1579edc1d4b5407c6b14b3e7bd7066f6a9fc16f2f82" => :sierra
+    sha256 "fcc8ee964d6e9ba4df256f6375c0ff868cf6c67171cc5dfc2080662bc77cbbb0" => :el_capitan
   end
 
-  depends_on "pkg-config" => :build
-  depends_on "intltool" => :build
+  depends_on "meson" => :build
+  depends_on "ninja" => :build
+  depends_on "gdk-pixbuf"
+  depends_on "gettext"
   depends_on "glib"
   depends_on "gobject-introspection"
+  depends_on "py3cairo"
+  depends_on "pygobject3" => "with-python3"
+  depends_on "python3"
+  depends_on "sqlite"
 
   def install
-    system "./configure", "--disable-debug",
-                          "--disable-dependency-tracking",
-                          "--disable-silent-rules",
-                          "--prefix=#{prefix}"
-    system "make", "install"
+    ENV.refurbish_args
+
+    pyver = Language::Python.major_minor_version "python3"
+
+    # prevent sandbox violation
+    inreplace "bindings/python/meson.build",
+              "install_dir: pygobject_override_dir",
+              "install_dir: '#{lib}/python#{pyver}/site-packages'"
+
+    mkdir "build" do
+      system "meson", "--prefix=#{prefix}", ".."
+      system "ninja", "install"
+    end
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gom/gom.h>
 
       int main(int argc, char *argv[]) {

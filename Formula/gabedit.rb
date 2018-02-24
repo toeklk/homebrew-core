@@ -1,17 +1,16 @@
 class Gabedit < Formula
   desc "GUI to computational chemistry packages like Gamess-US, Gaussian, etc."
-  homepage "http://gabedit.sourceforge.net/"
-  url "https://downloads.sourceforge.net/project/gabedit/gabedit/Gabedit248/GabeditSrc248.tar.gz"
-  version "2.4.8"
-  sha256 "38d6437a18280387b46fd136f2201a73b33e45abde13fa802c64806b6b64e4d3"
-  revision 1
+  homepage "https://gabedit.sourceforge.io/"
+  url "https://downloads.sourceforge.net/project/gabedit/gabedit/Gabedit250/GabeditSrc250.tar.gz"
+  version "2.5.0"
+  sha256 "45cdde213a09294bbf2df5f324ea11fc4c4045b3f9d58e4d67979e6f071c7689"
 
   bottle do
     cellar :any
-    sha256 "76f03dc778e3379b2824c875c9eb344e8042c27fdf57f39576dcce78aa96dbb7" => :sierra
-    sha256 "e8f13bf6bf5744f3439604b74c1313817dbf148b63e039e54089c10d65a818ee" => :el_capitan
-    sha256 "86ef29773a913efbce0b04aef8e6abfe8c4849b02840f411f418e939da479c45" => :yosemite
-    sha256 "507caa30aad09047605ca4df857b98e2c2172145d9382e8ca156fd63eeec334a" => :mavericks
+    sha256 "5c4b24ec80ff5e567a7b50e4a2c62aad0d70009179534363bc8be60c66cc3484" => :high_sierra
+    sha256 "22d5d4524dae2675c9184b322c6554331112fd799d1a8466b9e9d6338ada7ca5" => :sierra
+    sha256 "2e8e35a860589f035a40ddde03bfabc6908308ec5fac3fcefeb1e0a8a5a0f053" => :el_capitan
+    sha256 "3dcde0ef2c31cc12898b477370d571d2091d8f2a1c858e8deb71a4fa8b52bf09" => :yosemite
   end
 
   depends_on "pkg-config" => :build
@@ -19,6 +18,15 @@ class Gabedit < Formula
   depends_on "gtkglext"
 
   def install
+    opengl_headers = MacOS.sdk_path/"System/Library/Frameworks/OpenGL.framework/Headers"
+    (buildpath/"brew_include").install_symlink opengl_headers => "GL"
+
+    inreplace "CONFIG" do |s|
+      s.gsub! "-lX11", ""
+      s.gsub! "-lpangox-1.0", ""
+      s.gsub! "GTKCFLAGS =", "GTKCFLAGS = -I#{buildpath}/brew_include"
+    end
+
     args = []
     args << "OMPLIB=" << "OMPCFLAGS=" if ENV.compiler == :clang
     system "make", *args
@@ -26,6 +34,6 @@ class Gabedit < Formula
   end
 
   test do
-    assert (bin/"gabedit").exist?
+    assert_predicate bin/"gabedit", :exist?
   end
 end

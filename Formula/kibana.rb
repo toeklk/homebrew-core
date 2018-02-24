@@ -4,54 +4,43 @@ class Kibana < Formula
   desc "Analytics and search dashboard for Elasticsearch"
   homepage "https://www.elastic.co/products/kibana"
   url "https://github.com/elastic/kibana.git",
-      :tag => "v5.0.1",
-      :revision => "2ee15d7ceb10d52bef0e5ee58d3f9c5a238cb786"
-
+      :tag => "v6.2.2",
+      :revision => "24d8d9d6e66efdf6c3686b47641b1a8513de6d3e"
   head "https://github.com/elastic/kibana.git"
 
   bottle do
-    sha256 "906ffb49faf564a1c50824d1cb0e655f2e3de7b850596d18d52f82da3e08c792" => :sierra
-    sha256 "ae6e58d6cf8218be1c9f3363be0544f5459af80187c775f44ac979beabe61406" => :el_capitan
-    sha256 "51a79d1969951e8d53e290e280ae6e94971b34bc80f4c4780e4e18e91d2c3219" => :yosemite
+    sha256 "6c87a2af00440c561cc7422740ffa85eed2336d00afb528eb41b937a976c7f14" => :high_sierra
+    sha256 "54aa514aa6c63020a323573d3fff3f73231bd981aa6ca5920e3dda36ad370c3c" => :sierra
+    sha256 "ba6031f2eb4dfedd446104ac5f4b45e35f2d2c28c5fa9b3abd6231231c7a20b2" => :el_capitan
   end
 
   resource "node" do
-    url "https://nodejs.org/dist/v7.1.0/node-v7.1.0.tar.xz" # N.B. includes vendored dependencies
-    sha256 "55ae831a2090e3af71b8f071dc5599922e5c752a2e40d77cbfd4a39d22cf4981"
+    url "https://github.com/nodejs/node.git",
+        :tag => "v6.12.2",
+        :revision => "381f5ec383dbb164cf3edd1a9de1811cf1cfdc65"
   end
 
   def install
     resource("node").stage do
       system "./configure", "--prefix=#{libexec}/node"
-      system "make", "test"
       system "make", "install"
     end
 
     # do not build packages for other platforms
-    platforms = Set.new(["darwin-x64", "linux-x64", "linux-x86", "windows-x86"])
-    if OS.mac? && Hardware::CPU.is_64_bit?
-      platform = "darwin-x64"
-    elsif OS.linux?
-      platform = Hardware::CPU.is_64_bit? ? "linux-x64" : "linux-x86"
-    else
-      raise "Installing Kibana via Homebrew is only supported on Darwin x86_64, Linux i386, Linux i686, and Linux x86_64"
-    end
-    platforms.delete(platform)
-    sub = platforms.to_a.join("|")
-    inreplace buildpath/"tasks/config/platforms.js", /('(#{sub})',?(?!;))/, "// \\1"
+    inreplace buildpath/"tasks/config/platforms.js", /('(linux-x64|windows-x64)',?(?!;))/, "// \\1"
 
     # trick the build into thinking we've already downloaded the Node.js binary
-    mkdir_p buildpath/".node_binaries/#{resource("node").version}/#{platform}"
+    mkdir_p buildpath/".node_binaries/#{resource("node").version}/darwin-x64"
 
     # set npm env and fix cache edge case (https://github.com/Homebrew/brew/pull/37#issuecomment-208840366)
     ENV.prepend_path "PATH", prefix/"libexec/node/bin"
-    Pathname.new("#{ENV["HOME"]}/.npmrc").write Language::Node.npm_cache_config
-    system "npm", "install", "--verbose"
+    system "npm", "install", "-ddd", "--build-from-source", "--#{Language::Node.npm_cache_config}"
     system "npm", "run", "build", "--", "--release", "--skip-os-packages", "--skip-archives"
 
-    prefix.install Dir["build/kibana-#{version}-#{platform.sub("x64", "x86_64")}/{bin,config,node_modules,optimize,package.json,src,webpackShims}"]
+    prefix.install Dir["build/kibana-#{version}-darwin-x86_64/{bin,config,node_modules,optimize,package.json,src,ui_framework,webpackShims}"]
 
     inreplace "#{bin}/kibana", %r{/node/bin/node}, "/libexec/node/bin/node"
+    inreplace "#{bin}/kibana-plugin", %r{/node/bin/node}, "/libexec/node/bin/node"
 
     cd prefix do
       inreplace "config/kibana.yml", "/var/run/kibana.pid", var/"run/kibana.pid"
@@ -66,7 +55,7 @@ class Kibana < Formula
     (prefix/"plugins").mkdir
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Config: #{etc}/kibana/
     If you wish to preserve your plugins upon upgrade, make a copy of
     #{opt_prefix}/plugins before upgrading, and copy it into the
@@ -76,7 +65,7 @@ class Kibana < Formula
 
   plist_options :manual => "kibana"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
     "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

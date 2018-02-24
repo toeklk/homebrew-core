@@ -1,14 +1,14 @@
 class ProtobufSwift < Formula
-  desc "Implementation of Protocol Buffers in Apple Swift."
+  desc "Implementation of Protocol Buffers in Swift"
   homepage "https://github.com/alexeyxo/protobuf-swift"
-  url "https://github.com/alexeyxo/protobuf-swift/archive/3.0.6.tar.gz"
-  sha256 "279c24886f5a88f332db2e0f745de55b6267e697ce4ba42f7d91566b6cf11be3"
+  url "https://github.com/alexeyxo/protobuf-swift/archive/4.0.1.tar.gz"
+  sha256 "098434ab76cc489c92100c0352d4476259737ed925d2c98d267848e7c8be80aa"
 
   bottle do
     cellar :any
-    sha256 "0a7d4ae9dc64460cb8a948e47109ff802198bea55f3c2506611a75b7926f16cd" => :sierra
-    sha256 "eaf517e7525e8a5968460229268c264d9c462f05caa4f09903ace835bff850a0" => :el_capitan
-    sha256 "7d3cf13a1ce4d89a4b07e40b2bf26ec115a0c6d0d9408b8a580583be8ced01f4" => :yosemite
+    sha256 "77b09439860f53d4899c8df8a27e004f57ec900266f04afe25ebbf2d86daddbf" => :high_sierra
+    sha256 "10edd63a5c5a366884365ea2d0f4dcf4e8f39f099348989e6e61c71ee98cb08f" => :sierra
+    sha256 "b044fd727cfa69e55d34e050d7be4798c8b54bff5494244a2cafb43b216ac107" => :el_capitan
   end
 
   depends_on "autoconf" => :build
@@ -16,7 +16,14 @@ class ProtobufSwift < Formula
   depends_on "libtool" => :build
   depends_on "protobuf"
 
+  conflicts_with "swift-protobuf",
+    :because => "both install `protoc-gen-swift` binaries"
+
   def install
+    system "protoc", "-Iplugin/compiler",
+                     "plugin/compiler/google/protobuf/descriptor.proto",
+                     "plugin/compiler/google/protobuf/swift-descriptor.proto",
+                     "--cpp_out=plugin/compiler"
     system "./autogen.sh"
     system "./configure", "--prefix=#{prefix}"
     system "make"
@@ -24,7 +31,7 @@ class ProtobufSwift < Formula
   end
 
   test do
-    testdata = <<-EOS.undent
+    testdata = <<~EOS
       syntax = "proto3";
       enum Flavor {
         CHOCOLATE = 0;
@@ -36,6 +43,6 @@ class ProtobufSwift < Formula
       }
     EOS
     (testpath/"test.proto").write(testdata)
-    system "protoc", "test.proto", "--swift_out=."
+    system Formula["protobuf"].opt_bin/"protoc", "test.proto", "--swift_out=."
   end
 end

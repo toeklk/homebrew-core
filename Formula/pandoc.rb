@@ -5,33 +5,35 @@ class Pandoc < Formula
 
   desc "Swiss-army knife of markup format conversion"
   homepage "https://pandoc.org/"
-  url "https://hackage.haskell.org/package/pandoc-1.18/pandoc-1.18.tar.gz"
-  sha256 "3ea4b977f31d71dedd99a4584a895659efbbab02b00fdc9daaf7781787ce4e92"
+  url "https://hackage.haskell.org/package/pandoc-2.1.1/pandoc-2.1.1.tar.gz"
+  sha256 "eafc00c8768a5d342fef3179046d2198d5489e48d106385708b8e2454e3be9b5"
   head "https://github.com/jgm/pandoc.git"
 
   bottle do
-    sha256 "21b4394ba8cd7d4f1f0aabb5364afde865def0dfe3e96fbc494651222e534371" => :sierra
-    sha256 "9c89c158ccc700be0bc20c659809e1078cd9077eab55e39ddffba7164cb5eb17" => :el_capitan
-    sha256 "8a7106dfc402b7bb63519e1a5b8ce9439bf084a145ffa30d4fe9183659f8b4a5" => :yosemite
+    sha256 "3a64d164f6d903c46734fb86996b45ce2b1baf3f1a4b84c194152f52396f31f6" => :high_sierra
+    sha256 "7c1e20d9c6de8fc9be6424f2a670b8560ce92a722f2f97613feb0ea86be7ec36" => :sierra
+    sha256 "5fb007bddd8b7b6cf6aaa47b1336cdcec5419311b3712bb72afc2184a47033a9" => :el_capitan
   end
 
-  depends_on "ghc" => :build
   depends_on "cabal-install" => :build
+  depends_on "ghc" => :build
 
   def install
-    args = []
-    args << "--constraint=cryptonite -support_aesni" if MacOS.version <= :lion
-    install_cabal_package *args
+    cabal_sandbox do
+      args = []
+      args << "--constraint=cryptonite -support_aesni" if MacOS.version <= :lion
+      install_cabal_package *args
+    end
     (bash_completion/"pandoc").write `#{bin}/pandoc --bash-completion`
   end
 
   test do
-    input_markdown = <<-EOS.undent
+    input_markdown = <<~EOS
       # Homebrew
 
       A package manager for humans. Cats should take a look at Tigerbrew.
     EOS
-    expected_html = <<-EOS.undent
+    expected_html = <<~EOS
       <h1 id="homebrew">Homebrew</h1>
       <p>A package manager for humans. Cats should take a look at Tigerbrew.</p>
     EOS

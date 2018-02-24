@@ -1,14 +1,13 @@
 class PerconaXtrabackup < Formula
   desc "Open source hot backup tool for InnoDB and XtraDB databases"
   homepage "https://www.percona.com/software/mysql-database/percona-xtrabackup"
-  url "https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.4/source/tarball/percona-xtrabackup-2.4.4.tar.gz"
-  sha256 "e3ec54eb468482503bccdd1619136e798798086042e9eb7c6daa2fb9b78783a3"
+  url "https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.9/source/tarball/percona-xtrabackup-2.4.9.tar.gz"
+  sha256 "23c1e42ad4161b38edef126cf600e28779788a4d1736cadbb8e8f3dc219135a7"
 
   bottle do
-    sha256 "a5fb5e87d082fe05196154b2acdb2c5f9960038819628a087d03d32d48cddd50" => :sierra
-    sha256 "79fd5cdb7b84795494caf58949bddf8abbbb05eff009d1e56ee31c577ae24a5d" => :el_capitan
-    sha256 "c7f56675e64d5f222ab33cb071c5edba7ca384332ecb8f7933566eb55b0261c8" => :yosemite
-    sha256 "6618802f70e5491736d5a436b74c74f2bf58db9375feee35ec274cb1f8acbba7" => :mavericks
+    sha256 "82a5240c5ffc40d1ef2a992217656cf5ca908666f8e78aaeace0b48612068553" => :high_sierra
+    sha256 "477074a6a94d7913d9acde2ca8b1200323ff378003e56d2eaa275f11867afb9d" => :sierra
+    sha256 "1c9f1beb8be3febf3d21255c0e059d10a838593b94fd83b23d8647f0a7b0fe98" => :el_capitan
   end
 
   option "without-docs", "Build without man pages (which requires python-sphinx)"
@@ -16,20 +15,26 @@ class PerconaXtrabackup < Formula
 
   depends_on "cmake" => :build
   depends_on "sphinx-doc" => :build if build.with? "docs"
-  depends_on :mysql => :recommended
+  depends_on "mysql" => :recommended
   depends_on "libev"
   depends_on "libgcrypt"
   depends_on "openssl"
 
   resource "DBD::mysql" do
-    url "https://cpan.metacpan.org/authors/id/M/MI/MICHIELB/DBD-mysql-4.035.tar.gz"
-    mirror "http://search.cpan.org/CPAN/authors/id/M/MI/MICHIELB/DBD-mysql-4.035.tar.gz"
-    sha256 "b7eca365ea16bcf4c96c2fc0221304ff9c4995e7a551886837804a8f66b61937"
+    url "https://cpan.metacpan.org/authors/id/C/CA/CAPTTOFU/DBD-mysql-4.046.tar.gz"
+    mirror "http://search.cpan.org/CPAN/authors/id/C/CA/CAPTTOFU/DBD-mysql-4.046.tar.gz"
+    sha256 "6165652ec959d05b97f5413fa3dff014b78a44cf6de21ae87283b28378daf1f7"
   end
 
   resource "boost" do
     url "https://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.bz2"
     sha256 "727a932322d94287b62abb1bd2d41723eec4356a7728909e38adb65ca25241ca"
+  end
+
+  # Fixes compile when building using Clang. Remove on next release.
+  patch do
+    url "https://github.com/percona/percona-xtrabackup/commit/7862bd714.patch?full_index=1"
+    sha256 "5283b069a4a4ddc5771b80c79813118450e8740f6ec7cf88ad5ef1a1da330b96"
   end
 
   def install
@@ -44,7 +49,7 @@ class PerconaXtrabackup < Formula
         -DINSTALL_MANDIR=share/man
       ]
 
-      # OSX has this value empty by default.
+      # macOS has this value empty by default.
       # See https://bugs.python.org/issue18378#msg215215
       ENV["LC_ALL"] = "en_US.UTF-8"
     else

@@ -1,13 +1,14 @@
 class Gsasl < Formula
   desc "SASL library command-line interface"
   homepage "https://www.gnu.org/software/gsasl/"
-  url "https://ftpmirror.gnu.org/gsasl/gsasl-1.8.0.tar.gz"
-  mirror "https://ftp.gnu.org/gsasl/gsasl-1.8.0.tar.gz"
+  url "https://ftp.gnu.org/gnu/gsasl/gsasl-1.8.0.tar.gz"
+  mirror "https://ftpmirror.gnu.org/gsasl/gsasl-1.8.0.tar.gz"
   sha256 "310262d1ded082d1ceefc52d6dad265c1decae8d84e12b5947d9b1dd193191e5"
 
   bottle do
     cellar :any
     rebuild 2
+    sha256 "0cac4a51f7ebbeb960744f0a48374b8800403fd773935f123810038da1d2d316" => :high_sierra
     sha256 "f37b1e2171acd1ed587c75827854750f2be04302147fb3fc05672c3e3cfe42f0" => :sierra
     sha256 "8dbca0c2938ab3b5077fe7ed572437a0f724e479a7f102d9c40f959b1483f09d" => :el_capitan
     sha256 "afc44c1161ffa2ae09bee4a82c25e626562d950ae092356fba204789e4b4752e" => :yosemite

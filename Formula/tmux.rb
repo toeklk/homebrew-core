@@ -1,15 +1,13 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  url "https://github.com/tmux/tmux/releases/download/2.3/tmux-2.3.tar.gz"
-  sha256 "55313e132f0f42de7e020bf6323a1939ee02ab79c48634aa07475db41573852b"
-  revision 2
+  url "https://github.com/tmux/tmux/releases/download/2.6/tmux-2.6.tar.gz"
+  sha256 "b17cd170a94d7b58c0698752e1f4f263ab6dc47425230df7e53a6435cc7cd7e8"
 
   bottle do
-    cellar :any
-    sha256 "2288f2bdd93d63e7020d6a70d32b141f8b704c1adc8fe3eb493a1a8efdd3a46b" => :sierra
-    sha256 "7e18b96da6a0b2d88a236f20d9e4f18de55f1fe307a01776abc95aa023232249" => :el_capitan
-    sha256 "717432a1d0242cdc66df0d6c54175c5202e7c09bfc1dd14a6d919defbeca5d1a" => :yosemite
+    sha256 "0ca2e76822980dcc009fde38379f7546b6568975d9dc4f2a6a312e32fce186f8" => :high_sierra
+    sha256 "d2b71640c44c4fc1e953a6eb1ca14b8c91ee4a19a91f2f699546c5cd6ed5b302" => :sierra
+    sha256 "cda9003fa113251c024210750d529be80379288436cf66a67a3896d2d14b6766" => :el_capitan
   end
 
   head do
@@ -49,7 +47,7 @@ class Tmux < Formula
     bash_completion.install resource("completion")
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Example configuration has been installed to:
       #{opt_pkgshare}
     EOS

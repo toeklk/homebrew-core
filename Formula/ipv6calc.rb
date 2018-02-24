@@ -1,20 +1,25 @@
 class Ipv6calc < Formula
   desc "Small utility for manipulating IPv6 addresses"
-  homepage "http://www.deepspace6.net/projects/ipv6calc.html"
-  url "ftp://ftp.deepspace6.net/pub/ds6/sources/ipv6calc/ipv6calc-0.94.1.tar.gz"
-  sha256 "3bd73fd92c1d971fadea41b39830975b4a20bbcd26587dfb2835964b33de4040"
+  homepage "https://www.deepspace6.net/projects/ipv6calc.html"
+  url "https://github.com/pbiering/ipv6calc/archive/1.0.0.tar.gz"
+  sha256 "74b0455e61834843bf8a5e7e0e0f39dd2b148114ff896d590eb2d826714594bd"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "1ccbbf74bb739f03f508b3b9de284a976deb6d812b162ee8993950537503ca18" => :sierra
-    sha256 "437b1ccd14d570eed3f5aefc6136921fecf64a6e5271342b56f265436562f610" => :el_capitan
-    sha256 "07aaa189403bd9d01a12e5aa79e8447e6f182cc6ef1ddcd68d5a9588cd6dd435" => :yosemite
-    sha256 "7b3518dc5a1a0e9d8804b2d3e231b271f112569f61ae816f3649ca2ba55b9168" => :mavericks
+    sha256 "1f3666901fc9da4e53f0c00d35bcc2bf807ec11a3363122850ef89b9cf45654c" => :high_sierra
+    sha256 "c6bdf091f2496a5ffcb776d18fd1dba83ca1051c9755c45449183e7c22d8814a" => :sierra
+    sha256 "768f3b011dd2c900b2d3030d63eba0d4ae3c417ba6aa5a9f4802a686ef74c562" => :el_capitan
+    sha256 "a129eaac7552df52afc8be73d6644ea4b556847efc9be48baf208fe04ca164e0" => :yosemite
   end
 
   def install
     # This needs --mandir, otherwise it tries to install to /share/man/man8.
     system "./configure", "--prefix=#{prefix}", "--mandir=#{man}"
+    system "make"
     system "make", "install"
+  end
+
+  test do
+    assert_equal "192.168.251.97", shell_output("#{bin}/ipv6calc -q --action conv6to4 --in ipv6 2002:c0a8:fb61::1 --out ipv4").strip
   end
 end

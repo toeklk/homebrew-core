@@ -1,16 +1,16 @@
 class Ccextractor < Formula
   desc "Free, GPL licensed closed caption tool"
-  homepage "http://www.ccextractor.org"
-  url "https://downloads.sourceforge.net/project/ccextractor/ccextractor/0.82/ccextractor.src.0.82.zip"
-  sha256 "890e7786256c74c7e4850592784da027451dd7c3e3a353c9bad3bea5467b7b77"
+  homepage "https://www.ccextractor.org/"
+  url "https://downloads.sourceforge.net/project/ccextractor/ccextractor/0.85/ccextractor-src-nowin.0.85.zip"
+  sha256 "2ac21c6483e206a796d26d6adb7e969eb038a97ead9e2b2a7ee91b8b08c6882e"
   head "https://github.com/ccextractor/ccextractor.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "e9b4e38e0b81d257841d64eb8aeec6e3015d1ad7ac9afe3d8b797f969109960d" => :sierra
-    sha256 "358c85300067eb0ae9a7b09d2325c24103ecbdf73f2d07c8e76baaeac5743931" => :el_capitan
-    sha256 "e5dfe6c34730149839a16860fb012776633dc0021562d26a6f06a5825116ee3c" => :yosemite
-    sha256 "b513081333efed3bf23e133bd062c18507b587a627379693a14372c45b966d6b" => :mavericks
+    sha256 "35b445f24dd0be2979fb9cdb47eda8c45489aaa746d6efeb866a1e8d2329a272" => :high_sierra
+    sha256 "708daa50fd6cd54bac11b8bb8f55b54b0999b180313538fa7bc3c346b4240c2e" => :sierra
+    sha256 "c9b725b4f4680f534e6924fe0b2b68aa77b25ff14a4118d49bc60bdfaa286287" => :el_capitan
+    sha256 "03f774c0122cad214d35afe8fbfdb450ca1713601858b07d783c8ade9757c44e" => :yosemite
   end
 
   def install
@@ -23,7 +23,10 @@ class Ccextractor < Formula
 
   test do
     touch testpath/"test"
-    system bin/"ccextractor", "test"
-    assert File.exist?("test.srt")
+    pid = fork do
+      exec bin/"ccextractor", testpath/"test"
+    end
+    Process.wait(pid)
+    assert_predicate testpath/"test.srt", :exist?
   end
 end

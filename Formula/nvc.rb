@@ -1,49 +1,37 @@
 class Nvc < Formula
   desc "VHDL compiler and simulator"
   homepage "https://github.com/nickg/nvc"
+  url "https://github.com/nickg/nvc/releases/download/r1.3.1/nvc-1.3.1.tar.gz"
+  sha256 "f578d3c631d58fdff7981a89bafb75554ea5651a44bbb1218037f57281c7350b"
 
-  stable do
-    url "https://github.com/nickg/nvc/releases/download/r1.0.0/nvc-1.0.0.tar.gz"
-    sha256 "a60478636268a7d1cad2d1c90e775cfd938199dba6b9c407badbef32753dc30f"
-
-    # Fixes nickg/nvc#265
-    # nvc needs external vhdl libraries at build
-    # PR adds https and checksums to the download script - fetch-ieee.sh
-    patch do
-      url "https://github.com/nickg/nvc/pull/296.patch"
-      sha256 "68cc9d23c286945a63464f9aa71d25d1e1b140e4652845c837cae3babbc45ab6"
-    end
-  end
   bottle do
-    sha256 "63d766663a4aed43ba91d853abc4f6e23423c8fbcc07e6fffe1d558e886bdd57" => :sierra
-    sha256 "e21c764dae84a026ca2c69e6040303bb501022e525d49e9130331d5c95b02ca9" => :el_capitan
-    sha256 "5a5fb69e028a07bcde7c1010ea67ee51c5e8f72be81982d50f5f17f3595dd003" => :yosemite
+    sha256 "da804dc99d5e2cde107690f13610b20aed1627314191281e0bd5c2f89799ceb5" => :high_sierra
+    sha256 "9e585721435432ac02cf01a2304c2a7c2c6c69c02413cace1beed2fa5d3552f1" => :sierra
+    sha256 "f8b422fba6185748fe3580e26e0868b9830d42dfbee4d23b34a101869b8c9d39" => :el_capitan
   end
 
   head do
     url "https://github.com/nickg/nvc.git"
 
-    depends_on "automake" => :build
     depends_on "autoconf" => :build
+    depends_on "automake" => :build
   end
 
+  depends_on "pkg-config" => :build
   depends_on "llvm" => :build
   depends_on "check" => :build
 
   resource "vim-hdl-examples" do
     url "https://github.com/suoto/vim-hdl-examples.git",
-    :revision => "232d28a9279bc80d2797afef212749434a78be6a"
+        :revision => "c112c17f098f13719784df90c277683051b61d05"
   end
 
   def install
-    args = %W[
-      --with-llvm=#{Formula["llvm"].opt_bin}/llvm-config
-      --prefix=#{prefix}
-    ]
-
-    system "./autogen.sh" unless build.stable?
+    system "./autogen.sh" if build.head?
     system "./tools/fetch-ieee.sh"
-    system "./configure", *args
+    system "./configure", "--with-llvm=#{Formula["llvm"].opt_bin}/llvm-config",
+                          "--prefix=#{prefix}",
+                          "--with-system-cc=/usr/bin/clang"
     system "make"
     system "make", "install"
   end

@@ -1,31 +1,14 @@
 class Thrift < Formula
   desc "Framework for scalable cross-language services development"
   homepage "https://thrift.apache.org/"
-
-  stable do
-    url "https://www.apache.org/dyn/closer.cgi?path=/thrift/0.9.3/thrift-0.9.3.tar.gz"
-    sha256 "b0740a070ac09adde04d43e852ce4c320564a292f26521c46b78e0641564969e"
-
-    # Apply any necessary patches (none currently required)
-    [
-      # Example patch:
-      #
-      # Apply THRIFT-2201 fix from master to 0.9.1 branch (required for clang to compile with C++11 support)
-      # %w{836d95f9f00be73c6936d407977796181d1a506c f8e14cbae1810ade4eab49d91e351459b055c81dba144c1ca3c5d6f4fe440925},
-    ].each do |name, sha|
-      patch do
-        url "https://git-wip-us.apache.org/repos/asf?p=thrift.git;a=commitdiff_plain;h=#{name}"
-        sha256 sha
-      end
-    end
-  end
+  url "https://www.apache.org/dyn/closer.cgi?path=/thrift/0.11.0/thrift-0.11.0.tar.gz"
+  sha256 "c4ad38b6cb4a3498310d405a91fef37b9a8e79a50cd0968148ee2524d2fa60c2"
 
   bottle do
     cellar :any
-    sha256 "faa61383db2180f31b57b1821c6e01128ba966558d99aae09f9d7478c93f287d" => :sierra
-    sha256 "171011fa42efb2fcafb1bae1e2d173e585eda199f145a62a825359c7a622b24b" => :el_capitan
-    sha256 "655bb0a05eb51ff465f8f378a7d3ea2438095e2d4c2a70da45965731b5de9cfb" => :yosemite
-    sha256 "092ff2a100f41871d3527c450403cfc2cf1cc0527ce2fdb4089f93915365713d" => :mavericks
+    sha256 "d1c648d84f21b567f1468625523b78d496d49954a3f5f28ce127f3eca7c0e2e4" => :high_sierra
+    sha256 "710f79cf150713e4e24ce03b605fcd3ea56651b58bb7afe64d8b4a948842616f" => :sierra
+    sha256 "e6f40c95f93331dda62d7cbfe0ce4f467c17e73e4a4a05f859e29a58533b52d8" => :el_capitan
   end
 
   head do
@@ -48,7 +31,12 @@ class Thrift < Formula
   depends_on "boost"
   depends_on "openssl"
   depends_on "libevent" => :optional
-  depends_on :python => :optional
+  depends_on "python" => :optional
+
+  if build.with? "java"
+    depends_on "ant" => :build
+    depends_on :java => "1.8"
+  end
 
   def install
     system "./bootstrap.sh" unless build.stable?
@@ -67,17 +55,23 @@ class Thrift < Formula
     # Don't install extensions to /usr:
     ENV["PY_PREFIX"] = prefix
     ENV["PHP_PREFIX"] = prefix
+    ENV["JAVA_PREFIX"] = buildpath
 
     system "./configure", "--disable-debug",
                           "--prefix=#{prefix}",
                           "--libdir=#{lib}",
+                          "--with-openssl=#{Formula["openssl"].opt_prefix}",
                           *exclusions
-    ENV.j1
+    ENV.deparallelize
     system "make"
     system "make", "install"
+
+    # Even when given a prefix to use it creates /usr/local/lib inside
+    # that dir & places the jars there, so we need to work around that.
+    (pkgshare/"java").install Dir["usr/local/lib/*.jar"] if build.with? "java"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     To install Ruby binding:
       gem install thrift
 

@@ -1,17 +1,18 @@
 class Tintin < Formula
   desc "MUD client"
-  homepage "http://tintin.sf.net"
-  url "https://downloads.sourceforge.net/project/tintin/TinTin%2B%2B%20Source%20Code/2.01.0/tintin-2.01.0.tar.gz"
-  sha256 "e0e35463a97ee5b33ef0b29b2c57fa8276c4e76328cb19c98a6ea92c603a9c76"
+  homepage "https://tintin.sourceforge.io/"
+  url "https://downloads.sourceforge.net/project/tintin/TinTin%2B%2B%20Source%20Code/2.01.4/tintin-2.01.4.tar.gz"
+  sha256 "dd22afbff45a93ec399065bae385489131af7e1b6ae8abb28f80d6a03b82ebbc"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "36071ac3d832a1c61922d2723146a92f69640e66282e793787a9d90988b58a66" => :sierra
-    sha256 "87db2f724f02d4904abd62cd1ca64761fc7c036581f002edc4165f304b39c0b1" => :el_capitan
-    sha256 "d5854bd2486230a6438a6de890ab23f812248298cdc4d4ab44c3b6b9866b9b1f" => :yosemite
-    sha256 "c8af90d6c19c9c8ccb3f09276fbe89f059e9762b36e35e981b2c856f952d12c7" => :mavericks
+    sha256 "552223fd7efc3d68a99a1d49135a6537091f0d893e67f08eaf876e2385a0460d" => :high_sierra
+    sha256 "58dbcc694fb3b80f10951d06f24fb4fd0e94eac1a3dc84017cd82e38610ff6a7" => :sierra
+    sha256 "bd1fe99b7c2a458acd81a5a567ba57c664c99f9f5f73adb8845bae7d7363a151" => :el_capitan
   end
 
+  depends_on "gnutls"
   depends_on "pcre"
 
   def install
@@ -24,6 +25,14 @@ class Tintin < Formula
                      "INCS=#{ENV.cppflags}",
                      "LDFLAGS=#{ENV.ldflags}",
                      "install"
+    end
+  end
+
+  test do
+    require "pty"
+    (testpath/"input").write("#end {bye}\n")
+    PTY.spawn(bin/"tt++", "-G", "input") do |r, _w, _pid|
+      assert_match "Goodbye", r.read
     end
   end
 end

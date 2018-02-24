@@ -1,15 +1,15 @@
 class Bmon < Formula
   desc "Interface bandwidth monitor"
   homepage "https://github.com/tgraf/bmon"
-  url "https://github.com/tgraf/bmon/releases/download/v3.9/bmon-3.9.tar.gz"
-  sha256 "9c08332520497ef1d51a733ca531ffedbb5a30c7c3f55579efe86c36138f93e1"
-  revision 1
+  url "https://github.com/tgraf/bmon/releases/download/v4.0/bmon-4.0.tar.gz"
+  sha256 "02fdc312b8ceeb5786b28bf905f54328f414040ff42f45c83007f24b76cc9f7a"
+  revision 2
 
   bottle do
-    sha256 "5764df478a5fd162c212b989aa22060d94100ec8becda51493adeb2215479fed" => :sierra
-    sha256 "6673c478d4f7558bab1ce6f1939d24bc8b88f81f3f31a92cf447317f8143cdf0" => :el_capitan
-    sha256 "e70015fe4b38f8c75783ac2d3a6f828d4a6d20ef7fbbb95378483fa2a22af7d4" => :yosemite
-    sha256 "dba21c9ad3060c78df2d11b71b6a23dd1a7dc609648fd0562cf59e08f45a7884" => :mavericks
+    sha256 "0e42dc7797916ba3b70729662c78a26fbc0e991c6568143888cded4595dbbf41" => :high_sierra
+    sha256 "2af9641dcfa37efcd37eb520b8ed1d2e82c12e23409ad074356959220f1b0a78" => :sierra
+    sha256 "dd09a67017c5ba3fffbe8ea14f79157126b069c89c3a452e42462fc65d222572" => :el_capitan
+    sha256 "9363be186d292bd7f2c7407713e1202efde1ca5aac6e4bddafc35a46e8989e3c" => :yosemite
   end
 
   head do

@@ -1,25 +1,21 @@
 class Libtermkey < Formula
   desc "Library for processing keyboard entry from the terminal"
   homepage "http://www.leonerd.org.uk/code/libtermkey/"
-  url "http://www.leonerd.org.uk/code/libtermkey/libtermkey-0.18.tar.gz"
-  sha256 "239746de41c845af52bb3c14055558f743292dd6c24ac26c2d6567a5a6093926"
+  url "http://www.leonerd.org.uk/code/libtermkey/libtermkey-0.20.tar.gz"
+  sha256 "6c0d87c94ab9915e76ecd313baec08dedf3bd56de83743d9aa923a081935d2f5"
 
   bottle do
     cellar :any
-    sha256 "3ae613ddcb184ff95fce6763779284e2e03d6c39e441d3663965d216b57eb5a8" => :sierra
-    sha256 "6f5a5f6120c9c9a61df4d706b6ec3fb8825ea07e013367e5b92158e361decb60" => :el_capitan
-    sha256 "fe1507d296341a28e7f4ec68dabbbcdcd7f2f07371b74a594ee99dd8f2bd3b36" => :yosemite
-    sha256 "29fb6a44d6ea50f8bc7cedf6dbdf6de9ad85c9568797ff40b4cb25c2ac28b07a" => :mavericks
+    sha256 "a01433286fbf7f0e1b5287af5aad39878d10f4375656d9477c9f23e4ed2d2077" => :high_sierra
+    sha256 "d6ed7a2c17bce7c8d6e96530ebe7cfabbf814e701c301d824b11ea22cd46d7d0" => :sierra
+    sha256 "782f20517ff7f10a76a5969eb698c9fd9fc279459c56cfb90dda81c30ec5b5ce" => :el_capitan
+    sha256 "07bfd3dd2f19032d05d2415642569df0ec8a74f48f545b3e5e1a8548849e9b42" => :yosemite
   end
-
-  option :universal
 
   depends_on "pkg-config" => :build
   depends_on "libtool" => :build
 
   def install
-    ENV.universal_binary if build.universal?
-
     system "make", "PREFIX=#{prefix}"
     system "make", "install", "PREFIX=#{prefix}"
   end

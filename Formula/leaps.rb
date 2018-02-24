@@ -1,37 +1,28 @@
-require "language/go"
-
 class Leaps < Formula
   desc "Collaborative web-based text editing service written in Golang"
   homepage "https://github.com/jeffail/leaps"
   url "https://github.com/Jeffail/leaps.git",
-    :tag => "v0.5.1",
-    :revision => "70524e3d02d0cf31f3d13737193a1459150781c8"
-  sha256 "5f3fe0bb1a0ca75616ba2cb6cba7b11c535ac6c732e83c71f708dc074e489b1f"
+      :tag => "v0.9.0",
+      :revision => "89d8ab9e9130238e56a0df283edbcd1115ec9225"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "916c0f83535614d47c9e5cae89104395155494057403c3fee38898c56c6becbb" => :sierra
-    sha256 "c5ab4128388ecc8f28cd181191dbf40a2510fc771185ae7d4cc80a724edd83ea" => :el_capitan
-    sha256 "7fd9a75a9e4c8e45639aba92b03a3394f65e41d4806689ca192591e37585e5f8" => :yosemite
+    sha256 "37343e978d4035fa9b2881c038748ec4704bf8a57308c59e64592dd404166e36" => :high_sierra
+    sha256 "d269ec8f0e492e2a9c7804ca2cc6d9211a9be7c3dfbb0daaab19c5b14bef5b24" => :sierra
+    sha256 "e36259af15ec8cf6546b1f7d99a105efb9a30c198f549a67964417e31892fe97" => :el_capitan
   end
 
+  depends_on "dep" => :build
   depends_on "go" => :build
 
-  go_resource "golang.org/x/net" do
-    url "https://go.googlesource.com/net.git",
-        :revision => "db8e4de5b2d6653f66aea53094624468caad15d2"
-  end
-
   def install
-    ENV["GOBIN"] = bin
     ENV["GOPATH"] = buildpath
-    ENV["GOHOME"] = buildpath
-
-    mkdir_p buildpath/"src/github.com/jeffail/"
-    ln_sf buildpath, buildpath/"src/github.com/jeffail/leaps"
-    Language::Go.stage_deps resources, buildpath/"src"
-
-    system "go", "build", "-o", "#{bin}/leaps", "github.com/jeffail/leaps/cmd/leaps"
+    (buildpath/"src/github.com/jeffail/leaps").install buildpath.children
+    cd buildpath/"src/github.com/jeffail/leaps" do
+      system "dep", "ensure"
+      system "go", "build", "-o", bin/"leaps", "./cmd/leaps"
+      prefix.install_metafiles
+    end
   end
 
   test do
@@ -47,7 +38,7 @@ class Leaps < Formula
       sleep(1)
 
       # Check that the server is responding correctly
-      assert_match /Choose a document from the left to get started/, shell_output("curl -o- http://localhost#{port}")
+      assert_match "You are alone", shell_output("curl -o- http://localhost#{port}")
     ensure
       # Stop the server gracefully
       Process.kill("HUP", leaps_pid)

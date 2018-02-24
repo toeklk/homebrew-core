@@ -1,17 +1,15 @@
 class Tasksh < Formula
   desc "Shell wrapper for Taskwarrior commands"
   homepage "https://tasktools.org/projects/tasksh.html"
-  url "https://taskwarrior.org/download/tasksh-1.0.0.tar.gz"
-  sha256 "9accc81f5ae3a985e33be728d56aba0401889d21f856cd94734d73c221bf8652"
-  head "https://git.tasktools.org/scm/ex/tasksh.git"
+  url "https://taskwarrior.org/download/tasksh-1.2.0.tar.gz"
+  sha256 "6e42f949bfd7fbdde4870af0e7b923114cc96c4344f82d9d924e984629e21ffd"
+  head "https://github.com/GothenburgBitFactory/taskshell.git", :branch => "1.3.0"
 
   bottle do
     cellar :any_skip_relocation
-    rebuild 1
-    sha256 "78f4218db1fd17a5a89fda4982e2054e2f283d4a2a24a431fd94126a07e8fd99" => :sierra
-    sha256 "74593fb90941d65acd8a4712218c2285819cbd61916b24be3ea792abbbe4dee5" => :el_capitan
-    sha256 "a618c8e5a8bf535aa116b60a68579f6f41904169641f43dde82693355785b38c" => :yosemite
-    sha256 "d3a214c7e1dd43755ad6a0e77bf9d1a455f88c67b60126f1a9f64b9bf426bfdc" => :mavericks
+    sha256 "17f99be8d0aea4c43877fbfb121b7989047f04650ccffa85e948859e8ee51e0b" => :high_sierra
+    sha256 "fd1b333c777401c53d5ddc8aaf52150a2a15fea4230a91d457d9d99ce2819ee7" => :sierra
+    sha256 "d695adcf10582123053612d98ed4bf988b22c50919598bf167bc2e62db142352" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -25,6 +23,6 @@ class Tasksh < Formula
   test do
     system "#{bin}/tasksh", "--version"
     (testpath/".taskrc").write "data.location=#{testpath}/.task\n"
-    assert_match(/Created task 1./, pipe_output("#{bin}/tasksh", "add Test Task"))
+    assert_match "Created task 1.", pipe_output("#{bin}/tasksh", "add Test Task", 0)
   end
 end

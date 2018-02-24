@@ -1,12 +1,13 @@
 class Libbs2b < Formula
   desc "Bauer stereophonic-to-binaural DSP"
-  homepage "http://bs2b.sourceforge.net/"
+  homepage "https://bs2b.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/bs2b/libbs2b/3.1.0/libbs2b-3.1.0.tar.gz"
   sha256 "6aaafd81aae3898ee40148dd1349aab348db9bfae9767d0e66e0b07ddd4b2528"
 
   bottle do
     cellar :any
     rebuild 1
+    sha256 "0d2faffb7452ddd66d306746065dc7264d66c3e8f60a3525ee4eb911cd546bcd" => :high_sierra
     sha256 "0431cb3f7cac90d18d854abe956ad296ba399832b733293e55ea58f0f11ba1b1" => :sierra
     sha256 "7949aa7768466a789d992d079a63d5933d19e76ebfb330b38d3b4822929a71ac" => :el_capitan
     sha256 "62a45fde4ae7db34b1c14212d2c0ec5c603fdc403dc1df2b629972789dc7489e" => :yosemite

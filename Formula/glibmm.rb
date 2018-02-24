@@ -1,14 +1,14 @@
 class Glibmm < Formula
   desc "C++ interface to glib"
   homepage "https://www.gtkmm.org/"
-  url "https://download.gnome.org/sources/glibmm/2.50/glibmm-2.50.0.tar.xz"
-  sha256 "df726e3c6ef42b7621474b03b644a2e40ec4eef94a1c5a932c1e740a78f95e94"
+  url "https://download.gnome.org/sources/glibmm/2.54/glibmm-2.54.1.tar.xz"
+  sha256 "7cc28c732b04d70ed34f0c923543129083cfb90580ea4a2b4be5b38802bf6a4a"
 
   bottle do
     cellar :any
-    sha256 "5db8c964d2b7dcd98fe1de642a9ff9f97924373c20e4b011d39386e1d4270504" => :sierra
-    sha256 "bd2aa1af2aa563148c4d913c4a74305e819bfe4661a93b1a33dd8ad2869ae5d8" => :el_capitan
-    sha256 "df9484403c8a3700e6939f497acffc3412817e36b7eb046ca3b5d3f3d368e16a" => :yosemite
+    sha256 "46ff598fd6c542432fcb474b56ad151e29f217ad588933bf350b377f51c969dd" => :high_sierra
+    sha256 "91e373202e1118e3874ecc46abfcad97faf830d0cdc94f1a974272e8df669bd4" => :sierra
+    sha256 "03ee806d8bad38ca85e0000c904276bae4222c01cee4f3a8188cbdef7473426a" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -19,12 +19,13 @@ class Glibmm < Formula
 
   def install
     ENV.cxx11
+
     system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}"
     system "make", "install"
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <glibmm.h>
 
       int main(int argc, char *argv[])

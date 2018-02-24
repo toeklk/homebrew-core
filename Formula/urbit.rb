@@ -1,14 +1,15 @@
 class Urbit < Formula
   desc "Personal cloud computer"
   homepage "https://urbit.org"
-  url "https://github.com/urbit/urbit/archive/v0.4.tar.gz"
-  sha256 "7320a3099b5a6392a6860f6824bb4b575bbde19ff1f59bc4661b3dbb9d1fbc69"
+  url "https://github.com/urbit/urbit/archive/v0.4.5.tar.gz"
+  sha256 "ac013b5a02d250450c983a3efc0997f2a5f5675bc3e16b51ed0a54dff1caef7c"
 
   bottle do
     cellar :any
-    sha256 "d723a4c29bed9ff97429264cd149cd7800841198d0a027137056f269b0c26f54" => :sierra
-    sha256 "11bd0f49a62ee05b62cda24d3a0595695bcd6a5866c99e946862eb7d0cf9234a" => :el_capitan
-    sha256 "57738db2b16a13a00ae95f86e3026a929ec253f2c763f6d4ddef186396aff2f7" => :yosemite
+    sha256 "3ea8320910d59da1d22253cda85376570636e0c65f4d78b0ad7b79f1e9400923" => :high_sierra
+    sha256 "6aa8484fbfaa20cd2b2b53b8de1cea7b342fe2a34185a91a680d6d544ac93d1f" => :sierra
+    sha256 "fa9109dff4cde264e6581f81e9bd30574081fd94ebff4436888d77460db4b8ad" => :el_capitan
+    sha256 "5544b9553137481df6e2035a4e0a0b022f362fab12f2b3047cc206a93f79cc5c" => :yosemite
   end
 
   depends_on "gmp"

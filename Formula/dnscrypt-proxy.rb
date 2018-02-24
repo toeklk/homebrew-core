@@ -1,112 +1,60 @@
 class DnscryptProxy < Formula
   desc "Secure communications between a client and a DNS resolver"
-  homepage "https://dnscrypt.org"
-  url "https://github.com/jedisct1/dnscrypt-proxy/releases/download/1.7.0/dnscrypt-proxy-1.7.0.tar.bz2"
-  sha256 "1daf77df9092491ea0b5176ec4b170f7b0645f97b62d1a50412a960656b482e3"
+  homepage "https://github.com/jedisct1/dnscrypt-proxy"
+  url "https://github.com/jedisct1/dnscrypt-proxy/archive/2.0.4.tar.gz"
+  sha256 "34b76e6fc774936cc3b8a785022c7314b7235fd283ceb728cd45458002bde9e2"
+  head "https://github.com/jedisct1/dnscrypt-proxy.git"
 
   bottle do
-    rebuild 1
-    sha256 "7940aba621d665eccbc3018c6a892313514ce84a540a416f19cddd962d33273d" => :sierra
-    sha256 "63d4a11824527a3d333176aa6ea93fe7e5eefcae658be41855fce86d45192115" => :el_capitan
-    sha256 "e56ea17922dcf696b4d8e3b5307abf330c0b43cbe9df81c91a3ac62890cc732e" => :yosemite
+    cellar :any_skip_relocation
+    sha256 "dfbb9725ba8fd76750be09dbfd24b1364c826d4ff47ef212e40a62fb8a9898fa" => :high_sierra
+    sha256 "7e519025d84c718e18f7081dc804cbb07a29701a5ef1530c4490a55b68b5328f" => :sierra
+    sha256 "c847d81c4cc14fa10257a5f98963ca90566cf0447566e90764a75d2c9798242e" => :el_capitan
   end
 
-  head do
-    url "https://github.com/jedisct1/dnscrypt-proxy.git"
-
-    depends_on "autoconf" => :build
-    depends_on "automake" => :build
-    depends_on "libtool" => :build
-  end
-
-  option "with-plugins", "Support plugins and install example plugins."
-
-  deprecated_option "plugins" => "with-plugins"
-
-  depends_on "libsodium"
-  depends_on "minisign" => :recommended
-  depends_on "ldns" => :recommended
+  depends_on "go" => :build
 
   def install
-    system "autoreconf", "-if" if build.head?
+    ENV["GOPATH"] = buildpath
 
-    args = %W[--disable-dependency-tracking --prefix=#{prefix}]
+    prefix.install_metafiles
+    dir = buildpath/"src/github.com/jedisct1/dnscrypt-proxy"
+    dir.install buildpath.children
 
-    if build.with? "plugins"
-      args << "--enable-plugins"
-      args << "--enable-relaxed-plugins-permissions"
-      args << "--enable-plugins-root"
-    end
-
-    system "./configure", *args
-    system "make", "install"
-
-    if build.with? "minisign"
-      (bin/"dnscrypt-update-resolvers").write <<-EOS.undent
-        #!/bin/sh
-        RESOLVERS_UPDATES_BASE_URL=https://download.dnscrypt.org/dnscrypt-proxy
-        RESOLVERS_LIST_BASE_DIR=#{pkgshare}
-        RESOLVERS_LIST_PUBLIC_KEY="RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3"
-
-        curl -L --max-redirs 5 -4 -m 30 --connect-timeout 30 -s \
-          "${RESOLVERS_UPDATES_BASE_URL}/dnscrypt-resolvers.csv" > \
-          "${RESOLVERS_LIST_BASE_DIR}/dnscrypt-resolvers.csv.tmp" && \
-        curl -L --max-redirs 5 -4 -m 30 --connect-timeout 30 -s \
-          "${RESOLVERS_UPDATES_BASE_URL}/dnscrypt-resolvers.csv.minisig" > \
-          "${RESOLVERS_LIST_BASE_DIR}/dnscrypt-resolvers.csv.minisig" && \
-        minisign -Vm ${RESOLVERS_LIST_BASE_DIR}/dnscrypt-resolvers.csv.tmp \
-          -x "${RESOLVERS_LIST_BASE_DIR}/dnscrypt-resolvers.csv.minisig" \
-          -P "$RESOLVERS_LIST_PUBLIC_KEY" -q && \
-        mv -f ${RESOLVERS_LIST_BASE_DIR}/dnscrypt-resolvers.csv.tmp \
-          ${RESOLVERS_LIST_BASE_DIR}/dnscrypt-resolvers.csv
-      EOS
-      chmod 0775, bin/"dnscrypt-update-resolvers"
+    cd dir/"dnscrypt-proxy" do
+      system "go", "build", "-ldflags", "-X main.version=#{version}", "-o",
+             sbin/"dnscrypt-proxy"
+      pkgshare.install Dir["example*"]
+      etc.install pkgshare/"example-dnscrypt-proxy.toml" => "dnscrypt-proxy.toml"
     end
   end
 
-  def post_install
-    return if build.without? "minisign"
+  def caveats; <<~EOS
+    After starting dnscrypt-proxy, you will need to point your
+    local DNS server to 127.0.0.1. You can do this by going to
+    System Preferences > "Network" and clicking the "Advanced..."
+    button for your interface. You will see a "DNS" tab where you
+    can click "+" and enter 127.0.0.1 in the "DNS Servers" section.
 
-    system bin/"dnscrypt-update-resolvers"
-  end
+    By default, dnscrypt-proxy runs on localhost (127.0.0.1), port 53,
+    using a random resolver. If you would like to change these settings,
+    you will have to edit the configuration file:
+      #{etc}/dnscrypt-proxy.toml
 
-  def caveats
-    s = <<-EOS.undent
-      After starting dnscrypt-proxy, you will need to point your
-      local DNS server to 127.0.0.1. You can do this by going to
-      System Preferences > "Network" and clicking the "Advanced..."
-      button for your interface. You will see a "DNS" tab where you
-      can click "+" and enter 127.0.0.1 in the "DNS Servers" section.
+    To check that dnscrypt-proxy is working correctly, open Terminal and enter the
+    following command. Replace en1 with whatever network interface you're using:
 
-      By default, dnscrypt-proxy runs on localhost (127.0.0.1), port 53,
-      and under the "nobody" user using the dnscrypt.eu-dk DNSCrypt-enabled
-      resolver. If you would like to change these settings, you will have to edit
-      the plist file (e.g., --resolver-address, --provider-name, --provider-key, etc.)
+      sudo tcpdump -i en1 -vvv 'port 443'
 
-      To check that dnscrypt-proxy is working correctly, open Terminal and enter the
-      following command. Replace en1 with whatever network interface you're using:
+    You should see a line in the result that looks like this:
 
-          sudo tcpdump -i en1 -vvv 'port 443'
-
-      You should see a line in the result that looks like this:
-
-          resolver2.dnscrypt.eu.https
-    EOS
-
-    if build.with? "minisign"
-      s += <<-EOS.undent
-
-        If at some point the resolver file gets outdated, it can be updated to the
-        latest version by running: #{opt_bin}/dnscrypt-update-resolvers
-      EOS
-    end
-
-    s
+     resolver.dnscrypt.info
+  EOS
   end
 
   plist_options :startup => true
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-/Apple/DTD PLIST 1.0/EN" "http:/www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -120,10 +68,8 @@ class DnscryptProxy < Formula
         <key>ProgramArguments</key>
         <array>
           <string>#{opt_sbin}/dnscrypt-proxy</string>
-          <string>--ephemeral-keys</string>
-          <string>--resolvers-list=#{opt_pkgshare}/dnscrypt-resolvers.csv</string>
-          <string>--resolver-name=dnscrypt.eu-dk</string>
-          <string>--user=nobody</string>
+          <string>-config</string>
+          <string>#{etc}/dnscrypt-proxy.toml</string>
         </array>
         <key>UserName</key>
         <string>root</string>
@@ -137,6 +83,8 @@ class DnscryptProxy < Formula
   end
 
   test do
-    system "#{sbin}/dnscrypt-proxy", "--version"
+    config = "-config #{etc}/dnscrypt-proxy.toml"
+    output = shell_output("#{sbin}/dnscrypt-proxy #{config} -list 2>&1")
+    assert_match "public-resolvers.md] loaded", output
   end
 end

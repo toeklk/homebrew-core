@@ -1,18 +1,23 @@
 class Unrar < Formula
   desc "Extract, view, and test RAR archives"
-  homepage "http://www.rarlab.com"
-  url "http://www.rarlab.com/rar/unrarsrc-5.4.5.tar.gz"
-  sha256 "e470c584332422893fb52e049f2cbd99e24dc6c6da971008b4e2ae4284f8796c"
+  homepage "https://www.rarlab.com/"
+  url "https://www.rarlab.com/rar/unrarsrc-5.5.8.tar.gz"
+  sha256 "9b66e4353a9944bc140eb2a919ff99482dd548f858f5e296d809e8f7cdb2fcf4"
 
   bottle do
     cellar :any
-    sha256 "160c588885c324f705a335c8637e91c133f162d5ba5b8ed6626b79ba71c9ea63" => :sierra
-    sha256 "40c06c3c954ca0729491335e289dfc2a112ac8df6c2ac20e527693183ce520ff" => :el_capitan
-    sha256 "4c8325c8382d687ca64c55fa4c5cac3237491babe24f2abb580e36b87cc24c52" => :yosemite
-    sha256 "360cd0f3ed5b8a57e8afb0860148ce1997f7f7328afa624d4848db87a509f2a0" => :mavericks
+    sha256 "ba87a2debd14ee02ebba3a2a9c687b0e64920651eab21d0ce305829cc02c1e1f" => :high_sierra
+    sha256 "fb54a22a18eb4e992fa5bec6a669f97a764919a5b78dce65407b6943d2bf0ebe" => :sierra
+    sha256 "82adba13791514beb06b9a7d659eb00a8c4f8057c5c9edd3df7ea8b085586372" => :el_capitan
+    sha256 "5e50649d2b6c717b36447f08d3dc1ce2d72da02603c6274327a24900030b6f5f" => :yosemite
   end
 
   def install
+    # upstream doesn't particularly care about their unix targets,
+    # so we do the dirty work of renaming their shared objects to
+    # dylibs for them.
+    inreplace "makefile", "libunrar.so", "libunrar.dylib"
+
     system "make"
     # Explicitly clean up for the library build to avoid an issue with an
     # apparent implicit clean which confuses the dependencies.
@@ -20,10 +25,7 @@ class Unrar < Formula
     system "make", "lib"
 
     bin.install "unrar"
-    # Sent an email to dev@rarlab.com (18-Feb-2015) asking them to look into
-    # the need for the explicit clean, and to change the make to generate a
-    # dylib file on macOS
-    lib.install "libunrar.so" => "libunrar.dylib"
+    lib.install "libunrar.dylib"
   end
 
   test do
@@ -34,7 +36,7 @@ class Unrar < Formula
 
     rarpath.write data.unpack("m").first
     assert_equal contentpath, `#{bin}/unrar lb #{rarpath}`.strip
-    assert_equal 0, $?.exitstatus
+    assert_equal 0, $CHILD_STATUS.exitstatus
 
     system "#{bin}/unrar", "x", rarpath, testpath
     assert_equal "Homebrew\n", (testpath/contentpath).read

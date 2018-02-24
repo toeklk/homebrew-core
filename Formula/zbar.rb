@@ -1,16 +1,33 @@
 class Zbar < Formula
   desc "Suite of barcodes-reading tools"
-  homepage "http://zbar.sourceforge.net"
-  url "https://downloads.sourceforge.net/project/zbar/zbar/0.10/zbar-0.10.tar.bz2"
-  sha256 "234efb39dbbe5cef4189cc76f37afbe3cfcfb45ae52493bfe8e191318bdbadc6"
-  revision 1
+  homepage "https://zbar.sourceforge.io"
+  revision 8
+
+  stable do
+    url "https://downloads.sourceforge.net/project/zbar/zbar/0.10/zbar-0.10.tar.bz2"
+    sha256 "234efb39dbbe5cef4189cc76f37afbe3cfcfb45ae52493bfe8e191318bdbadc6"
+
+    # Fix JPEG handling using patch from
+    # https://sourceforge.net/p/zbar/discussion/664596/thread/58b8d79b#8f67
+    # already applied upstream but not present in the 0.10 release
+    patch :DATA
+  end
 
   bottle do
     cellar :any
-    sha256 "fe51e5b5668ba04ba18186a7f3f78267a9a4c8270ae4c25331e3963b8002b6b0" => :sierra
-    sha256 "41950a6ec2dc5631fba19098d644f9eed2b91b8be0a1a1473f6d93e796345bea" => :el_capitan
-    sha256 "175d9360172bc0afc153dc1e2b3e042d3d4ad27db94ed28573c12f4c77616b74" => :yosemite
-    sha256 "39865fe54a7bd3f0153e19729d0b958bd3ac5a5bac5d39a50194b39db2503317" => :mavericks
+    sha256 "5929b876b1536e7b4c75ea08e52a94aafb43326bdfda8258929929a867e8f15d" => :high_sierra
+    sha256 "86a824f7c99c057389d03591a665a85d975e43f7296bf2a26e8bd7664846562a" => :sierra
+    sha256 "b30c6de3d4194cfe20e054cb2f3aa271766f1147da91295bf03db9c422384a7d" => :el_capitan
+  end
+
+  head do
+    url "https://github.com/ZBar/ZBar.git"
+
+    depends_on "gettext" => :build
+    depends_on "automake" => :build
+    depends_on "autoconf" => :build
+    depends_on "libtool" => :build
+    depends_on "xmlto" => :build
   end
 
   depends_on :x11 => :optional
@@ -22,12 +39,19 @@ class Zbar < Formula
   depends_on "freetype"
   depends_on "libtool" => :run
 
-  # Fix JPEG handling using patch from
-  # https://sourceforge.net/p/zbar/discussion/664596/thread/58b8d79b#8f67
-  # already applied upstream but not present in the 0.10 release
-  patch :DATA
-
   def install
+    if build.head?
+      inreplace "configure.ac", "-Werror", ""
+      gettext = Formula["gettext"]
+      system "autoreconf", "-fvi", "-I", "#{gettext.opt_share}/aclocal"
+    end
+
+    # ImageMagick 7 compatibility
+    # Reported 20 Jun 2016 https://sourceforge.net/p/zbar/support-requests/156/
+    inreplace ["configure", "zbarimg/zbarimg.c"],
+      "wand/MagickWand.h",
+      "ImageMagick-7/MagickWand/MagickWand.h"
+
     args = %W[
       --disable-dependency-tracking
       --prefix=#{prefix}
@@ -45,6 +69,10 @@ class Zbar < Formula
 
     system "./configure", *args
     system "make", "install"
+  end
+
+  test do
+    system bin/"zbarimg", "-h"
   end
 end
 

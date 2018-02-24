@@ -1,14 +1,15 @@
 class Folly < Formula
   desc "Collection of reusable C++ library artifacts developed at Facebook"
   homepage "https://github.com/facebook/folly"
-  url "https://github.com/facebook/folly/archive/v2016.10.24.00.tar.gz"
-  sha256 "d54b609d3750a6a1cfbda7c62e1457af60cf5efc48d7a8e6552d67909e064757"
+  url "https://github.com/facebook/folly/archive/v2018.02.19.00.tar.gz"
+  sha256 "6555faa54f4bfa76e27b548de6c8783f15b0726f70def29324fa40258cf0be07"
   head "https://github.com/facebook/folly.git"
 
   bottle do
     cellar :any
-    sha256 "cb72c8ed2d85355d539e6fc4614b09419b0dab137fdaa9ffb3b53e76e2a06497" => :sierra
-    sha256 "c3edb0227431fd4f015a8a0b52e1dffa188008f9f4d139fbeac96685b82d56ab" => :el_capitan
+    sha256 "175bdc5eaa0b3654770d5189dd4edce614f6b28f6ba1f90792ab234e3c0c2c27" => :high_sierra
+    sha256 "6aab2b2105ddb61a932228dd9b825424e9380109dac27eee9a11f6a2a16fde66" => :sierra
+    sha256 "e05d7a382bb560c6854a9d33008e97186b4d28b4c8afb5b7cadb8d8168c38cbb" => :el_capitan
   end
 
   depends_on "autoconf" => :build
@@ -23,7 +24,6 @@ class Folly < Formula
   depends_on "xz"
   depends_on "snappy"
   depends_on "lz4"
-  depends_on "jemalloc"
   depends_on "openssl"
 
   # https://github.com/facebook/folly/issues/451
@@ -39,27 +39,6 @@ class Folly < Formula
     ENV.cxx11
 
     cd "folly" do
-      if MacOS.version == "10.11" && MacOS::Xcode.installed? && MacOS::Xcode.version >= "8.0"
-        # Workaround for "no matching function for call to 'clock_gettime'"
-        # See upstream PR from 2 Oct 2016 facebook/folly#488
-        inreplace ["Benchmark.cpp", "Benchmark.h"] do |s|
-          s.gsub! "clock_gettime(CLOCK_REALTIME",
-                  "clock_gettime((clockid_t)CLOCK_REALTIME"
-          s.gsub! "clock_getres(CLOCK_REALTIME",
-                  "clock_getres((clockid_t)CLOCK_REALTIME", false
-        end
-
-        # Fix "candidate function not viable: no known conversion from
-        # 'folly::detail::Clock' to 'clockid_t' for 1st argument"
-        # See upstream PR mentioned above
-        inreplace "portability/Time.h", "typedef uint8_t clockid_t;", ""
-      end
-
-      # Build system relies on pkg-config but gflags removed
-      # the .pc files so now folly cannot find without flags.
-      ENV["GFLAGS_CFLAGS"] = Formula["gflags"].opt_include
-      ENV["GFLAGS_LIBS"] = Formula["gflags"].opt_lib
-
       system "autoreconf", "-fvi"
       system "./configure", "--prefix=#{prefix}", "--disable-silent-rules",
                             "--disable-dependency-tracking"
@@ -69,7 +48,7 @@ class Folly < Formula
   end
 
   test do
-    (testpath/"test.cc").write <<-EOS.undent
+    (testpath/"test.cc").write <<~EOS
       #include <folly/FBVector.h>
       int main() {
         folly::fbvector<int> numbers({0, 1, 2, 3});

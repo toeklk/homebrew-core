@@ -1,73 +1,87 @@
 class Pgloader < Formula
   desc "Data loading tool for PostgreSQL"
   homepage "https://github.com/dimitri/pgloader"
-  url "https://github.com/dimitri/pgloader/archive/v3.2.2.tar.gz"
-  sha256 "5fe5c115e277a9dd616b1077f89bffdf978bc6983ce62d99af9a218142c39e40"
-  head "https://github.com/dimitri/pgloader.git"
-  revision 2
+  url "https://github.com/dimitri/pgloader/archive/v3.4.1.tar.gz"
+  sha256 "3ac4d03706057a35e1d4d0e63571b84be7d0d07ea09e015d90e242200488fe82"
+  revision 1
 
   bottle do
-    sha256 "3474b716df1279759a9cc1f4b49ea52dc6fbc270386d490dcefa3d3949df973d" => :sierra
-    sha256 "b6d1a4ff0f134c5832cc4249bafc03c478c2f02f32a98d526f42c9e16d2f486a" => :el_capitan
-    sha256 "693fd7db17f168790b7177ab2d5a2295b095cb03737b913e075ca76f2930c371" => :yosemite
+    rebuild 1
+    sha256 "f847576d5d4769b8021323c809b585057a1f99f4154116a6fa2f70abb34e5c6a" => :high_sierra
+    sha256 "aef13aa237bdad345ec75dacf88fbaf555519c047ef2c42fd8bd6753c08c3db2" => :sierra
+    sha256 "7fb6e58e1030e6dfd8a096525fab8ad65f739a16644f023b7c7cc6dfbc91c8ab" => :el_capitan
+  end
+
+  head do
+    url "https://github.com/dimitri/pgloader.git"
+
+    resource "cl-mustache" do
+      url "https://beta.quicklisp.org/archive/cl-mustache/2015-09-23/cl-mustache-20150923-git.tgz"
+      sha256 "22b0938a3765229a54bd84f70c7de2a56e8903fef4dbc987a3c8621314d800e4"
+    end
+
+    resource "yason" do
+      url "https://beta.quicklisp.org/archive/yason/2016-02-08/yason-v0.7.6.tgz"
+      sha256 "1332170b030067e2ea7119e8a18abb7778b89fd6a2163f808d80dbbd48b0ee01"
+    end
   end
 
   depends_on "sbcl"
   depends_on "freetds"
   depends_on "buildapp" => :build
-  depends_on :postgresql => :recommended
+  depends_on "postgresql" => :recommended
 
   # Resource stanzas are generated automatically by quicklisp-roundup.
   # See: https://github.com/benesch/quicklisp-homebrew-roundup
 
   resource "alexandria" do
-    url "https://beta.quicklisp.org/archive/alexandria/2015-05-05/alexandria-20150505-git.tgz"
-    sha256 "14edf05fd7550a49450c4cdab8a29d2266d722e856e1dd15e3403854d2a633fc"
+    url "https://beta.quicklisp.org/archive/alexandria/2017-08-30/alexandria-20170830-git.tgz"
+    sha256 "894e54f77594b13137b5b8ec05937ad6b78bc15c4630ffd1e550e1f226a2f96e"
   end
 
   resource "anaphora" do
-    url "https://beta.quicklisp.org/archive/anaphora/2011-06-19/anaphora-0.9.4.tgz"
-    sha256 "5e7334e0b498cf4c01cf767f6f7e2be6a01895cc6f80d7fcae6d311fee43983f"
+    url "https://beta.quicklisp.org/archive/anaphora/2017-02-27/anaphora-20170227-git.tgz"
+    sha256 "a9790080e92f451e4bd43ccd8accf69d1e0f2089e0de207bf4271b4fd932dbc6"
   end
 
   resource "asdf-finalizers" do
-    url "https://beta.quicklisp.org/archive/asdf-finalizers/2015-06-08/asdf-finalizers-20150608-git.tgz"
-    sha256 "2f1d76bea6831ca3873762f2245529db38e8633caa76bd8e15882fbeaf0e1c7f"
+    url "https://beta.quicklisp.org/archive/asdf-finalizers/2017-04-03/asdf-finalizers-20170403-git.tgz"
+    sha256 "b22f0fa44b662abdab5e844b03cd104f1c391234ad3d7bd4928bc521025053f0"
   end
 
   resource "asdf-system-connections" do
-    url "https://beta.quicklisp.org/archive/asdf-system-connections/2014-02-11/asdf-system-connections-20140211-git.tgz"
-    sha256 "df8bf8fcb0f33535137dfb232183387bef63ae713820c7305d921e5fad9a9669"
+    url "https://beta.quicklisp.org/archive/asdf-system-connections/2017-01-24/asdf-system-connections-20170124-git.tgz"
+    sha256 "f8723e0b0b8bd5f964f7726536e52aacb2e9833d475fcde8333cda81d7190241"
   end
 
   resource "babel" do
-    url "https://beta.quicklisp.org/archive/babel/2015-06-08/babel-20150608-git.tgz"
-    sha256 "6536bb4b426464151dfa476495bede44da5d67165e8d1179238ce731e6e1625b"
+    url "https://beta.quicklisp.org/archive/babel/2017-12-27/babel-20171227-git.tgz"
+    sha256 "2e0b1e1513d2cf61f23f38f4d2b5fec23efecf88cb72b68aff7d07559334de98"
   end
 
   resource "bordeaux-threads" do
-    url "https://beta.quicklisp.org/archive/bordeaux-threads/2013-06-15/bordeaux-threads-0.8.3.tgz"
-    sha256 "1e96b51770d9a4a52d1a60b821c2d1807a08b7eb3359a0d1a38349d2353e7630"
+    url "https://beta.quicklisp.org/archive/bordeaux-threads/2016-03-18/bordeaux-threads-v0.8.5.tgz"
+    sha256 "edaedd450d9267b0a578c9da421fdc96e5f93b119d1502abb1d428e646eb0127"
   end
 
   resource "cffi" do
-    url "https://beta.quicklisp.org/archive/cffi/2015-09-23/cffi_0.16.1.tgz"
-    sha256 "8c0d8ccef43c5cc8562b03f3c3020464578a7c92273cde1060e8d9d89c0ccb47"
+    url "https://beta.quicklisp.org/archive/cffi/2017-06-30/cffi_0.19.0.tgz"
+    sha256 "49366f97ce20f1a9081b1abce89ab62608dc781dfeb40105a6c98d8b8182638b"
   end
 
   resource "chipz" do
-    url "https://beta.quicklisp.org/archive/chipz/2015-05-05/chipz-20150505-git.tgz"
-    sha256 "803d15e7a4acdae9e6fd18aaad78abb3bb9681d03a8ebb20ae0f733b06691924"
+    url "https://beta.quicklisp.org/archive/chipz/2016-03-18/chipz-20160318-git.tgz"
+    sha256 "4620842f94c9431379e9e7e4f27c46381e1730fb1a2c187b39600ed2267afab6"
   end
 
   resource "chunga" do
-    url "https://beta.quicklisp.org/archive/chunga/2014-12-17/chunga-1.1.6.tgz"
-    sha256 "efd3a4a1272cc8c04a0875967175abc65e99ff43a5ca0bad12f74f0953746dc7"
+    url "https://beta.quicklisp.org/archive/chunga/2018-01-31/chunga-20180131-git.tgz"
+    sha256 "38db3685ffe2fdf15cef49a8cc3f2c3082834668d2dd06c84af25065acd93433"
   end
 
   resource "cl+ssl" do
-    url "https://beta.quicklisp.org/archive/cl+ssl/2015-06-08/cl+ssl-20150608-git.tgz"
-    sha256 "6d7314a13874ad8edbb3bb4ba64344f22b1fee26ffd3280b4e3e02b28cb811e5"
+    url "https://beta.quicklisp.org/archive/cl+ssl/2017-12-27/cl+ssl-20171227-git.tgz"
+    sha256 "449f91bddc7274166b8db7546f27bc2912126fdd2f6c802b213f7bc99867dcd4"
   end
 
   resource "cl-abnf" do
@@ -81,13 +95,13 @@ class Pgloader < Formula
   end
 
   resource "cl-containers" do
-    url "https://beta.quicklisp.org/archive/cl-containers/2015-09-23/cl-containers-20150923-git.tgz"
-    sha256 "9f02adedb39b4cab31047af7153ee46626009a8305d6fe10b79ccf3d2dd77e66"
+    url "https://beta.quicklisp.org/archive/cl-containers/2017-04-03/cl-containers-20170403-git.tgz"
+    sha256 "afafc5d18d07c783e37b1ad6ef29e8bc552292b4ddd5fd7544868cddcb5f9c72"
   end
 
   resource "cl-csv" do
-    url "https://beta.quicklisp.org/archive/cl-csv/2015-06-08/cl-csv-20150608-git.tgz"
-    sha256 "b6a1db0a10937dd1e38247eee2b4aa055a4ca4a65eb93b752a1a2f3d21e02833"
+    url "https://beta.quicklisp.org/archive/cl-csv/2018-01-31/cl-csv-20180131-git.tgz"
+    sha256 "900f0278bd9016f875c3c90fabffb0450cf629eb34f76a7d2cbaee1a20132145"
   end
 
   resource "cl-db3" do
@@ -96,18 +110,18 @@ class Pgloader < Formula
   end
 
   resource "cl-fad" do
-    url "https://beta.quicklisp.org/archive/cl-fad/2014-12-17/cl-fad-0.7.3.tgz"
-    sha256 "7fce0593d246463ee42029c3a769ca7f0e8538a4d46c82a26b8fac0b9fe23457"
+    url "https://beta.quicklisp.org/archive/cl-fad/2017-12-27/cl-fad-20171227-git.tgz"
+    sha256 "48fdd1fcf89d5f8d3c55c0064a124b35b41cb47061ac20539abb944d67608236"
   end
 
   resource "cl-interpol" do
-    url "https://beta.quicklisp.org/archive/cl-interpol/2010-10-06/cl-interpol-0.2.1.tgz"
-    sha256 "7b659ecd994f0a2b4d13f698bf1c7afde9c49f579513d59ed576c6e862d7ca66"
+    url "https://beta.quicklisp.org/archive/cl-interpol/2017-12-27/cl-interpol-20171227-git.tgz"
+    sha256 "fe4f01a27e51d4bb26691e9fa592a92266bbb89df8d4692b88f84d0d11ef9bd4"
   end
 
   resource "cl-ixf" do
-    url "https://beta.quicklisp.org/archive/cl-ixf/2014-08-26/cl-ixf-20140826-git.tgz"
-    sha256 "14c6db515cdb1b34859ef5fde4d3539b27a666938de25a036aee51ec72a4f627"
+    url "https://beta.quicklisp.org/archive/cl-ixf/2017-06-30/cl-ixf-20170630-git.tgz"
+    sha256 "c2d1cbc962c0e3136df4d7e1de65f304aa421fa1ad2fb0e3d1aaf945c7d7d5e1"
   end
 
   resource "cl-log" do
@@ -121,13 +135,13 @@ class Pgloader < Formula
   end
 
   resource "cl-mssql" do
-    url "https://beta.quicklisp.org/archive/cl-mssql/2013-10-03/cl-mssql-20131003-git.tgz"
-    sha256 "d34ada2cdabd305fd1d76a02ed60eaf4de02cd2e895060208b41d801c94373fa"
+    url "https://beta.quicklisp.org/archive/cl-mssql/2017-06-30/cl-mssql-20170630-git.tgz"
+    sha256 "be6fb798a33ceb6bb35fc4e09dcb56144f3e08b66c6d9e35b2f8a29ac6d49a6f"
   end
 
   resource "cl-ppcre" do
-    url "https://beta.quicklisp.org/archive/cl-ppcre/2015-09-23/cl-ppcre-2.0.11.tgz"
-    sha256 "626d4e1f78659d0b6e4d675c94e39afb1f602427724c961b1e4f029b348f4cb6"
+    url "https://beta.quicklisp.org/archive/cl-ppcre/2017-12-27/cl-ppcre-20171227-git.tgz"
+    sha256 "84d77df5e6913535deea5d0b7d13e0108da5eaa90034039da2976ad96762b16d"
   end
 
   resource "cl-sqlite" do
@@ -136,8 +150,8 @@ class Pgloader < Formula
   end
 
   resource "cl-unicode" do
-    url "https://beta.quicklisp.org/archive/cl-unicode/2014-12-17/cl-unicode-0.1.5.tgz"
-    sha256 "d690480a82bfaa8d5dba29b68bc24f13e4e485f825904e5822879a280bc6a5c9"
+    url "https://beta.quicklisp.org/archive/cl-unicode/2018-01-31/cl-unicode-20180131-git.tgz"
+    sha256 "aa23b1f9674dc03a241f407fc5e1b4034ba4103d3e653f3f6f9ef02b44d77084"
   end
 
   resource "cl-utilities" do
@@ -146,18 +160,18 @@ class Pgloader < Formula
   end
 
   resource "closer-mop" do
-    url "https://beta.quicklisp.org/archive/closer-mop/2015-10-31/closer-mop-20151031-git.tgz"
-    sha256 "8c75b2470e7e1a5d0b1ed6bc572704b10bf7ee340f87d0c1ae0190456c6cfb94"
+    url "https://beta.quicklisp.org/archive/closer-mop/2018-01-31/closer-mop-20180131-git.tgz"
+    sha256 "da64623f0070479f24569cfb561559fe9831d910a7c1ecbc2212b5756fbf4e53"
   end
 
   resource "command-line-arguments" do
-    url "https://beta.quicklisp.org/archive/command-line-arguments/2015-07-09/command-line-arguments-20150709-git.tgz"
-    sha256 "b032a2a750fe335be6b7327e8f87d39ed1669c671f010544b838522606a9c17c"
+    url "https://beta.quicklisp.org/archive/command-line-arguments/2015-12-18/command-line-arguments-20151218-git.tgz"
+    sha256 "d0fba1c0ac361aab4273425079945ee1ac8e7d7e7b9a960026a8c999e41edb1f"
   end
 
   resource "drakma" do
-    url "https://beta.quicklisp.org/archive/drakma/2015-10-31/drakma-2.0.2.tgz"
-    sha256 "5f40ae3c8c8cabb834234a17c8f89dd8cc35cc104b89a8f86636b4ee5280fcae"
+    url "https://beta.quicklisp.org/archive/drakma/2017-08-30/drakma-v2.0.4.tgz"
+    sha256 "ea15c928676c94c484b9c8a093adde274a0d2d439c23871c60be10b102af0d44"
   end
 
   resource "dynamic-classes" do
@@ -166,13 +180,13 @@ class Pgloader < Formula
   end
 
   resource "esrap" do
-    url "https://beta.quicklisp.org/archive/esrap/2015-10-31/esrap-20151031-git.tgz"
-    sha256 "ad18ba00760f48e291c0a3b1e884ff4a6414d4994902b67bf3ce50ca8b0a16ba"
+    url "https://beta.quicklisp.org/archive/esrap/2018-01-31/esrap-20180131-git.tgz"
+    sha256 "6cde96bad96ae2a6784ac321d7323a05db3e3fec5f1b48002b22281ff839f9cd"
   end
 
   resource "flexi-streams" do
-    url "https://beta.quicklisp.org/archive/flexi-streams/2015-07-09/flexi-streams-1.0.15.tgz"
-    sha256 "f70c76e1724978100e26d9e0e0a0844939cde084b0d7f5623f1adbc8cb187d7e"
+    url "https://beta.quicklisp.org/archive/flexi-streams/2017-12-27/flexi-streams-20171227-git.tgz"
+    sha256 "ccbbce21fe146ad7e59c9495bf5128e57329779e9abbf0fb7bfe9eef35e283c3"
   end
 
   resource "garbage-pools" do
@@ -181,48 +195,48 @@ class Pgloader < Formula
   end
 
   resource "ieee-floats" do
-    url "https://beta.quicklisp.org/archive/ieee-floats/2015-06-08/ieee-floats-20150608-git.tgz"
-    sha256 "ad1c0a62b9434f8aa0d10a2b6a725d68830008a1e5fba3b41d9890b84281ebb0"
+    url "https://beta.quicklisp.org/archive/ieee-floats/2017-08-30/ieee-floats-20170830-git.tgz"
+    sha256 "137bc5b3385c35101a6440112757df46570395cdaeed4bf11648353638c18495"
   end
 
   resource "ironclad" do
-    url "https://beta.quicklisp.org/archive/ironclad/2014-11-06/ironclad_0.33.0.tgz"
-    sha256 "e7f33e7ad79106de7a7f861013cde2812b83a22f6ab340fb37a6c4fad0efa0d1"
+    url "https://beta.quicklisp.org/archive/ironclad/2017-11-30/ironclad-v0.37.tgz"
+    sha256 "22de0d98a3e5b076676a1a3d1fcd7673058269ce52574b1064fa26e98bb13418"
   end
 
   resource "iterate" do
-    url "https://beta.quicklisp.org/archive/iterate/2014-07-13/iterate-20140713-darcs.tgz"
-    sha256 "c50264e19b0c5cf52f05dc45889a48c96d449ce24dd15018a228fa6a722405b2"
+    url "https://beta.quicklisp.org/archive/iterate/2018-01-31/iterate-20180131-darcs.tgz"
+    sha256 "122698472a6044fd7db8828fd4eb62e8c4b3dbd715a8d3932573049e4ae35416"
   end
 
   resource "local-time" do
-    url "https://beta.quicklisp.org/archive/local-time/2015-06-08/local-time-20150608-git.tgz"
-    sha256 "5c251852c09e508962a02ab441fccc07524bcb6059c6bc77ec4f1d20472bee3c"
+    url "https://beta.quicklisp.org/archive/local-time/2018-01-31/local-time-20180131-git.tgz"
+    sha256 "f9e674202596ffe70e82f44e303fa866ce39188990014b42ea334cdc2ca813c5"
   end
 
   resource "lparallel" do
-    url "https://beta.quicklisp.org/archive/lparallel/2015-09-23/lparallel-20150923-git.tgz"
-    sha256 "deaf06f4796630c85fcc1fff3b9b715d674cc3ecb9ab742b0cca77132e4440ec"
+    url "https://beta.quicklisp.org/archive/lparallel/2016-08-25/lparallel-20160825-git.tgz"
+    sha256 "213bc89e6bbabe07fc3bcb21be1021b31f6f2ab1b7a2abb358a01ab9bee69c73"
   end
 
   resource "md5" do
-    url "https://beta.quicklisp.org/archive/md5/2015-08-04/md5-20150804-git.tgz"
-    sha256 "856d522b4f60af0ead0435114c11100c0f5348e5e1db5fffe93a851be54dc7e9"
+    url "https://beta.quicklisp.org/archive/md5/2017-06-30/md5-20170630-git.tgz"
+    sha256 "ddc3c29843fecf1af5f39346ff91cebadcc4ffb61d3e64698acbcda90722915e"
   end
 
   resource "metabang-bind" do
-    url "https://beta.quicklisp.org/archive/metabang-bind/2014-11-06/metabang-bind-20141106-git.tgz"
-    sha256 "84b0d7384a8f385140a11820e4f57cfd630c8e7ff48b44d357e9af9acd82be86"
+    url "https://beta.quicklisp.org/archive/metabang-bind/2017-11-30/metabang-bind-20171130-git.tgz"
+    sha256 "2ac820a212756f49b7987f2603c22c8eb10ded912903843f9792e28004794c56"
   end
 
   resource "metatilities-base" do
-    url "https://beta.quicklisp.org/archive/metatilities-base/2012-09-09/metatilities-base-20120909-git.tgz"
-    sha256 "2a0f3f2b3d9724035e03c4bcb9fa587a2a638bd0fd64f20926d83efa09e8d4f8"
+    url "https://beta.quicklisp.org/archive/metatilities-base/2017-04-03/metatilities-base-20170403-git.tgz"
+    sha256 "799d8a3743660bb98bf517a22aae0c73269061fdf9e69214c3b679f3ee9f8191"
   end
 
   resource "nibbles" do
-    url "https://beta.quicklisp.org/archive/nibbles/2015-07-09/nibbles-20150709-git.tgz"
-    sha256 "2fc1e3a8a62f322904b2bb0f3743c25c0e75939944ed8de4eb73f50670d9f652"
+    url "https://beta.quicklisp.org/archive/nibbles/2017-11-30/nibbles-20171130-git.tgz"
+    sha256 "f61732eaac77db579738b06606bcad25d3e5477970d97b32e4a086a9a2f5d317"
   end
 
   resource "parse-number" do
@@ -231,8 +245,8 @@ class Pgloader < Formula
   end
 
   resource "postmodern" do
-    url "https://beta.quicklisp.org/archive/postmodern/2015-10-31/postmodern-20151031-git.tgz"
-    sha256 "636d7192e57f236dd580ceede1431ef0cdfbf9bc1906914fc98a691f2a88f65b"
+    url "https://beta.quicklisp.org/archive/postmodern/2018-01-31/postmodern-20180131-git.tgz"
+    sha256 "7156d15be6271a9afa75e99072fd94d109aa1a008c10eb988ec1df544ebde557"
   end
 
   resource "puri" do
@@ -241,18 +255,18 @@ class Pgloader < Formula
   end
 
   resource "py-configparser" do
-    url "https://beta.quicklisp.org/archive/py-configparser/2013-10-03/py-configparser-20131003-svn.tgz"
-    sha256 "9d5365e66f5d788535d53ebf4c733e7d0d47c5b5e5f817c151503325e8c69a81"
+    url "https://beta.quicklisp.org/archive/py-configparser/2017-08-30/py-configparser-20170830-svn.tgz"
+    sha256 "325d2c059deaf3506f69ae7d8c71a0d5aa38a0f3f244a73a0b06676baa30c051"
   end
 
   resource "qmynd" do
-    url "https://beta.quicklisp.org/archive/qmynd/2015-08-04/qmynd-20150804-git.tgz"
-    sha256 "a25ef1ed7bb162b40f964fd0e0baec1c6c6dca19b27aa09c05f6ed7f3061ca47"
+    url "https://beta.quicklisp.org/archive/qmynd/2018-01-31/qmynd-20180131-git.tgz"
+    sha256 "2c98ca6500f171744d12bd1bd8476092016787e1c875b13437e3fe9bfd5537e6"
   end
 
   resource "quri" do
-    url "https://beta.quicklisp.org/archive/quri/2015-10-31/quri-20151031-git.tgz"
-    sha256 "b7eba0392f588e9af57c47805bd9210ed1c35d0cde62e0fd5da80b2a658203be"
+    url "https://beta.quicklisp.org/archive/quri/2016-12-04/quri-20161204-git.tgz"
+    sha256 "7b29fe2c2746f2cf59eee703b2ff65b10e6ed2e10232f2c8456657d1e6402e92"
   end
 
   resource "salza2" do
@@ -266,13 +280,13 @@ class Pgloader < Formula
   end
 
   resource "trivial-backtrace" do
-    url "https://beta.quicklisp.org/archive/trivial-backtrace/2015-04-07/trivial-backtrace-20150407-git.tgz"
-    sha256 "97d045b7701e3dcc49149a0a94e3648131bd586e803126d07a79f405f6c07cd1"
+    url "https://beta.quicklisp.org/archive/trivial-backtrace/2016-05-31/trivial-backtrace-20160531-git.tgz"
+    sha256 "1df68d7d0f4a9611e5470cdacae58d594b26cc63b223e89fd85152b119559bed"
   end
 
   resource "trivial-features" do
-    url "https://beta.quicklisp.org/archive/trivial-features/2015-09-23/trivial-features-20150923-git.tgz"
-    sha256 "f7afa96fab42e57ccf86ccd787ee743913c7e2bcb549502ab85eb6948e636808"
+    url "https://beta.quicklisp.org/archive/trivial-features/2016-12-04/trivial-features-20161204-git.tgz"
+    sha256 "424681538abfa8c5af41fae0099c6e5cb9b05f823a094abba42fcac312f35f44"
   end
 
   resource "trivial-garbage" do
@@ -291,13 +305,13 @@ class Pgloader < Formula
   end
 
   resource "uiop" do
-    url "https://beta.quicklisp.org/archive/uiop/2015-10-31/uiop-3.1.6.tgz"
-    sha256 "8b01848d84a5c5dd6107aa63b4bcabb9b0d0889dd4eb351cfe88255f4ded9115"
+    url "https://beta.quicklisp.org/archive/uiop/2017-12-27/uiop-3.3.1.tgz"
+    sha256 "0cbe1012899f1b1584f954bcb265d306b974ebd9141f97b476879adc00513b71"
   end
 
   resource "usocket" do
-    url "https://beta.quicklisp.org/archive/usocket/2015-06-08/usocket-0.6.3.2.tgz"
-    sha256 "2815c7bdf1352f1ac634204ec12457ff57dfe64170512e6416bb17eb4799fce6"
+    url "https://beta.quicklisp.org/archive/usocket/2016-10-31/usocket-0.7.0.1.tgz"
+    sha256 "c2454e8d8f65bf81aadf877d65d9b6364ed25f8560ad405063e2b4bfb872ecd6"
   end
 
   resource "uuid" do
@@ -354,7 +368,7 @@ class Pgloader < Formula
     ENV["PGHOST"] = testpath/"socket"
     ENV["PGDATABASE"] = "brew"
 
-    (testpath/"test.load").write <<-EOS.undent
+    (testpath/"test.load").write <<~EOS
       LOAD CSV
         FROM inline (code, country)
         INTO postgresql:///#{ENV["PGDATABASE"]}?tablename=csv

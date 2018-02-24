@@ -1,15 +1,14 @@
 class Nagios < Formula
   desc "Network monitoring and management system"
   homepage "https://www.nagios.org/"
-  url "https://downloads.sourceforge.net/project/nagios/nagios-4.x/nagios-4.0.6/nagios-4.0.6.tar.gz"
-  sha256 "d400190c771eb90e0ba16351f6358fa7e22e42a7be986f2066db63518a14397b"
+  url "https://downloads.sourceforge.net/project/nagios/nagios-4.x/nagios-4.3.4/nagios-4.3.4.tar.gz"
+  sha256 "c90b7812d9e343db12be19a572e15c415c5d6353a91c5e226e432c2d4aaa44f1"
 
   bottle do
-    cellar :any
-    sha256 "1b7ef621545f9513777feca6fae80eb74e3b4ff89741fb5e535564c5d874295d" => :sierra
-    sha256 "36fd9a8eda1286902fefea97a76e508e27c6cd7fd6cc2156558411f6b3f32709" => :el_capitan
-    sha256 "d577fda33880b29093628affbf7e71d9e1e37220f84b6c83cc7dbb05875fa86a" => :yosemite
-    sha256 "e5a625fae90701cbbfa97fa872c8a694d1365f04d970822e3bc8d81aa37ca667" => :mavericks
+    sha256 "d1d4071289fd037542a4f36f205ba522d3aae397e5379def5c402e6befb19f72" => :high_sierra
+    sha256 "979dbfa690a58f825c7c06376e2c27ed0b680a1415a996a4666325a2dfaf9ed3" => :sierra
+    sha256 "0f33981e12c49a84137d57bfd3c9163da1632ab9c1a9ab97f699d4a7f722811a" => :el_capitan
+    sha256 "a521392cf589fab9d9dda30b4cb1e5a7c23baf22b898114a3d65b40a830b2a81" => :yosemite
   end
 
   depends_on "gd"
@@ -17,27 +16,27 @@ class Nagios < Formula
   depends_on "libpng"
 
   def nagios_sbin
-    prefix+"cgi-bin"
+    prefix/"cgi-bin"
   end
 
   def nagios_etc
-    etc+"nagios"
+    etc/"nagios"
   end
 
   def nagios_var
-    var+"lib/nagios"
+    var/"lib/nagios"
   end
 
   def htdocs
-    share+"nagios/htdocs"
+    pkgshare/"htdocs"
   end
 
   def user
-    `id -un`.chomp
+    Utils.popen_read("id -un").chomp
   end
 
   def group
-    `id -gn`.chomp
+    Utils.popen_read("id -gn").chomp
   end
 
   def install
@@ -55,44 +54,26 @@ class Nagios < Formula
                           "--with-nagios-group='#{group}'",
                           "--with-command-user=#{user}",
                           "--with-command-group=_www",
-                          "--with-httpd-conf=#{share}"
+                          "--with-httpd-conf=#{share}",
+                          "--disable-libtool"
     system "make", "all"
     system "make", "install"
 
     # Install config
-    system "make install-config"
-    system "make install-webconf"
-    mkdir HOMEBREW_PREFIX+"var/lib/nagios/rw" unless File.exist? HOMEBREW_PREFIX+"var/lib/nagios/rw"
+    system "make", "install-config"
+    system "make", "install-webconf"
   end
 
-  plist_options :startup => true, :manual => "nagios #{HOMEBREW_PREFIX}/etc/nagios/nagios.cfg"
+  def post_install
+    (var/"lib/nagios/rw").mkpath
 
-  def plist; <<-EOS.undent
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-    <plist version="1.0">
-    <dict>
-            <key>KeepAlive</key>
-            <true/>
-            <key>Label</key>
-            <string>#{plist_name}</string>
-            <key>ProgramArguments</key>
-            <array>
-                    <string>#{opt_bin}/nagios</string>
-                    <string>#{nagios_etc}/nagios.cfg</string>
-            </array>
-            <key>RunAtLoad</key>
-            <true/>
-            <key>StandardErrorPath</key>
-            <string>/dev/null</string>
-            <key>StandardOutPath</key>
-            <string>/dev/null</string>
-    </dict>
-    </plist>
-    EOS
+    config = etc/"nagios/nagios.cfg"
+    return unless File.exist?(config)
+    return if File.read(config).include?(ENV["USER"])
+    inreplace config, "brew", ENV["USER"]
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     First we need to create a command dir using superhuman powers:
 
       mkdir -p #{nagios_var}/rw
@@ -122,5 +103,36 @@ class Nagios < Formula
       open http://localhost/nagios
 
     EOS
+  end
+
+  plist_options :startup => true, :manual => "nagios #{HOMEBREW_PREFIX}/etc/nagios/nagios.cfg"
+
+  def plist; <<~EOS
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+      <key>KeepAlive</key>
+      <true/>
+      <key>Label</key>
+      <string>#{plist_name}</string>
+      <key>ProgramArguments</key>
+      <array>
+        <string>#{opt_bin}/nagios</string>
+        <string>#{nagios_etc}/nagios.cfg</string>
+      </array>
+      <key>RunAtLoad</key>
+      <true/>
+      <key>StandardErrorPath</key>
+      <string>/dev/null</string>
+      <key>StandardOutPath</key>
+      <string>/dev/null</string>
+    </dict>
+    </plist>
+    EOS
+  end
+
+  test do
+    assert_match version.to_s, shell_output("#{bin}/nagios --version")
   end
 end

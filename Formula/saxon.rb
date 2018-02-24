@@ -1,9 +1,9 @@
 class Saxon < Formula
   desc "XSLT and XQuery processor"
-  homepage "http://saxon.sourceforge.net"
-  url "https://downloads.sourceforge.net/project/saxon/Saxon-HE/9.7/SaxonHE9-7-0-4J.zip"
-  version "9.7.0.4"
-  sha256 "b83d9abb4ed2b333a965c7c41787f7073d5af4d5a72e26ad6a551d1bbf9633de"
+  homepage "https://saxon.sourceforge.io"
+  url "https://downloads.sourceforge.net/project/saxon/Saxon-HE/9.8/SaxonHE9-8-0-4J.zip"
+  version "9.8.0.4"
+  sha256 "e19cdc64111af9e4c84b6d67bed792c3017775465cb42f6063af9f2d66ff5154"
 
   bottle :unneeded
 
@@ -13,10 +13,10 @@ class Saxon < Formula
   end
 
   test do
-    (testpath/"test.xml").write <<-XML.undent
+    (testpath/"test.xml").write <<~EOS
       <test>It works!</test>
-    XML
-    (testpath/"test.xsl").write <<-XSL.undent
+    EOS
+    (testpath/"test.xsl").write <<~EOS
       <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
         <xsl:template match="/">
           <html>
@@ -26,13 +26,13 @@ class Saxon < Formula
           </html>
         </xsl:template>
       </xsl:stylesheet>
-    XSL
-    assert_equal <<-HTML.undent.chop, shell_output("#{bin}/saxon test.xml test.xsl")
+    EOS
+    assert_equal <<~EOS.chop, shell_output("#{bin}/saxon test.xml test.xsl")
       <html>
          <body>
             <p>It works!</p>
          </body>
       </html>
-    HTML
+    EOS
   end
 end

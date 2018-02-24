@@ -1,14 +1,14 @@
 class Freetds < Formula
   desc "Libraries to talk to Microsoft SQL Server and Sybase databases"
   homepage "http://www.freetds.org/"
-  url "ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.20.tar.gz"
-  mirror "https://fossies.org/linux/privat/freetds-1.00.20.tar.gz"
-  sha256 "35d13e34008b784cb583ffe6a2c85a7d0eda2a88ce5fb60a847c86905dc0b9e5"
+  url "http://www.freetds.org/files/stable/freetds-1.00.82.tar.bz2"
+  mirror "https://fossies.org/linux/privat/freetds-1.00.82.tar.bz2"
+  sha256 "ccc6d3df74096cfc3b8d169e5483f5cfa3e58f1bb82ec144ba490c140661ec6a"
 
   bottle do
-    sha256 "b467ed1ce29e024c9cfb8207e06f8e6f9b64ec623ecde3b5b1e9b20329660649" => :sierra
-    sha256 "3c51027462b85b3d509776d33486a9480671a41bea3ffbfec9234374bbc15893" => :el_capitan
-    sha256 "a9fd1c9eb57ac3aca56f62927b41a8dc866b4334b0d6b05f048d194e7ad5deca" => :yosemite
+    sha256 "a9e15897934467f7a32c166300a8edae2d73a15a13c3ec70877544400fd5ad17" => :high_sierra
+    sha256 "29e74a9a4d19c32e7d44aea7ed322ea32a4017182ab2d78a49aa23e4a26af58c" => :sierra
+    sha256 "89f1cacc94b35f62e65be2a0d6d5590a5a7fea239d8e19614b37b414da2182cc" => :el_capitan
   end
 
   head do
@@ -20,7 +20,6 @@ class Freetds < Formula
     depends_on "libtool" => :build
   end
 
-  option :universal
   option "with-msdblib", "Enable Microsoft behavior in the DB-Library API where it diverges from Sybase's"
   option "with-sybase-compat", "Enable close compatibility with Sybase's ABI, at the expense of other features"
   option "with-odbc-wide", "Enable odbc wide, prevent unicode - MemoryError's"
@@ -62,12 +61,8 @@ class Freetds < Formula
     # Translate formula's "--with" options to configuration script's "--enable"
     # options
     %w[msdblib sybase-compat odbc-wide krb5].each do |option|
-      if build.with? option
-        args << "--enable-#{option}"
-      end
+      args << "--enable-#{option}" if build.with? option
     end
-
-    ENV.universal_binary if build.universal?
 
     if build.head?
       system "./autogen.sh", *args
@@ -75,7 +70,7 @@ class Freetds < Formula
       system "./configure", *args
     end
     system "make"
-    ENV.j1 # Or fails to install on multi-core machines
+    ENV.deparallelize # Or fails to install on multi-core machines
     system "make", "install"
   end
 

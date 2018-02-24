@@ -1,14 +1,8 @@
 class Byteman < Formula
-  desc "Java bytecode manipulation tool for testing, monitoring and tracing."
+  desc "Java bytecode manipulation tool for testing, monitoring and tracing"
   homepage "https://byteman.jboss.org/"
-  url "https://downloads.jboss.org/byteman/3.0.5/byteman-download-3.0.5-bin.zip"
-  sha256 "c7b90b63346d4a0f648c55e12c21110fb173fb9ae8471727fd44906591fa8c26"
-
-  devel do
-    url "https://downloads.jboss.org/byteman/4.0.0-BETA0/byteman-download-4.0.0-BETA0-bin.zip"
-    sha256 "345b10b207e7213e96a124b05b52b71fb932d1668733cbd7e0b4ec4f497bb5a8"
-    version "4.0.0-BETA0"
-  end
+  url "https://downloads.jboss.org/byteman/4.0.1/byteman-download-4.0.1-bin.zip"
+  sha256 "a69b199ad15407e8003b2da61512446c3392eb189e097ee042e9e758cde3da64"
 
   bottle :unneeded
   depends_on :java => "1.6+"
@@ -28,7 +22,7 @@ class Byteman < Formula
   end
 
   test do
-    (testpath/"src/main/java/BytemanHello.java").write <<-EOS.undent
+    (testpath/"src/main/java/BytemanHello.java").write <<~EOS
       class BytemanHello {
         public static void main(String... args) {
           System.out.println("Hello, Brew!");
@@ -36,7 +30,7 @@ class Byteman < Formula
       }
     EOS
 
-    (testpath/"brew.btm").write <<-EOS.undent
+    (testpath/"brew.btm").write <<~EOS
       RULE trace main entry
       CLASS BytemanHello
       METHOD main
@@ -56,10 +50,10 @@ class Byteman < Formula
     # Compile example
     system "javac", "src/main/java/BytemanHello.java"
     # Expected successful output when Byteman runs example
-    expected = <<-EOS.undent
-    Entering main
-    Hello, Brew!
-    Exiting main
+    expected = <<~EOS
+      Entering main
+      Hello, Brew!
+      Exiting main
     EOS
     actual = shell_output("#{bin}/bmjava -l brew.btm -cp src/main/java BytemanHello")
     assert_equal(expected, actual)

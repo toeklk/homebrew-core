@@ -1,14 +1,15 @@
 class Hebcal < Formula
   desc "Perpetual Jewish calendar for the command-line"
   homepage "https://github.com/hebcal/hebcal"
-  url "https://github.com/hebcal/hebcal/archive/v4.10.tar.gz"
-  sha256 "c3728870c95b9289df9f6a4ef3cdd2303ee3d7978c5114013b04703528a4923e"
+  url "https://github.com/hebcal/hebcal/archive/v4.13.tar.gz"
+  sha256 "7b2e69b0e400ffd727fd818d926484c3f15a51cd6b325cea2483354501d6fce9"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "124d8d686c08c0df51c677510126ed92bc2b0731cc2627944f4d698c0b8dab9c" => :sierra
-    sha256 "b74724fc183f43732db2b1ae910eb566f1555be92e5f6e90aa04089bbdbb2cc6" => :el_capitan
-    sha256 "bb04224c664ab61c340428dd364a0456166e96e55242dd573084371d44a50874" => :yosemite
+    sha256 "95fd596027fcf571cd1091be417f28ad59ee838aab4c0769f8f36ae10896eeb0" => :high_sierra
+    sha256 "b520aadc300e1660d66e8ee26712405b3581ad32b20c119908c5890d90f721e9" => :sierra
+    sha256 "55630d52364af42172ae1abc10847110fabe93f94ae21708863803be7c35fdc9" => :el_capitan
+    sha256 "37d26466a7deb14cb2f38cc7eff1621eef652239bb973b3f5c5c870cb624399d" => :yosemite
   end
 
   depends_on "autoconf" => :build

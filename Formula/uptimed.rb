@@ -5,6 +5,7 @@ class Uptimed < Formula
   sha256 "26891965bb499065e34072cecd3eb8087102b1c05f530c8fe8504a07c722f9bf"
 
   bottle do
+    sha256 "0cf4e158be10141b759d7cb0edcea6ead489b64e625751dc3df5f8a5b49f3916" => :high_sierra
     sha256 "35abda91e2e732e28a6e967e421d9e571678c17725149098dd8543c632f8ca0d" => :sierra
     sha256 "1aa7991db96ff3cb2a2d2e9a62177a724380068ddd5f37501fc0cfa9e87bb0d2" => :el_capitan
     sha256 "cd0bd1b637357439872b01eeb3b32e10c111dd630b711bbd0ea7488f66c68a64" => :yosemite
@@ -28,7 +29,9 @@ class Uptimed < Formula
     system "make", "install"
   end
 
-  def plist; <<-EOS.undent
+  plist_options :manual => "uptimed"
+
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -54,6 +57,9 @@ class Uptimed < Formula
   end
 
   test do
-    system "#{bin}/uprecords"
+    system "#{sbin}/uptimed", "-t", "0"
+    sleep 2
+    output = shell_output("#{bin}/uprecords -s")
+    assert_match /->\s+\d+\s+\d+\w,\s+\d+:\d+:\d+\s+|.*/, output, "Uptime returned is invalid"
   end
 end

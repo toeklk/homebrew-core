@@ -2,15 +2,18 @@ class DockerMachineDriverXhyve < Formula
   desc "Docker Machine driver for xhyve"
   homepage "https://github.com/zchee/docker-machine-driver-xhyve"
   url "https://github.com/zchee/docker-machine-driver-xhyve.git",
-    :tag => "v0.3.0",
-    :revision => "b74c23dc15666ad6d5ccdd207b87a6c44bdd584d"
+    :tag => "v0.3.3",
+    :revision => "7d92f74a8b9825e55ee5088b8bfa93b042badc47"
 
   head "https://github.com/zchee/docker-machine-driver-xhyve.git"
 
   bottle do
-    sha256 "f650f9a530c52b62d6aeaeca51453f2488155f9c3b9e7ee6fec8f1006f4bad3b" => :sierra
-    sha256 "4425bd727de66f57cc15f4c14d10cf764a1e968ac19022ead3f5144b3d859934" => :el_capitan
-    sha256 "6042fe21e3e6e6feb46273796d5cbe9ba307ea73e3e6c40135f23e5e820f411d" => :yosemite
+    cellar :any_skip_relocation
+    rebuild 1
+    sha256 "826c8da536f8a69110a0b0ad81e94b23449fa0adc5aaa4c4a77f2ed4bc4108b6" => :high_sierra
+    sha256 "407e1ed8a553f39fab89269acf1d94c28f6496e1314d7166d35463178c170640" => :sierra
+    sha256 "1cef89278cc1df107d71187bdc0f24d941d4d92d4d773fe0ffe50033a16118f5" => :el_capitan
+    sha256 "10bc22b8ece5f7ae8fa190d3c95b6f0f4825a5d1adcb941500c993f4b9ddf2a9" => :yosemite
   end
 
   option "without-qcow2", "Do not support qcow2 disk image format"
@@ -19,7 +22,8 @@ class DockerMachineDriverXhyve < Formula
   depends_on "go" => :build
   depends_on "docker-machine" => :recommended
   if build.with? "qcow2"
-    depends_on "opam"
+    depends_on "ocaml" => :build
+    depends_on "opam" => :build
     depends_on "libev"
   end
 
@@ -32,9 +36,12 @@ class DockerMachineDriverXhyve < Formula
 
     cd build_root do
       git_hash = `git rev-parse --short HEAD --quiet`.chomp
-      if build.head?
-        git_hash = "HEAD-#{git_hash}"
-      end
+      git_hash = "HEAD-#{git_hash}" if build.head?
+
+      go_ldflags = "-w -s -X 'github.com/zchee/docker-machine-driver-xhyve/xhyve.GitCommit=Homebrew#{git_hash}'"
+      ENV["GO_LDFLAGS"] = go_ldflags
+      ENV["GO_BUILD_TAGS"] = build_tags
+      ENV["LIBEV_FILE"] = "#{Formula["libev"].opt_lib}/libev.a"
 
       if build.with? "qcow2"
         build_tags << " qcow2"
@@ -45,23 +52,33 @@ class DockerMachineDriverXhyve < Formula
         ENV["PERL5LIB"] = "#{opam_dir}/system/lib/perl5"
         ENV["OCAML_TOPLEVEL_PATH"] = "#{opam_dir}/system/lib/toplevel"
         ENV.prepend_path "PATH", "#{opam_dir}/system/bin"
-        system "opam", "install", "-y", "uri", "qcow-format", "conf-libev"
+
+        inreplace "#{opam_dir}/compilers/4.05.0/4.05.0/4.05.0.comp",
+          '["./configure"', '["./configure" "-no-graph"' # Avoid X11
+
+        ENV.deparallelize { system "opam", "switch", "4.05.0" }
+
+        system "opam", "config", "exec", "--",
+               "opam", "install", "-y", "uri", "qcow-format", "io-page.1.6.1",
+               "conf-libev", "mirage-block-unix>2.3.0", "lwt<3.1.0"
+
+        system "opam", "config", "exec", "--", "make", "lib9p"
+        system "opam", "config", "exec", "--", "make", "build"
+      else
+        system "make", "lib9p"
+        system "make", "build"
       end
 
-      go_ldflags = "-w -s -X 'github.com/zchee/docker-machine-driver-xhyve/xhyve.GitCommit=Homebrew#{git_hash}'"
-      ENV["GO_LDFLAGS"] = go_ldflags
-      ENV["GO_BUILD_TAGS"] = build_tags
-      system "make", "lib9p"
-      system "make", "build"
       bin.install "bin/docker-machine-driver-xhyve"
+      prefix.install_metafiles
     end
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     This driver requires superuser privileges to access the hypervisor. To
     enable, execute
-        sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
-        sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+        sudo chown root:wheel #{opt_prefix}/bin/docker-machine-driver-xhyve
+        sudo chmod u+s #{opt_prefix}/bin/docker-machine-driver-xhyve
     EOS
   end
 

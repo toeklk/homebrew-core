@@ -1,16 +1,15 @@
 class Owfs < Formula
   desc "Monitor and control physical environment using Dallas/Maxim 1-wire system"
   homepage "http://owfs.org/"
-  url "https://downloads.sourceforge.net/project/owfs/owfs/3.1p4/owfs-3.1p4.tar.gz"
-  version "3.1p4"
-  sha256 "83ea34ede9f44665c5bef4e46fd9bbc087ad8a76c533bcbf03b436b7601e1e54"
+  url "https://downloads.sourceforge.net/project/owfs/owfs/3.2p2/owfs-3.2p2.tar.gz"
+  version "3.2p2"
+  sha256 "39535521a65a74bd36dc31726bcf04201f60f230a7944e9a63c393c318f5113c"
 
   bottle do
     cellar :any
-    sha256 "d2596e89c6f0a388ba62f66ca152a1c155c3992497c354eebc0701290fc82b25" => :sierra
-    sha256 "63142415875279e8c5a4cdb6c54fa898fe8648570558c0f1a8d3626ad6d868af" => :el_capitan
-    sha256 "7ea77ba55ee52f8bad219d904e78a708262b21ec7746bbfd02e9f70f10aa7f7b" => :yosemite
-    sha256 "dd21b7a305e3469d5542c45b82b9a678eb6b5ddfb853cb835e10fc91c63dd5eb" => :mavericks
+    sha256 "51bd18872d4b55af34626459c3f6e039139647124abff190b280e4ddf2c4012f" => :high_sierra
+    sha256 "5dd1116b1058b7eb849905b6af987e7ea71fd3486ccc8f1670cf841b6583802f" => :sierra
+    sha256 "06a2b3710c371730028a58bab488064f967ef6e820f0877e723f38a4e5eaf5e7" => :el_capitan
   end
 
   depends_on "pkg-config" => :build

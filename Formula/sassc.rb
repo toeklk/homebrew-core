@@ -1,14 +1,16 @@
 class Sassc < Formula
   desc "Wrapper around libsass that helps to create command-line apps"
   homepage "https://github.com/sass/sassc"
-  url "https://github.com/sass/sassc.git", :tag => "3.3.6", :revision => "e32c23dafbad59e757d5a3aab153e5f3a01cb6ab"
+  url "https://github.com/sass/sassc.git",
+      :tag => "3.4.8",
+      :revision => "aa6d5c635ea8faf44d542a23aaf85d27e5777d48"
   head "https://github.com/sass/sassc.git"
 
   bottle do
     cellar :any
-    sha256 "f59af4d6364440102506fe9d92921a0dd9bcffab9bc2a620c1be637d416cb10c" => :sierra
-    sha256 "534c0fc0ae6e79accb16da5e9ffef0900924fac876a4364ce78c5513a0a55083" => :el_capitan
-    sha256 "ccc9448a322b91eb877893f7978f0f1fea9edc79853d76dec7a16047d921ef4e" => :yosemite
+    sha256 "f48aaee9afc666a7ac0ce4b341b7e15b4e4d9404a77500e73da3cdfd73d4eaa8" => :high_sierra
+    sha256 "bcc4826570ea3b06ce0abbe121c34dceb4bbe63725813141b4609103a4b2db51" => :sierra
+    sha256 "25a34fbafc73386346451db63cffdfe2455d22a834a0510ff51d8bec925fbc3e" => :el_capitan
   end
 
   depends_on "autoconf" => :build
@@ -25,7 +27,7 @@ class Sassc < Formula
   end
 
   test do
-    (testpath/"input.scss").write <<-EOS.undent
+    (testpath/"input.scss").write <<~EOS
       div {
         img {
           border: 0px;

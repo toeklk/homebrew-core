@@ -1,11 +1,12 @@
 class I2util < Formula
   desc "Internet2 utility tools"
-  homepage "http://software.internet2.edu/"
-  url "http://software.internet2.edu/sources/I2util/I2util-1.2.tar.gz"
+  homepage "https://software.internet2.edu/"
+  url "https://software.internet2.edu/sources/I2util/I2util-1.2.tar.gz"
   sha256 "3b704cdb88e83f7123f3cec0fe3283b0681cc9f80c426c3f761a0eefd1d72c59"
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "47c66cf5e0bfec05a5c254dc4088fe2ec3dd45772d729bd0b38146afdfbd0f0a" => :high_sierra
     sha256 "562e2d9021ff8044ca05a63c31d6560e5071ffc62f34ff1046cf195118b3471a" => :sierra
     sha256 "44f87d48502ae3e34ebfc0882aa689a70e8c92d398247c5a53e2f4b7d7652b39" => :el_capitan
     sha256 "ad1821b2637c75638de2ecd2bd3127a0c8300fe4fbd72c18ae648a131b97b6f7" => :yosemite
@@ -21,7 +22,7 @@ class I2util < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <I2util/util.h>
       #include <string.h>
       int main() {
@@ -31,7 +32,7 @@ class I2util < Formula
         return 0;
       }
     EOS
-    system ENV.cc, "test.c", "-lI2util", "-o", "test"
+    system ENV.cc, "test.c", "-L#{lib}", "-lI2util", "-o", "test"
     system "./test"
   end
 end

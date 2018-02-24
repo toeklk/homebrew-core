@@ -1,21 +1,21 @@
 class Postgresql < Formula
   desc "Object-relational database system"
   homepage "https://www.postgresql.org/"
-  url "https://ftp.postgresql.org/pub/source/v9.6.1/postgresql-9.6.1.tar.bz2"
-  sha256 "e5101e0a49141fc12a7018c6dad594694d3a3325f5ab71e93e0e51bd94e51fcd"
-
+  url "https://ftp.postgresql.org/pub/source/v10.2/postgresql-10.2.tar.bz2"
+  sha256 "fe32009b62ddb97f7f014307ce9d0edb6972f5a698e63cb531088e147d145bad"
   head "https://github.com/postgres/postgres.git"
 
   bottle do
-    sha256 "0da8bf2c15d5991feb11df68680b85d29fb56cca7cf51262cd467ad688b2130c" => :sierra
-    sha256 "f885679f2fe9999551fab47618529287097345a8226da5b969baaa26a60333b4" => :el_capitan
-    sha256 "6f535922dca6457f0b16a5a22be5d35ec9138dc2334acc60a660dbb7594c1d41" => :yosemite
+    sha256 "cd6cc15552d50b9c2d3947e3c992ab7a337d28d69ee868dc4aa14a384af75d0d" => :high_sierra
+    sha256 "e590d7301f8f69d538845dd264f7dfd6d60ee6361dc16ea7c39adb4d20d6fcd1" => :sierra
+    sha256 "d76f53f2747f808277afd80264a7e624b13e9b3e48ac57d7445f607b03ed1ac8" => :el_capitan
   end
 
-  option "32-bit"
   option "without-perl", "Build without Perl support"
   option "without-tcl", "Build without Tcl support"
   option "with-dtrace", "Build with DTrace support"
+  option "with-python", "Enable PL/Python2"
+  option "with-python3", "Enable PL/Python3 (incompatible with --with-python)"
 
   deprecated_option "no-perl" => "without-perl"
   deprecated_option "no-tcl" => "without-tcl"
@@ -23,13 +23,9 @@ class Postgresql < Formula
 
   depends_on "openssl"
   depends_on "readline"
-  depends_on "libxml2" if MacOS.version <= :leopard # Leopard libxml is too old
 
-  option "with-python", "Enable PL/Python2"
-  depends_on :python => :optional
-
-  option "with-python3", "Enable PL/Python3 (incompatible with --with-python)"
-  depends_on :python3 => :optional
+  depends_on "python" => :optional
+  depends_on "python3" => :optional
 
   conflicts_with "postgres-xc",
     :because => "postgresql and postgres-xc install the same binaries."
@@ -40,7 +36,6 @@ class Postgresql < Formula
   end
 
   def install
-    ENV.libxml2 if MacOS.version >= :snow_leopard
     # avoid adding the SDK library directory to the linker search path
     ENV["XML2_CONFIG"] = "xml2-config --exec-prefix=/usr"
 
@@ -80,17 +75,13 @@ class Postgresql < Formula
     if build.with?("tcl") && (MacOS.version >= :mavericks || MacOS::CLT.installed?)
       args << "--with-tcl"
 
-      if File.exist?("#{MacOS.sdk_path}/usr/lib/tclConfig.sh")
-        args << "--with-tclconfig=#{MacOS.sdk_path}/usr/lib"
+      if File.exist?("#{MacOS.sdk_path}/System/Library/Frameworks/Tcl.framework/tclConfig.sh")
+        args << "--with-tclconfig=#{MacOS.sdk_path}/System/Library/Frameworks/Tcl.framework"
       end
     end
 
     args << "--enable-dtrace" if build.with? "dtrace"
     args << "--with-uuid=e2fs"
-
-    if build.build_32_bit?
-      ENV.append %w[CFLAGS LDFLAGS], "-arch #{Hardware::CPU.arch_32_bit}"
-    end
 
     system "./configure", *args
     system "make"
@@ -107,25 +98,15 @@ class Postgresql < Formula
     end
   end
 
-  def caveats; <<-EOS.undent
-    If builds of PostgreSQL 9 are failing and you have version 8.x installed,
-    you may need to remove the previous version first. See:
-      https://github.com/Homebrew/homebrew/issues/2510
-
-    To migrate existing data from a previous major version (pre-9.0) of PostgreSQL, see:
-      https://www.postgresql.org/docs/9.6/static/upgrading.html
-
-    To migrate existing data from a previous minor version (9.0-9.5) of PostgreSQL, see:
-      https://www.postgresql.org/docs/9.6/static/pgupgrade.html
-
-      You will need your previous PostgreSQL installation from brew to perform `pg_upgrade`.
-      Do not run `brew cleanup postgresql` until you have performed the migration.
+  def caveats; <<~EOS
+    To migrate existing data from a previous major version of PostgreSQL run:
+      brew postgresql-upgrade-database
     EOS
   end
 
   plist_options :manual => "pg_ctl -D #{HOMEBREW_PREFIX}/var/postgres start"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -144,6 +125,8 @@ class Postgresql < Formula
       <true/>
       <key>WorkingDirectory</key>
       <string>#{HOMEBREW_PREFIX}</string>
+      <key>StandardOutPath</key>
+      <string>#{var}/log/postgres.log</string>
       <key>StandardErrorPath</key>
       <string>#{var}/log/postgres.log</string>
     </dict>

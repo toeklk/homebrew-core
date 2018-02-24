@@ -1,25 +1,26 @@
 class Neofetch < Formula
-  desc "fast, highly customisable system info script"
+  desc "Fast, highly customisable system info script"
   homepage "https://github.com/dylanaraps/neofetch"
-  url "https://github.com/dylanaraps/neofetch/archive/1.9.1.tar.gz"
-  sha256 "d7e30215994968ca861836f9bab9259624688fd50620e7d5af5c8b31da8bd32b"
+  url "https://github.com/dylanaraps/neofetch/archive/3.3.0.tar.gz"
+  sha256 "4808e76bd81da3602cb5be7e01dfed8223b1109e2792755dd0d54126014ee696"
   head "https://github.com/dylanaraps/neofetch.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "406ebb3eebda7517b496eb896df66966bf974adf2a603358469c01deda9a5238" => :sierra
-    sha256 "406ebb3eebda7517b496eb896df66966bf974adf2a603358469c01deda9a5238" => :el_capitan
-    sha256 "406ebb3eebda7517b496eb896df66966bf974adf2a603358469c01deda9a5238" => :yosemite
+    sha256 "b415a5e617cfbebac3d6e5d585a8306eb3fed1bd22c6b1a7088f623a3ffec173" => :high_sierra
+    sha256 "9ee6ce5a7c1542275dddc52a5f108e86e64c021364d3639ce4ed7ee987a01cf5" => :sierra
+    sha256 "9ee6ce5a7c1542275dddc52a5f108e86e64c021364d3639ce4ed7ee987a01cf5" => :el_capitan
   end
 
   depends_on "screenresolution" => :recommended
   depends_on "imagemagick" => :recommended
 
   def install
-    system "make", "install", "PREFIX=#{prefix}"
+    system "make", "install", "PREFIX=#{prefix}", "SYSCONFDIR=#{etc}"
   end
 
   test do
-    system "#{bin}/neofetch", "--test", "--config off"
+    system "#{bin}/neofetch", "--config", "none", "--color_blocks", "off",
+                              "--disable", "wm", "de", "term", "gpu"
   end
 end

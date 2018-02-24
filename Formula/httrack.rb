@@ -3,15 +3,14 @@ class Httrack < Formula
   homepage "https://www.httrack.com/"
   # Always use mirror.httrack.com when you link to a new version of HTTrack, as
   # link to download.httrack.com will break on next HTTrack update.
-  url "https://mirror.httrack.com/historical/httrack-3.48.21.tar.gz"
-  sha256 "871b60a1e22d7ac217e4e14ad4d562fbad5df7c370e845f1ecf5c0e4917be482"
+  url "https://mirror.httrack.com/historical/httrack-3.49.2.tar.gz"
+  sha256 "3477a0e5568e241c63c9899accbfcdb6aadef2812fcce0173688567b4c7d4025"
 
   bottle do
-    rebuild 1
-    sha256 "d01beef135e94fd249da1bee887da70a73694a08820512b146b4340b9530da3a" => :sierra
-    sha256 "032f5fde39f04bdf772c223cdcd4974a7bb72bfcff0f71f34a8716870a80e37c" => :el_capitan
-    sha256 "5dafcc2d3cf49fcbf3b804aacd42955d32cfff7643fdbb157ffbecbdaddfae68" => :yosemite
-    sha256 "d6c9e71315a64a0fb1ac42e3515742f6d7b8dfac6ec1049a0f81e5aedd4f4364" => :mavericks
+    sha256 "e46c52519cd4b7caf7ff5bd034ab016362e79d4df73840305b3a54d679fa33b4" => :high_sierra
+    sha256 "16e5fb0657a1cdafcfa94d9f5e1362f7f1f89e86633e371b7ad86d17b7caa37b" => :sierra
+    sha256 "34e26e1534cdf1cf32f10c861833c2ab8405def4a0f2d08253acfe15e37a8b90" => :el_capitan
+    sha256 "e07658fd32a00001eb85c18b159eea17e2014142e8e56c7d1e07ecbb5774be95" => :yosemite
   end
 
   depends_on "openssl"
@@ -27,6 +26,6 @@ class Httrack < Formula
   test do
     download = "https://raw.githubusercontent.com/Homebrew/homebrew/65c59dedea31/.yardopts"
     system bin/"httrack", download, "-O", testpath
-    assert File.exist?("raw.githubusercontent.com")
+    assert_predicate testpath/"raw.githubusercontent.com", :exist?
   end
 end

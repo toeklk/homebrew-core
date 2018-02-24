@@ -1,18 +1,15 @@
 class Xrootd < Formula
   desc "High performance, scalable, fault-tolerant access to data"
   homepage "http://xrootd.org"
-  url "http://xrootd.org/download/v4.1.1/xrootd-4.1.1.tar.gz"
-  sha256 "3e472ec8068adc76f10df8a1bb1c795bb37a0a9936d4a255cc62073eb86c70c4"
+  url "http://xrootd.org/download/v4.8.1/xrootd-4.8.1.tar.gz"
+  sha256 "edee2673d941daf7a6e5c963d339d4a69b4db5c4b6f77b4548b3129b42198029"
   head "https://github.com/xrootd/xrootd.git"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "bfd51945b51e87bb4216606888c55d0fbf56a4ac5882e8af6e17109d1ecc44bf" => :sierra
-    sha256 "10019de1deb873bb5324d94ec6153dab41e537f1cdbab4eaf7c00f6de666e0d4" => :el_capitan
-    sha256 "5aec9e2b8272937b9bfe807b0fe19ecbd80ee09cffb90199f4bacedafb4993c0" => :yosemite
-    sha256 "dd7dc0728eb0117d8d0d544bc6ff20b460015d8e2cc6868c3ba5fd8c748716b7" => :mavericks
-    sha256 "1b6edb252ed5915dc67b39dbe84500d9f36af0dc883e63dfcf724af59b35e6f5" => :mountain_lion
+    sha256 "17fd0df59c94f95e6c849c62155527a1cc61b14c1324c35e424175bd7847c49d" => :high_sierra
+    sha256 "a9cf8e475ec61737b216d287354d9f953f66e6ed2e0ef2af71476bb37374b306" => :sierra
+    sha256 "76ce93c37b9d8543816c985b32c8c9a9d519815891e42f909d040a35c70f9fb4" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -23,7 +20,6 @@ class Xrootd < Formula
       system "cmake", "..", *std_cmake_args
       system "make", "install"
     end
-    share.install prefix/"man"
   end
 
   test do

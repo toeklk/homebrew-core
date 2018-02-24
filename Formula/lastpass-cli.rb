@@ -1,27 +1,28 @@
 class LastpassCli < Formula
   desc "LastPass command-line interface tool"
   homepage "https://github.com/lastpass/lastpass-cli"
-  url "https://github.com/lastpass/lastpass-cli/archive/v1.0.0.tar.gz"
-  sha256 "42096c0bd3972b0e9cc9cef32fbf141e47b04b9e2387fb3abe8b105e135fb41e"
+  url "https://github.com/lastpass/lastpass-cli/archive/v1.2.2.tar.gz"
+  sha256 "26c93ae610932139dacaff2e0f916c5628def48bb4129b4099101cf4e6c7c499"
   head "https://github.com/lastpass/lastpass-cli.git"
 
   bottle do
     cellar :any
-    sha256 "bc5e958d0b2529ab05e78dfbecd332ddb7f2b061ffa89e8337519a8bfe58861e" => :sierra
-    sha256 "42710f8cf1bef7628e61251e10bd0bf2a36f219e950fd40fb9d93561f87f4335" => :el_capitan
-    sha256 "6d8a04d5bab5db00b80f5d6a35c639040ca0494e81ee85e7ae21bb52d8e617b8" => :yosemite
-    sha256 "dc2eb72ebe79a0963dc9cae50ec6a38633740866b356e7521f37bf1c586a37f0" => :mavericks
+    sha256 "99b21d0071c0485bb6ad14fc4f73c60cfcf9f3f15af433d990b35e098113cb4a" => :high_sierra
+    sha256 "162e608bb8f6694bac3c4bd156005ba262a08252bbb7ac2f2d77c3c1357ef220" => :sierra
+    sha256 "b1757bed02d604980af5ffda05b48659e88766b7d113f78f0e77509394cd1d98" => :el_capitan
   end
 
-  option "with-doc", "Install man pages"
-
-  depends_on "asciidoc" => :build if build.with? "doc"
+  depends_on "asciidoc" => :build
+  depends_on "cmake" => :build
+  depends_on "docbook-xsl" => :build
+  depends_on "pkg-config" => :build
   depends_on "openssl"
   depends_on "pinentry" => :optional
 
   def install
+    ENV["XML_CATALOG_FILES"] = etc/"xml/catalog"
     system "make", "PREFIX=#{prefix}", "install"
-    system "make", "MANDIR=#{man}", "install-doc" if build.with? "doc"
+    system "make", "MANDIR=#{man}", "install-doc"
   end
 
   test do

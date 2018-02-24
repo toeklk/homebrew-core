@@ -1,27 +1,33 @@
 class Libcue < Formula
   desc "Cue sheet parser library for C"
   homepage "https://github.com/lipnitsk/libcue"
-  url "https://github.com/lipnitsk/libcue/archive/v1.4.0.tar.gz"
-  sha256 "c3c46d58cebf15b3fe07e6f649014694d338ddd880e941bfb1fd3cedae66c62f"
+  url "https://github.com/lipnitsk/libcue/archive/v2.2.0.tar.gz"
+  sha256 "328f14b8ae0a6b8d4c96928b53b88a86d72a354b4da9d846343c78ba36022879"
 
   bottle do
     cellar :any
-    rebuild 2
-    sha256 "1364a393179776e3deedce880702d4c9ce425eb3b9ab84e016809c1e234e9749" => :sierra
-    sha256 "420574b32e8adcca07f13a7727b4f2d3391b91566aa7fad63b452cd11fc881ad" => :el_capitan
-    sha256 "1734b330e87a099d8a0c472af86e3f1c1babfabb3d29240a74e54e98932c91af" => :yosemite
-    sha256 "f61624f74ef918f2b90bdfc9157f7a08829153dd2655ad73126e0a0ddd60127d" => :mavericks
+    sha256 "88f893cd81af245a0f573cad9ddc4cbfddb1c8f948da7a01fd3218a32673626f" => :high_sierra
+    sha256 "90efcf7400fece2beb2ce1a433331c87602fe6414dbbd09233c535dbb3d1d9a1" => :sierra
+    sha256 "ccedc0b4aa350161a33a29241d250ef4cb3fab0f47a71c9cce19593edab62332" => :el_capitan
   end
 
-  depends_on "automake" => :build
-  depends_on "autoconf" => :build
-  depends_on "libtool" => :build
+  depends_on "cmake" => :build
 
   def install
-    inreplace "autogen.sh", "libtoolize", "glibtoolize"
-    system "./autogen.sh"
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}"
+    system "cmake", ".", *std_cmake_args
+    system "make"
+    (pkgshare/"tests").mkpath
+    cp_r "t/.", pkgshare/"tests"
+    system "make", "test"
     system "make", "install"
+  end
+
+  test do
+    cp_r (pkgshare/"tests").children, testpath
+    Dir["*.c"].each do |f|
+      system ENV.cc, f, "-o", "test", "-L#{lib}", "-lcue", "-I#{include}"
+      system "./test"
+      rm "test"
+    end
   end
 end

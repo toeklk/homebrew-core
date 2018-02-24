@@ -1,32 +1,30 @@
 class Ntl < Formula
   desc "C++ number theory library"
   homepage "http://www.shoup.net/ntl"
-  url "http://www.shoup.net/ntl/ntl-9.11.0.tar.gz"
-  sha256 "379901709e6abfeaa1ca41fc36e0a746604cc608237c6629058505bfd8ed9cf1"
+  url "http://www.shoup.net/ntl/ntl-10.5.0.tar.gz"
+  sha256 "b90b36c9dd8954c9bc54410b1d57c00be956ae1db5a062945822bbd7a86ab4d2"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "caf7d8c05b1fc05f81720d7bb15dc6a6f35400f864e7127b1518375f1d4f6961" => :sierra
-    sha256 "a5c752d7d68c7deb5579c65ab2c8e6d86cdd0f42a079b3b8dd18f543c2afe173" => :el_capitan
-    sha256 "7e18d270ed1cd7e82b41e8b15a38c32feed36cf29d890fc1e18c836905dbfbd3" => :yosemite
-    sha256 "e406e9a91f24abb86252fd652780c316f87e44fa13fb171e090a401a357b02a0" => :mavericks
+    cellar :any
+    sha256 "d3b7cb343a1b590d0e21cbac76ffa40d59dfd59986aa5cd6c8234c7a9797e4be" => :high_sierra
+    sha256 "34e952fe458afc912c0822a3db858b843270dc4b6bea3b73eac52b3b29761d77" => :sierra
+    sha256 "d34ad4f67e21327db85b1007626f77f6e5c87857707b53a3419dce6886418331" => :el_capitan
   end
 
   depends_on "gmp"
 
   def install
-    args = ["PREFIX=#{prefix}"]
+    args = ["PREFIX=#{prefix}", "SHARED=on"]
 
     cd "src" do
       system "./configure", *args
       system "make"
-      system "make", "check"
       system "make", "install"
     end
   end
 
   test do
-    (testpath/"square.cc").write <<-EOS.undent
+    (testpath/"square.cc").write <<~EOS
       #include <iostream>
       #include <NTL/ZZ.h>
 
@@ -43,8 +41,8 @@ class Ntl < Formula
       -I#{include}
       -L#{gmp.opt_lib}
       -L#{lib}
-      -lgmp
       -lntl
+      -lgmp
     ]
     system ENV.cxx, "square.cc", "-o", "square", *flags
     assert_equal "4611686018427387904", pipe_output("./square", "2147483648")

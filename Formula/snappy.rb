@@ -1,41 +1,37 @@
 class Snappy < Formula
   desc "Compression/decompression library aiming for high speed"
-  homepage "https://code.google.com/archive/p/snappy/"
-  url "https://github.com/google/snappy/releases/download/1.1.3/snappy-1.1.3.tar.gz"
-  sha256 "2f1e82adf0868c9e26a5a7a3115111b6da7e432ddbac268a7ca2fae2a247eef3"
+  homepage "https://google.github.io/snappy/"
+  url "https://github.com/google/snappy/archive/1.1.7.tar.gz"
+  sha256 "3dfa02e873ff51a11ee02b9ca391807f0c8ea0529a4924afa645fbf97163f9d4"
+  revision 1
+  head "https://github.com/google/snappy.git"
 
   bottle do
     cellar :any
-    sha256 "cd88be1dad7f60ddbaea2ee3ad2886165108c2b944bebc83191e48e17de9820b" => :sierra
-    sha256 "3afcebfc5b7d6c6b5f6bf3deaae31eb18901d6e2a678e93ce2f8b2d0def1f5a7" => :el_capitan
-    sha256 "b213966add3c3acdce7f612135d9d4a0f1ef3b70ab2bd254e775b27968e14e7a" => :yosemite
-    sha256 "e05b8764ffbf52ef4505471f3db46b1373d4c91be7dfb64bf29a6aff4a454f5e" => :mavericks
-    sha256 "7afb5461d7424be580c7f3b1f04e2145775b21e571a277dae1f604f11c544363" => :mountain_lion
+    sha256 "162c90af81dcc8378f642b0b9905c78271ea6a5837199fc671e8948749db41f7" => :high_sierra
+    sha256 "39554f2f199def29cfce83c64e220635cac7d3481bf42fba20ba935c674d0dc4" => :sierra
+    sha256 "90c4778393606a51788e68dcd7046831a71cc2c95698fe261780e649ac3ce26c" => :el_capitan
   end
 
-  head do
-    url "https://github.com/google/snappy.git"
-    depends_on "automake" => :build
-    depends_on "autoconf" => :build
-    depends_on "libtool" => :build
-  end
-
-  option :universal
-
+  depends_on "cmake" => :build
   depends_on "pkg-config" => :build
 
-  def install
-    ENV.universal_binary if build.universal?
-    ENV.j1 if build.stable?
+  # Upstream PR from 20 Dec 2017 "Fix broken version API"
+  patch do
+    url "https://github.com/google/snappy/pull/61.patch?full_index=1"
+    sha256 "131404e4da2440c83115308f58c91b4a29f4ae93bf841284e0877135d122d7e2"
+  end
 
-    system "./autogen.sh" if build.head?
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}"
+  def install
+    system "cmake", ".", *std_cmake_args
+    system "make", "install"
+    system "make", "clean"
+    system "cmake", ".", "-DBUILD_SHARED_LIBS=ON", *std_cmake_args
     system "make", "install"
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <assert.h>
       #include <snappy.h>
       #include <string>

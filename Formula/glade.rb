@@ -1,14 +1,13 @@
 class Glade < Formula
   desc "RAD tool for the GTK+ and GNOME environment"
   homepage "https://glade.gnome.org/"
-  url "https://download.gnome.org/sources/glade/3.20/glade-3.20.0.tar.xz"
-  sha256 "82d96dca5dec40ee34e2f41d49c13b4ea50da8f32a3a49ca2da802ff14dc18fe"
-  revision 1
+  url "https://download.gnome.org/sources/glade/3.20/glade-3.20.3.tar.xz"
+  sha256 "1739d5478fc54ec8174ff3faa8026053c21c6a10fe38a49c66138f9deada08d4"
 
   bottle do
-    sha256 "5ce422e93894c6136ef3df57e8440c482c0bfac5277a41ed8f2fc79879caec86" => :sierra
-    sha256 "93e1cacb5f672dd4913191e16f81a6c24ca45943faf7493f7b0b0363dbfe69d6" => :el_capitan
-    sha256 "97be70ab4496c03f9fae820dffaaa5fcc9c1d3399adbe797bbe52e50ab1aad76" => :yosemite
+    sha256 "939c5b58652e519b0915adfd0a20e978ca4365b393ba92664d04294372af995a" => :high_sierra
+    sha256 "d395b6430d4975dc3267e15844ab5b92b11bc7bffcbd4faf3b67ff404a069af1" => :sierra
+    sha256 "917f2c82103a0a9a1b675c350c7069dcf5b3d727e91f3c0da17052c0659ea9c4" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -17,7 +16,7 @@ class Glade < Formula
   depends_on "docbook-xsl" => :build
   depends_on "gettext"
   depends_on "libxml2"
-  depends_on "gnome-icon-theme"
+  depends_on "adwaita-icon-theme"
   depends_on "hicolor-icon-theme"
   depends_on "gtk+3"
   depends_on "gtk-mac-integration"
@@ -43,7 +42,7 @@ class Glade < Formula
     # executable test (GUI)
     system "#{bin}/glade", "--version"
     # API test
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gladeui/glade.h>
 
       int main(int argc, char *argv[]) {
@@ -59,24 +58,31 @@ class Glade < Formula
     gdk_pixbuf = Formula["gdk-pixbuf"]
     gettext = Formula["gettext"]
     glib = Formula["glib"]
-    gtkx = Formula["gtk+3"]
+    gtkx3 = Formula["gtk+3"]
+    harfbuzz = Formula["harfbuzz"]
+    libepoxy = Formula["libepoxy"]
     libpng = Formula["libpng"]
     pango = Formula["pango"]
+    pcre = Formula["pcre"]
     pixman = Formula["pixman"]
-    flags = %W[
+    flags = (ENV.cflags || "").split + (ENV.cppflags || "").split + (ENV.ldflags || "").split
+    flags += %W[
       -I#{atk.opt_include}/atk-1.0
       -I#{cairo.opt_include}/cairo
       -I#{fontconfig.opt_include}
       -I#{freetype.opt_include}/freetype2
       -I#{gdk_pixbuf.opt_include}/gdk-pixbuf-2.0
       -I#{gettext.opt_include}
+      -I#{glib.opt_include}/gio-unix-2.0/
       -I#{glib.opt_include}/glib-2.0
       -I#{glib.opt_lib}/glib-2.0/include
-      -I#{gtkx.opt_include}/gtk-3.0
-      -I#{gtkx.opt_lib}/gtk-3.0/include
+      -I#{gtkx3.opt_include}/gtk-3.0
+      -I#{harfbuzz.opt_include}/harfbuzz
       -I#{include}/libgladeui-2.0
+      -I#{libepoxy.opt_include}
       -I#{libpng.opt_include}/libpng16
       -I#{pango.opt_include}/pango-1.0
+      -I#{pcre.opt_include}
       -I#{pixman.opt_include}/pixman-1
       -D_REENTRANT
       -L#{atk.opt_lib}
@@ -84,18 +90,19 @@ class Glade < Formula
       -L#{gdk_pixbuf.opt_lib}
       -L#{gettext.opt_lib}
       -L#{glib.opt_lib}
-      -L#{gtkx.opt_lib}
+      -L#{gtkx3.opt_lib}
       -L#{lib}
       -L#{pango.opt_lib}
       -latk-1.0
       -lcairo
-      -lgdk-quartz-2.0
+      -lcairo-gobject
+      -lgdk-3
       -lgdk_pixbuf-2.0
       -lgio-2.0
       -lgladeui-2
       -lglib-2.0
       -lgobject-2.0
-      -lgtk-quartz-2.0
+      -lgtk-3
       -lintl
       -lpango-1.0
       -lpangocairo-1.0

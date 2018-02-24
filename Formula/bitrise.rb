@@ -1,14 +1,14 @@
 class Bitrise < Formula
   desc "Command-line automation tool"
   homepage "https://github.com/bitrise-io/bitrise"
-  url "https://github.com/bitrise-io/bitrise/archive/1.4.5.tar.gz"
-  sha256 "80aab3dfe8e34eb7996f98edb7102c8566af87616acf5f7a76a5012bb421d415"
+  url "https://github.com/bitrise-io/bitrise/archive/1.13.0.tar.gz"
+  sha256 "cb967a110e7d8dacec085d354eeb5cde812193e5ee6e97c52de68555b341f417"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "b6622c94fb2f85a5cff42f8bd946a70cc3bacb8539ed23de0a0c631fdc891b93" => :sierra
-    sha256 "b5f6b52b2681c0a1247bff6c1d61fa074196d13b59c8211e87657069650b0e89" => :el_capitan
-    sha256 "0fdca27cea011f0f9e3d32622ce845f2d64f6d8b2f2b2a1c20ab0899f07360d0" => :yosemite
+    sha256 "6c3618c62aa06944b2e99c09a89b6f115602396c38fd5ff8311050649a4f8126" => :high_sierra
+    sha256 "6c24f396b7409537ea2606e8f8acf4a813eee1e8017beb9c7ca3ad54b12761e3" => :sierra
+    sha256 "e85b92f3c787a43bcfd76eef71bd26f5e37d7eea8188c0f6182133b9c7100189" => :el_capitan
   end
 
   depends_on "go" => :build
@@ -28,7 +28,7 @@ class Bitrise < Formula
   end
 
   test do
-    (testpath/"bitrise.yml").write <<-EOS.undent
+    (testpath/"bitrise.yml").write <<~EOS
       format_version: 1.3.1
       default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
       workflows:

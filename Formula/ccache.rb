@@ -1,13 +1,13 @@
 class Ccache < Formula
   desc "Object-file caching compiler wrapper"
   homepage "https://ccache.samba.org/"
-  url "https://www.samba.org/ftp/ccache/ccache-3.3.3.tar.xz"
-  sha256 "3b02a745da1cfa9eb438af7147e0fd3545e2f6163de9e5b07da86f58859f04ec"
+  url "https://www.samba.org/ftp/ccache/ccache-3.4.1.tar.xz"
+  sha256 "8c2e260d4245e362552e47bec359941210a96419ac5adf582046ceb92489f7de"
 
   bottle do
-    sha256 "2c58338abe176ba22f712b43519f3037ff6a1e612f45005af21f4516b7e19d73" => :sierra
-    sha256 "5b69d18b9fec4a3874fc00aa657132ea0cecd17eed970e025f19b5317ac2d1f0" => :el_capitan
-    sha256 "cedb89c4e3cce65755a1d666b2a5e5b3239e870e98412d2e13fffbe5ac10cb80" => :yosemite
+    sha256 "2b882c22a604c273a3cf410fe63356f59f849bd96a357e209b2aa4adaeaa2278" => :high_sierra
+    sha256 "4fe6dbcfce304311d9c3a48a62dd9554971a4a7385457e4de2b61ab86585b1d0" => :sierra
+    sha256 "74a40b0aa7fece889f1352b720a1b1bab4f1cf040ab3ea9b8d6215736c6f86b7" => :el_capitan
   end
 
   head do
@@ -16,14 +16,14 @@ class Ccache < Formula
     depends_on "autoconf" => :build
     depends_on "automake" => :build
     depends_on "libtool" => :build
-    depends_on "asciidoc" => ["with-docbook-xsl", :build]
+    depends_on "asciidoc" => :build
   end
 
   def install
     ENV["XML_CATALOG_FILES"] = etc/"xml/catalog" if build.head?
 
     system "./autogen.sh" if build.head?
-    system "./configure", "--prefix=#{prefix}", "--mandir=#{man}", "--with-bundled-zlib"
+    system "./configure", "--prefix=#{prefix}", "--mandir=#{man}"
     system "make"
     system "make", "install"
 
@@ -33,15 +33,15 @@ class Ccache < Formula
       clang
       clang++
       cc
-      gcc gcc2 gcc3 gcc-3.3 gcc-4.0 gcc-4.2 gcc-4.3 gcc-4.4 gcc-4.5 gcc-4.6 gcc-4.7 gcc-4.8 gcc-4.9 gcc-5 gcc-6
-      c++ c++3 c++-3.3 c++-4.0 c++-4.2 c++-4.3 c++-4.4 c++-4.5 c++-4.6 c++-4.7 c++-4.8 c++-4.9 c++-5 c++-6
-      g++ g++2 g++3 g++-3.3 g++-4.0 g++-4.2 g++-4.3 g++-4.4 g++-4.5 g++-4.6 g++-4.7 g++-4.8 g++-4.9 g++-5 g++-6
+      gcc gcc2 gcc3 gcc-3.3 gcc-4.0 gcc-4.2 gcc-4.3 gcc-4.4 gcc-4.5 gcc-4.6 gcc-4.7 gcc-4.8 gcc-4.9 gcc-5 gcc-6 gcc-7
+      c++ c++3 c++-3.3 c++-4.0 c++-4.2 c++-4.3 c++-4.4 c++-4.5 c++-4.6 c++-4.7 c++-4.8 c++-4.9 c++-5 c++-6 c++-7
+      g++ g++2 g++3 g++-3.3 g++-4.0 g++-4.2 g++-4.3 g++-4.4 g++-4.5 g++-4.6 g++-4.7 g++-4.8 g++-4.9 g++-5 g++-6 g++-7
     ].each do |prog|
       libexec.install_symlink bin/"ccache" => prog
     end
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     To install symlinks for compilers that will automatically use
     ccache, prepend this directory to your PATH:
       #{opt_libexec}

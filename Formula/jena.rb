@@ -1,13 +1,13 @@
 class Jena < Formula
   desc "Framework for building semantic web and linked data apps"
   homepage "https://jena.apache.org/"
-  url "https://archive.apache.org/dist/jena/binaries/apache-jena-3.1.0.tar.gz"
-  sha256 "532ad87eab7792ff1ffae34375d4c27956aada7c659743c39027e8b48f29cbd9"
+  url "https://archive.apache.org/dist/jena/binaries/apache-jena-3.6.0.tar.gz"
+  sha256 "a76415af2c70d74110accc473443bd2a18f66a7392a97f3367fdd0efe530e314"
 
   bottle :unneeded
 
   def shim_script(target)
-    <<-EOS.undent
+    <<~EOS
       #!/usr/bin/env bash
       export JENA_HOME="#{libexec}"
       "$JENA_HOME/bin/#{target}" "$@"

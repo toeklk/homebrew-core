@@ -1,16 +1,16 @@
 class Osmfilter < Formula
   desc "Command-line tool to filter OpenStreetMap files for specific tags"
-  homepage "http://wiki.openstreetmap.org/wiki/Osmfilter"
+  homepage "https://wiki.openstreetmap.org/wiki/Osmfilter"
   url "https://gitlab.com/osm-c-tools/osmctools.git",
-    :tag => "0.6", :revision => "7594309ea6f8437a04514f68cc36029cafa951fd"
+    :tag => "0.8", :revision => "fbf0a0a01624951efd7a7407ee3821fd817acf63"
 
   head "https://gitlab.com/osm-c-tools/osmctools.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "f9d4bb82465736f6a7be7fb75dddc089474ceca9e468a813067a93fa851a35c4" => :sierra
-    sha256 "bfcf14daf9df379499b9c53abf604017b746d7d828d5f235ca9a771191a9d934" => :el_capitan
-    sha256 "db7d1ae3b020f0edb9b577701be214abdd347fca463ef6d69dce90913e687691" => :yosemite
+    sha256 "568d4cda4c2da1cd248a4b7f63d7f90d612b92ce77672cfabc52c3de35d87446" => :high_sierra
+    sha256 "fd6f2bc2490d732f9a70899505e11d9da0b8a24575ee532fb473b73d016f3b2c" => :sierra
+    sha256 "4d81c759c35a68d11432e189ae0ca3204744b5fc8b98ec2ccf7fb1ca07b000bf" => :el_capitan
   end
 
   depends_on "automake" => :build

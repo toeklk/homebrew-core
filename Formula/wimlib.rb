@@ -1,18 +1,19 @@
 class Wimlib < Formula
   desc "Library to create, extract, and modify Windows Imaging files"
   homepage "https://wimlib.net/"
-  url "https://wimlib.net/downloads/wimlib-1.10.0.tar.gz"
-  sha256 "989b1b02f246c480dec10469374f4235d15a3d5e5ae054452405305af5007f55"
+  url "https://wimlib.net/downloads/wimlib-1.12.0.tar.gz"
+  sha256 "852cf59d682a91974f715f09fa98cab621b740226adcfea7a42360be0f86464f"
 
   bottle do
     cellar :any
-    sha256 "820662984db7e93d3a437a1e9a04a4dc52d66ca12caef609a51438e636477348" => :sierra
-    sha256 "01953339d96184ffadd03080f40d71238f106d820965ddf8147d412fb3b711d5" => :el_capitan
-    sha256 "1708e5941ec5985f5575f41da85893ba05b898dfbb562eee1433163225ec783f" => :yosemite
+    sha256 "bf98257d6f32313b3a57713ae6b2ad7c3f72ddd5b1e1ed609436fb337ba51d63" => :high_sierra
+    sha256 "32a00c25f98932b84ac5304df29eb5f6edea0a2fc3a2b33ee83938e92c488549" => :sierra
+    sha256 "6a2b65020b31dbda4499bffbe773e5596dbc130d6f91ee84c9a7c532dd858594" => :el_capitan
+    sha256 "c26d19bd6a6994fae60000f329d136c991b6a1172141c6c047792175a2c79439" => :yosemite
   end
 
   depends_on "pkg-config" => :build
-  depends_on "homebrew/fuse/ntfs-3g" => :optional
+  depends_on "ntfs-3g" => :optional
   depends_on "openssl"
 
   def install
@@ -39,7 +40,7 @@ class Wimlib < Formula
     # capture an image
     ENV.append "WIMLIB_IMAGEX_USE_UTF8", "1"
     system "#{bin}/wimcapture", "foo", "bar.wim"
-    assert File.exist?("bar.wim")
+    assert_predicate testpath/"bar.wim", :exist?
 
     # get info on the image
     system "#{bin}/wiminfo", "bar.wim"

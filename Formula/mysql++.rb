@@ -1,23 +1,22 @@
 class Mysqlxx < Formula
   desc "C++ wrapper for MySQL's C API"
-  homepage "https://tangentsoft.net/mysql++/"
-  url "https://tangentsoft.net/mysql++/releases/mysql++-3.2.1.tar.gz"
-  sha256 "aee521873d4dbb816d15f22ee93b6aced789ce4e3ca59f7c114a79cb72f75d20"
+  homepage "https://tangentsoft.com/mysqlpp/home"
+  url "https://tangentsoft.com/mysqlpp/releases/mysql++-3.2.3.tar.gz"
+  sha256 "c804c38fe229caab62a48a6d0a5cb279460da319562f41a16ad2f0a0f55b6941"
+  revision 1
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "50fb897ad1253fb2355ea2d42500e90f352f78d6df218db51c381a7ce8122cbf" => :sierra
-    sha256 "75fdc6bbf0aacac8b4014ea232588e2eb37c4f051573754ad45f0404cfdebc13" => :el_capitan
-    sha256 "5806dd86bc995dcfd76503453102bf0507194cfae0064837aa899ab2d00825a0" => :yosemite
+    sha256 "62551ee383b5c68a1b74f3652e44fafc3ab210b63af765cb2a6318f09695c0b1" => :high_sierra
+    sha256 "00b0c1e860ed384bb27fbbe53c62ea4cbbec592357a2744e8203ccf000c84c31" => :sierra
+    sha256 "1668ebf91ee98d2d898f2b2eb75adba49f7bb3c8e353f2ac95f722da2858110b" => :el_capitan
   end
 
-  depends_on :mysql
+  depends_on "mysql"
 
   def install
-    mysql_include_dir = `mysql_config --variable=pkgincludedir`
-    system "./configure", "--disable-debug",
-                          "--disable-dependency-tracking",
+    mysql_include_dir = Utils.popen_read("mysql_config --variable=pkgincludedir")
+    system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
                           "--with-field-limit=40",
                           "--with-mysql-lib=#{HOMEBREW_PREFIX}/lib",
@@ -26,7 +25,7 @@ class Mysqlxx < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <mysql++/cmdline.h>
       int main(int argc, char *argv[]) {
         mysqlpp::examples::CommandLine cmdline(argc, argv);
@@ -36,7 +35,8 @@ class Mysqlxx < Formula
         return 0;
       }
     EOS
-    system ENV.cxx, "test.cpp", `mysql_config --include`.chomp, "-L#{lib}", "-lmysqlpp", "-o", "test"
+    system ENV.cxx, "test.cpp", Utils.popen_read("mysql_config --include").chomp,
+                    "-L#{lib}", "-lmysqlpp", "-o", "test"
     system "./test", "-u", "foo", "-p", "bar"
   end
 end

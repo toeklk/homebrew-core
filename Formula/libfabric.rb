@@ -1,25 +1,22 @@
 class Libfabric < Formula
   desc "OpenFabrics libfabric"
   homepage "https://ofiwg.github.io/libfabric/"
-  url "https://github.com/ofiwg/libfabric/releases/download/v1.3.0/libfabric-1.3.0.tar.bz2"
-  sha256 "0a0d4f1a0d178d80ec336763a0fd371ade97199d6f1e884ef8f0e6bc99f258c9"
+  url "https://github.com/ofiwg/libfabric/releases/download/v1.5.3/libfabric-1.5.3.tar.bz2"
+  sha256 "f62a40da06f8951db267a59a4ee7363b6ee60a7abbc55cd5db6c8b067d93fa0c"
+  head "https://github.com/ofiwg/libfabric.git"
 
   bottle do
-    sha256 "53984f1dac904f22ac42ac6855a1ab61ff0433ac42b499048b47a2ddd66da9bc" => :el_capitan
-    sha256 "5828c0555c4d12ab148c26c91859bd389b9bba030114256fb9337118902283c9" => :yosemite
-    sha256 "2a3136934b1099fb3288e4283bab1ec2972eb002539e35620dc40d0a00c956bf" => :mavericks
+    sha256 "6a03113916120d748b750ca4e7716c1f15b29539de0d91737f2db3fa68c801b1" => :high_sierra
+    sha256 "47a662abb4abfe93f272ce0337675daca692e1076dc7d51180e8d085fd8777f4" => :sierra
+    sha256 "c6f9f04517d7675162610ac0e01c98f5f3d07785663a75a3caf4575dae177435" => :el_capitan
   end
 
-  head do
-    url "https://github.com/ofiwg/libfabric.git"
-
-    depends_on "autoconf" => :build
-    depends_on "automake" => :build
-    depends_on "libtool"  => :build
-  end
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
+  depends_on "libtool"  => :build
 
   def install
-    system "./autogen.sh" if build.head?
+    system "autoreconf", "-fiv"
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
                           "--prefix=#{prefix}"

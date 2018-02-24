@@ -1,24 +1,20 @@
-require "language/node"
-
 class Yarn < Formula
-  desc "Javascript package manager"
+  desc "JavaScript package manager"
   homepage "https://yarnpkg.com/"
-  url "https://yarnpkg.com/downloads/0.17.3/yarn-v0.17.3.tar.gz"
-  sha256 "883df435f68ce47c93c2e4be27acbd4122ae52ef4d334f75104c0c5e187a9173"
-  head "https://github.com/yarnpkg/yarn.git"
+  url "https://yarnpkg.com/downloads/1.3.2/yarn-v1.3.2.tar.gz"
+  sha256 "6cfe82e530ef0837212f13e45c1565ba53f5199eec2527b85ecbcd88bf26821d"
 
-  bottle do
-    cellar :any_skip_relocation
-    sha256 "f3cdef013027989dbef439b55df86d94f5ecc3defa83fbd8434edeb7849d6c79" => :sierra
-    sha256 "0d5ef00d46efc9620b6296a4898e9b64bafdc0e140c57ed1db858d8d9b40c954" => :el_capitan
-    sha256 "7561a3d2f5279c3c9af65f8d16288286bf4ecfcc3899e660628bb2d6844cd1e3" => :yosemite
-  end
+  bottle :unneeded
 
-  depends_on "node"
+  depends_on "node" => :recommended
+
+  conflicts_with "hadoop", :because => "both install `yarn` binaries"
 
   def install
-    system "npm", "install", *Language::Node.std_npm_install_args(libexec)
-    bin.install_symlink Dir["#{libexec}/bin/*"]
+    libexec.install Dir["*"]
+    (bin/"yarn").write_env_script "#{libexec}/bin/yarn.js", :PREFIX => HOMEBREW_PREFIX
+    (bin/"yarnpkg").write_env_script "#{libexec}/bin/yarn.js", :PREFIX => HOMEBREW_PREFIX
+    inreplace "#{libexec}/package.json", '"installationMethod": "tar"', '"installationMethod": "homebrew"'
   end
 
   test do

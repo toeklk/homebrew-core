@@ -1,22 +1,19 @@
 class Links < Formula
   desc "Lynx-like WWW browser that supports tables, menus, etc."
   homepage "http://links.twibright.com/"
-  # Switch url & mirror back over when twibright is responsive.
-  url "https://mirrors.ocf.berkeley.edu/debian/pool/main/l/links2/links2_2.13.orig.tar.bz2"
-  mirror "http://links.twibright.com/download/links-2.13.tar.bz2"
-  sha256 "c252095334a3b199fa791c6f9a9affe2839a7fbd536685ab07851cb7efaa4405"
+  url "http://links.twibright.com/download/links-2.14.tar.bz2"
+  sha256 "f70d0678ef1c5550953bdc27b12e72d5de86e53b05dd59b0fc7f07c507f244b8"
+  revision 1
 
   bottle do
     cellar :any
-    sha256 "9b47581bba7ce7e119756d20997642f6b48404387b159c517f94cc829c10903e" => :sierra
-    sha256 "72f73ee61f9b16ae1e8bbe1306900a1fb17cfd49576f166bb88ab574ec8b0925" => :el_capitan
-    sha256 "490a0aa8d1116268d3a431d9c1442dc9a2bd94fb00a74f0cab3767622ea119ac" => :yosemite
-    sha256 "65ed8437744babda1c9653b7944b5e77b1147d235424948c1c98309b15c9ccc8" => :mavericks
+    sha256 "c5548c20d4e677218f870fb19c2275f51b3a737da1fd78532b88cf90af4e4dd5" => :high_sierra
+    sha256 "5a8045be375cb674122da0342e04f47ff14c3360e1f7eebe9f827284aba318ed" => :sierra
+    sha256 "3a74e6b5c260ee7ac380cf0e15e0c718fb6c06c113ac2311a0dae9b1be755fe3" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "openssl" => :recommended
-  depends_on "libressl" => :optional
   depends_on "libtiff" => :optional
   depends_on "jpeg" => :optional
   depends_on "librsvg" => :optional
@@ -28,13 +25,9 @@ class Links < Formula
       --disable-dependency-tracking
       --prefix=#{prefix}
       --mandir=#{man}
+      --with-ssl=#{Formula["openssl"].opt_prefix}
+      --without-lzma
     ]
-
-    if build.with? "libressl"
-      args << "--with-ssl=#{Formula["libressl"].opt_prefix}"
-    else
-      args << "--with-ssl=#{Formula["openssl"].opt_prefix}"
-    end
 
     args << "--enable-graphics" if build.with? "x11"
     args << "--without-libtiff" if build.without? "libtiff"

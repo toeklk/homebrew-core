@@ -1,22 +1,22 @@
 class Syntaxerl < Formula
   desc "Syntax checker for Erlang code and config files"
   homepage "https://github.com/ten0s/syntaxerl"
-  url "https://github.com/ten0s/syntaxerl/archive/0.12.0.tar.gz"
-  sha256 "41245dc4ec6fe5e38f9669480ffe65789781e7ae93094e7a6c9eff21f9b7b234"
+  url "https://github.com/ten0s/syntaxerl/archive/0.14.0.tar.gz"
+  sha256 "a7c46789aadf467191f43b82ac6a428faf4d38af2965fdcd946789a7f40439fc"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "a5b022d728babd0fd5f492b45f63e99b4ff9086821ceb250a085a051f33e5b68" => :sierra
-    sha256 "e41ec5d0fe9d78f9574c8ddeb08943e4e4d09cc826e7012d089ca7ed0d719523" => :el_capitan
-    sha256 "9402057ae3c091f56a08c2746ac0d56da0bb337250c9765ccc01a0e1f2331656" => :yosemite
-    sha256 "ccf1aecf79fbf0da7f8857a88ce536068095148d47a9791503b256cde0eed2d3" => :mavericks
+    sha256 "2b4c6e6d7e7413fe81e5107e80841f5a8c4bbddec9e12f3f53c92bedd5fced3b" => :high_sierra
+    sha256 "0e0ac8402dd61720eeca50047b173f7500dc38bd7cceb37915c4425b7492044e" => :sierra
+    sha256 "648f30c4fb2db062f4c9f27d3c73cf679181e7183a5b7b83b5670624d88b27d5" => :el_capitan
+    sha256 "80ea1737253a2115722350d6a6456ba48ae853674bb91f7a8b685e7b8311eb74" => :yosemite
   end
 
   depends_on "erlang"
 
   def install
     system "make"
-    bin.install "syntaxerl"
+    bin.install "_build/default/bin/syntaxerl"
   end
 
   test do

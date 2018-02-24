@@ -1,22 +1,26 @@
 class Emacs < Formula
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
-  url "https://ftpmirror.gnu.org/emacs/emacs-25.1.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/emacs/emacs-25.1.tar.xz"
-  sha256 "19f2798ee3bc26c95dca3303e7ab141e7ad65d6ea2b6945eeba4dbea7df48f33"
+  url "https://ftp.gnu.org/gnu/emacs/emacs-25.3.tar.xz"
+  sha256 "253ac5e7075e594549b83fd9ec116a9dc37294d415e2f21f8ee109829307c00b"
 
   bottle do
-    rebuild 4
-    sha256 "c80ef281b85fb8a8bd65a84676056ea41d7bb2954d5c82193eef2acea2ade856" => :sierra
-    sha256 "5498bd9f8e027d8a77a8939d3468123313a57e67c3f08ad4d4f72bd1a95b3cbb" => :el_capitan
-    sha256 "8fa2c1f493b9dc831a017055b5de26b426925895c6400b24a3755e4db8b0ffa2" => :yosemite
+    sha256 "d5ce62eb55d64830264873a363a99f3de58c35c0bd1602cb7fd0bc37137b0c9d" => :high_sierra
+    sha256 "4d7ff7f96c9812a9f58cd45796aef789a1b5d26c58e3e68ecf520fab34af524d" => :sierra
+    sha256 "7bf6dfba77259ef5454696834c14fcab3643197ba70eef1e608476167c3d387b" => :el_capitan
+  end
+
+  devel do
+    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.0.91.tar.xz"
+    sha256 "31f6bb353e13d337e10160f778608e342becd213fbb21c9f08085abe318381a0"
   end
 
   head do
     url "https://github.com/emacs-mirror/emacs.git"
 
     depends_on "autoconf" => :build
-    depends_on "automake" => :build
+    depends_on "gnu-sed" => :build
+    depends_on "texinfo" => :build
   end
 
   option "with-cocoa", "Build a Cocoa version of emacs"
@@ -27,12 +31,15 @@ class Emacs < Formula
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
   deprecated_option "with-d-bus" => "with-dbus"
+  deprecated_option "imagemagick" => "imagemagick@6"
 
   depends_on "pkg-config" => :build
   depends_on "dbus" => :optional
   depends_on "gnutls" => :optional
   depends_on "librsvg" => :optional
-  depends_on "imagemagick" => :optional
+  # Emacs does not support ImageMagick 7:
+  # Reported on 2017-03-04: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25967
+  depends_on "imagemagick@6" => :optional
   depends_on "mailutils" => :optional
 
   def install
@@ -63,12 +70,23 @@ class Emacs < Formula
       args << "--without-gnutls"
     end
 
-    args << "--with-imagemagick" if build.with? "imagemagick"
+    # Note that if ./configure is passed --with-imagemagick but can't find the
+    # library it does not fail but imagemagick support will not be available.
+    # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
+    if build.with? "imagemagick@6"
+      args << "--with-imagemagick"
+    else
+      args << "--without-imagemagick"
+    end
+
     args << "--with-modules" if build.with? "modules"
     args << "--with-rsvg" if build.with? "librsvg"
     args << "--without-pop" if build.with? "mailutils"
 
-    system "./autogen.sh" if build.head? || build.devel?
+    if build.head?
+      ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
+      system "./autogen.sh"
+    end
 
     if build.with? "cocoa"
       args << "--with-ns" << "--disable-ns-self-contained"
@@ -85,7 +103,7 @@ class Emacs < Formula
 
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
-      (bin/"emacs").write <<-EOS.undent
+      (bin/"emacs").write <<~EOS
         #!/bin/bash
         exec #{prefix}/Emacs.app/Contents/MacOS/Emacs "$@"
       EOS
@@ -100,7 +118,7 @@ class Emacs < Formula
   end
 
   def caveats
-    if build.with? "cocoa" then <<-EOS.undent
+    if build.with? "cocoa" then <<~EOS
       Please try the Cask for a better-supported Cocoa version:
         brew cask install emacs
       EOS
@@ -109,7 +127,7 @@ class Emacs < Formula
 
   plist_options :manual => "emacs"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

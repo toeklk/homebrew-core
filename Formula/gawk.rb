@@ -1,20 +1,15 @@
 class Gawk < Formula
   desc "GNU awk utility"
   homepage "https://www.gnu.org/software/gawk/"
-  url "https://ftpmirror.gnu.org/gawk/gawk-4.1.4.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/gawk/gawk-4.1.4.tar.xz"
-  sha256 "53e184e2d0f90def9207860531802456322be091c7b48f23fdc79cda65adc266"
+  url "https://ftp.gnu.org/gnu/gawk/gawk-4.2.0.tar.xz"
+  mirror "https://ftpmirror.gnu.org/gawk/gawk-4.2.0.tar.xz"
+  sha256 "d4f3cd31c001fd0ed52832d4fbfbdfeaa38ad541c182f80ff8fdf87324a6a9f2"
   revision 1
 
   bottle do
-    sha256 "370e7a490801595a484c347da99d8b6dce58d63f8581962cd6d16552e5a4992f" => :sierra
-    sha256 "71d2f6ec3359647298cc0867b88653078ba933b09b139dcd00d76fe763ccb1bb" => :el_capitan
-    sha256 "bc8bd37d3761403f22bf3937097c67d8e76e914c90abfa577fd7e17af337057a" => :yosemite
-  end
-
-  fails_with :llvm do
-    build 2326
-    cause "Undefined symbols when linking"
+    sha256 "506f2f173b24afbf3467a5408a4268bbb749b0eccfa354a8c3a2c3139fd1deed" => :high_sierra
+    sha256 "ec83ac264e9a13b6e83bd70e5f0d965e78ba46837244b224d0fae90f7e66631c" => :sierra
+    sha256 "5c463865ee87a53bd13b380552a4dcfc4933fe100e2c740586ba69d1eb870c2e" => :el_capitan
   end
 
   depends_on "mpfr"

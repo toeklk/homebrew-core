@@ -8,6 +8,7 @@ class Libpgm < Formula
   bottle do
     cellar :any
     rebuild 1
+    sha256 "cccc90b754683842714480dc0a099abd303426ab2b47fd9fd8d0172717d9bc17" => :high_sierra
     sha256 "e84427aa937687e77701f8b0834866c86e6d4916685c769c4900403307b624c5" => :sierra
     sha256 "24765bd6efa0aa65a333e3d5bb5a48159875b81cae8ca99c479fbda4133f49b9" => :el_capitan
     sha256 "ae0d1d980f84677fcaa08b1d9f35f1c9d4858e4239598530b7485e9f248def73" => :yosemite
@@ -15,11 +16,8 @@ class Libpgm < Formula
     sha256 "682fb0731817ab2f01c9247b1579dcd4a5ff8e28a938ddcd7045ee30acc81499" => :mountain_lion
   end
 
-  option :universal
-
   def install
     cd "openpgm/pgm" do
-      ENV.universal_binary if build.universal?
       system "./configure", "--disable-dependency-tracking",
                             "--prefix=#{prefix}"
       system "make", "install"

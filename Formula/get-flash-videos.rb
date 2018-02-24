@@ -1,15 +1,14 @@
 class GetFlashVideos < Formula
   desc "Download or play videos from various Flash-based websites"
   homepage "https://github.com/monsieurvideo/get-flash-videos"
-  url "https://github.com/monsieurvideo/get-flash-videos/archive/1.25.92.tar.gz"
-  sha256 "e4b64eb51058e55f07cb66b7c50b11ea1ca0a57162946b7af96db748ed22cdcb"
+  url "https://github.com/monsieurvideo/get-flash-videos/archive/1.25.98.tar.gz"
+  sha256 "7cf941783fe8037474ee33a33b91379a0226c08ff4d58be454b12f8a2f150d5d"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "9e421e82146422d1b8643c42bad2cdb4204b0d051a391e0c00eec728f0b803c2" => :sierra
-    sha256 "aa4d0cd861625d151c762d02e82b2561f6cd5ef9e71a82b6a7f8e04e80e65921" => :el_capitan
-    sha256 "ca00455cb5d0984c1642177ea6d5735969924df12e38a3fcf5594d96df1eb028" => :yosemite
-    sha256 "648139985a7dcf350c029faf908364acc9ebe74f154173436668753295bd3717" => :mavericks
+    sha256 "788dc7a201a1c619e6e29e9a4cef61092b5f77ab8c6c04f0b14213b14b4ab671" => :high_sierra
+    sha256 "4f6cc5397f548ad04606adf1ababe1378d2e72ccc354508a10c064520850df58" => :sierra
+    sha256 "0897cacbf82a7f597abb8cac9374391948f26887552bc445322df4d57684cd53" => :el_capitan
   end
 
   depends_on "rtmpdump"
@@ -20,8 +19,8 @@ class GetFlashVideos < Formula
   end
 
   resource "LWP::Protocol" do
-    url "https://cpan.metacpan.org/authors/id/E/ET/ETHER/libwww-perl-6.15.tar.gz"
-    sha256 "6f349d45c21b1ec0501c4437dfcb70570940e6c3d5bff783bd91d4cddead8322"
+    url "https://cpan.metacpan.org/authors/id/E/ET/ETHER/libwww-perl-6.31.tar.gz"
+    sha256 "525d5386d39d1c1d7da8a0e9dd0cbab95cba2a4bfcfd9b83b257f49be4eecae3"
   end
 
   resource "Tie::IxHash" do
@@ -30,18 +29,23 @@ class GetFlashVideos < Formula
   end
 
   resource "WWW::Mechanize" do
-    url "https://cpan.metacpan.org/authors/id/E/ET/ETHER/WWW-Mechanize-1.75.tar.gz"
-    sha256 "5310051feb66c6ef9f7a4c070c66ec6092932129fc9cd18bba009ce999b7930b"
+    url "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/WWW-Mechanize-1.87.tar.gz"
+    sha256 "819342a55cdaaf742e8511ecf72c7764b71789f4d1ef0eb6f4b4db4361f3b9cf"
   end
 
   resource "Term::ProgressBar" do
-    url "https://cpan.metacpan.org/authors/id/S/SZ/SZABGAB/Term-ProgressBar-2.17.tar.gz"
-    sha256 "c1e0602c738a91fe54b01bcaa0d1a898b07ef6815c55eb2ebd6da4e3be20f696"
+    url "https://cpan.metacpan.org/authors/id/M/MA/MANWAR/Term-ProgressBar-2.21.tar.gz"
+    sha256 "66994f1a6ca94d8d92e3efac406142fb0d05033360c0acce2599862db9c30e44"
   end
 
   resource "Class::MethodMaker" do
     url "https://cpan.metacpan.org/authors/id/S/SC/SCHWIGON/class-methodmaker/Class-MethodMaker-2.24.tar.gz"
     sha256 "5eef58ccb27ebd01bcde5b14bcc553b5347a0699e5c3e921c7780c3526890328"
+  end
+
+  resource "Crypt::Rijndael" do
+    url "https://cpan.metacpan.org/authors/id/L/LE/LEONT/Crypt-Rijndael-1.13.tar.gz"
+    sha256 "cd7209a6dfe0a3dc8caffe1aa2233b0e6effec7572d76a7a93feefffe636214e"
   end
 
   def install
@@ -66,8 +70,8 @@ class GetFlashVideos < Formula
   end
 
   test do
-    file = "BBC_-__Do_whatever_it_takes_to_get_him_to_talk.flv"
+    file = testpath/"BBC_-__Do_whatever_it_takes_to_get_him_to_talk.flv"
     system bin/"get_flash_videos", "http://news.bbc.co.uk/2/hi/programmes/hardtalk/9560793.stm"
-    assert File.exist?(file), "Failed to download #{file}!"
+    assert_predicate file, :exist?, "Failed to download #{file}!"
   end
 end

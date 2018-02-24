@@ -6,15 +6,16 @@
 # operate fine.
 # Please see https://github.com/Homebrew/homebrew/pull/22043 for more info
 class Jack < Formula
-  desc "Jack Audio Connection Kit (JACK)"
+  desc "Audio Connection Kit"
   homepage "http://jackaudio.org"
   url "http://jackaudio.org/downloads/jack-audio-connection-kit-0.125.0.tar.gz"
   sha256 "3517b5bff82139a76b2b66fe2fd9a3b34b6e594c184f95a988524c575b11d444"
+  revision 2
 
   bottle do
-    sha256 "09037cc758f7fbb1906e9f57722143ac6fad688dafc8a3737b23ee6cf60f3277" => :sierra
-    sha256 "538c6769165c651170287b466aadd693622430a4b3df917277faa4dcef9e36a9" => :el_capitan
-    sha256 "e605e6c982263cf1e058ac67c130273caec43aec75371b907ad3a04ec5e212d8" => :yosemite
+    sha256 "abc0921ccf479b78ccd3d9ce393290800bed6c059046dc9f42029cc4c954b3ad" => :high_sierra
+    sha256 "abc0921ccf479b78ccd3d9ce393290800bed6c059046dc9f42029cc4c954b3ad" => :sierra
+    sha256 "85a868bc1467309193251f81640e54d91a3ee2369cf83dae2f2e4cca2755dddf" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -35,7 +36,7 @@ class Jack < Formula
 
   plist_options :manual => "jackd -d coreaudio"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

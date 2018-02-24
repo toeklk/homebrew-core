@@ -1,13 +1,13 @@
 class GstLibav < Formula
   desc "GStreamer plugins for Libav (a fork of FFmpeg)"
   homepage "https://gstreamer.freedesktop.org/"
-  url "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.10.0.tar.xz"
-  sha256 "af98204411c78abb98233c1858f2886be6401304d24be218752bbbcede9bd85b"
+  url "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.12.4.tar.xz"
+  sha256 "2a56aa5d2d8cd912f2bce17f174713d2c417ca298f1f9c28ee66d4aa1e1d9e62"
 
   bottle do
-    sha256 "8096e64628f7c99a5687ae07559c01f43dcab49dec064e63620c3180be74abe0" => :sierra
-    sha256 "70ae4c01f08528601200a7aba4d85041c04c572624ce9943f8709172c97f6db8" => :el_capitan
-    sha256 "974e9469592720e7808433386002c2792a18119db21481fd981c2355fabadab4" => :yosemite
+    sha256 "096d30103b5dda4a71c8e382bacea6e8cd11f3a0f365f44ccb13c0818c8170ae" => :high_sierra
+    sha256 "373291911b7504b4a5579c482ffe25f832da2f6d414f2f76e058524581c72043" => :sierra
+    sha256 "9e6949f43141b323b6e8f2cb5c9e980cda08e3297d688b4a8b9321da427afeec" => :el_capitan
   end
 
   head do

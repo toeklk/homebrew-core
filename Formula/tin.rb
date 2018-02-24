@@ -1,19 +1,18 @@
 class Tin < Formula
   desc "Threaded, NNTP-, and spool-based UseNet newsreader"
   homepage "http://www.tin.org"
-  url "http://ftp.cuhk.edu.hk/pub/packages/news/tin/v2.4/tin-2.4.0.tar.gz"
-  sha256 "26ee20980c88308f225c0bae55b6db12365ced3398dbea0621992dff0e74cbb6"
+  url "http://ftp.cuhk.edu.hk/pub/packages/news/tin/v2.4/tin-2.4.2.tar.gz"
+  sha256 "93839d2fd82175281c57f1a408dfb56bf716cf4f0b259b3e03462dca32391d51"
 
   bottle do
-    sha256 "8449ea4864b1fb5daa8f28f94b3561dbc0f165dbfb0c1c4fc7173f2552ad040d" => :sierra
-    sha256 "6cff69c3cbafa44246b88cc5721cf497933b80f12b703de54afe4b00d8fa54a9" => :el_capitan
-    sha256 "ca307ff45977125664a3e8add2f28bc9f37570a5150db8ad573ba7aac67a8bad" => :yosemite
+    sha256 "e9b2afbdc37d3a349dd8341e7ceb1191466b28fc9e636ef15308d6c5b7075ba4" => :high_sierra
+    sha256 "7964b2236af4b8c195271238b66a054293d94ce5bda3f10746f0b8e1d06c9f91" => :sierra
+    sha256 "572e6d081547a2b9fc46afffa994f52ffd5696be884e18858c8c03131a72faec" => :el_capitan
   end
 
   conflicts_with "mutt", :because => "both install mmdf.5 and mbox.5 man pages"
 
   def install
-    ENV.enable_warnings
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--prefix=#{prefix}",

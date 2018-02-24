@@ -1,19 +1,15 @@
 class Sdl2Image < Formula
   desc "Library for loading images as SDL surfaces and textures"
   homepage "https://www.libsdl.org/projects/SDL_image/"
-  url "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1.tar.gz"
-  sha256 "3a3eafbceea5125c04be585373bfd8b3a18f259bd7eae3efc4e6d8e60e0d7f64"
-  revision 1
+  url "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.2.tar.gz"
+  sha256 "72df075aef91fc4585098ea7e0b072d416ec7599aa10473719fbe51e9b8f6ce8"
 
   bottle do
     cellar :any
-    sha256 "d2ad5a4813d150ba0d31173feb6acdd58bd5ddfc254276b08d4982752d735b29" => :sierra
-    sha256 "8ffdcc75d5e300da37890307580a38f1e7393fee7e3053e13dcf1e16d153fea6" => :el_capitan
-    sha256 "2fb42da2d5d39a90be7d28089f92527a405618c23da638c84121850b3ee766be" => :yosemite
-    sha256 "8e5a4437ddccffe5dada2e19aa3cbdf8d857f00df793b3456f0356115e4082af" => :mavericks
+    sha256 "bf5ff1c94ebde257e9d397fcab3d2ba42e870c771ff948ca54c25146f7da2f07" => :high_sierra
+    sha256 "a9cda2a4abd47e4084212fdbb90c601dce4a1e599c0dcaad95b0fe139a5dad1a" => :sierra
+    sha256 "cbe47c5ce034bea17df0ed477b143e6695ac81dda3c03de71252373ff0b1703f" => :el_capitan
   end
-
-  option :universal
 
   depends_on "pkg-config" => :build
   depends_on "sdl2"
@@ -23,12 +19,30 @@ class Sdl2Image < Formula
   depends_on "webp" => :recommended
 
   def install
-    ENV.universal_binary if build.universal?
-
     inreplace "SDL2_image.pc.in", "@prefix@", HOMEBREW_PREFIX
 
     system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}", "--enable-imageio=no"
+                          "--prefix=#{prefix}",
+                          "--disable-imageio",
+                          "--disable-jpg-shared",
+                          "--disable-png-shared",
+                          "--disable-tif-shared",
+                          "--disable-webp-shared"
     system "make", "install"
+  end
+
+  test do
+    (testpath/"test.c").write <<~EOS
+      #include <SDL2/SDL_image.h>
+
+      int main()
+      {
+          int success = IMG_Init(0);
+          IMG_Quit();
+          return success;
+      }
+    EOS
+    system ENV.cc, "-L#{lib}", "-lsdl2_image", "test.c", "-o", "test"
+    system "./test"
   end
 end

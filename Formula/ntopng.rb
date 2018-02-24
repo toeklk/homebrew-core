@@ -1,24 +1,21 @@
 class Ntopng < Formula
   desc "Next generation version of the original ntop"
-  homepage "http://www.ntop.org/products/ntop/"
-  revision 1
+  homepage "https://www.ntop.org/products/traffic-analysis/ntop/"
 
   stable do
-    url "https://github.com/ntop/ntopng/archive/2.4.tar.gz"
-    sha256 "86f8ed46983f46bcd931304d3d992fc1af572b11e461ab9fb4f0f472429bd5dd"
+    url "https://github.com/ntop/ntopng/archive/3.2.tar.gz"
+    sha256 "3d7f7934d983623a586132d2602f25b630614f1d3ae73c56d6290deed1af19ee"
 
     resource "nDPI" do
-      # tip of 1.8-stable branch; four commits beyond the 1.8 tag
-      url "https://github.com/ntop/nDPI.git",
-        :revision => "6fb81f146e2542cfbf7fab7d53678339c7747b35"
+      url "https://github.com/ntop/nDPI/archive/2.2.tar.gz"
+      sha256 "25607db12f466ba88a1454ef8b378e0e9eb59adffad6baa4b5610859a102a5dd"
     end
   end
 
   bottle do
-    sha256 "60f5fea02d8b2b3a21a692948ff766b46022577bd7b9b06089f47394d6c757dd" => :sierra
-    sha256 "1fc7e9e953d8f56e76be90b02b3d45e91cd2a9bb398a6635a992c733574e6058" => :el_capitan
-    sha256 "22821f8c3b10ebab568755a86349ed0a65a28ea04f262df94771e71b8f423502" => :yosemite
-    sha256 "156d8545cc8632d4ecb92d2cea86f784da0150f0cd9e0a567985ba9785b1ae1f" => :mavericks
+    sha256 "e4f7e647e5c37d3d936f8d18a3ebb620ed80b806c60275a09f5e3815e85db873" => :high_sierra
+    sha256 "5103e823d0792492aeaa3ab36d83f71fa2697d526bd92c963b2882b809ce6687" => :sierra
+    sha256 "dd1b65f7942118b0fa313b8560ce98ad15b3de91417ad596872b82b48161ee42" => :el_capitan
   end
 
   head do
@@ -36,13 +33,11 @@ class Ntopng < Formula
   depends_on "pkg-config" => :build
   depends_on "libtool" => :build
   depends_on "json-glib" => :build
-  depends_on "wget" => :build
   depends_on "zeromq" => :build
   depends_on "gnutls" => :build
 
   depends_on "json-c"
   depends_on "rrdtool"
-  depends_on "luajit"
   depends_on "geoip"
   depends_on "redis"
   depends_on "mysql" if build.without? "mariadb"
@@ -61,6 +56,6 @@ class Ntopng < Formula
   end
 
   test do
-    system "#{bin}/ntopng", "-h"
+    system "#{bin}/ntopng", "-V"
   end
 end

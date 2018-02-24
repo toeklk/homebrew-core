@@ -1,13 +1,14 @@
 class Profanity < Formula
   desc "Console based XMPP client"
   homepage "http://www.profanity.im/"
-  url "http://www.profanity.im/profanity-0.5.0.tar.gz"
-  sha256 "783be8aa6eab7192fc211f00adac136b21e580ea52d9c07128312a9609939668"
+  url "http://www.profanity.im/profanity-0.5.1.tar.gz"
+  sha256 "e3513713e74ec3363fbdbac2919bdc17e249988780cc5a4589d1425807a7feb8"
 
   bottle do
-    sha256 "16c6bad33b79547d3704eac09cc47cd419108ee229f45b05b485a1cc7013d768" => :sierra
-    sha256 "d2bd1f9941cb5ae5227b9c4bb253fa647788c5e3f46c90f384173ff5b4f43d96" => :el_capitan
-    sha256 "0766255c85298c03ceffb45192fb0945240e1ba186aea4b8b014208e8611f1c2" => :yosemite
+    rebuild 1
+    sha256 "927877fecb1306de71150281968d62ebc20d3e2fb70a43706d759d31f9b46d3d" => :high_sierra
+    sha256 "e1944f29f1fb1233f43c9beac4e4f6c4af247e64e94fa9c1c3b77fc4071124aa" => :sierra
+    sha256 "759ebf658a3a869b22da48f7c6a99dbad605c75af19931cef996ef3484df5d29" => :el_capitan
   end
 
   head do
@@ -34,12 +35,11 @@ class Profanity < Formula
     system "./bootstrap.sh" if build.head?
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
-                          "--disable-python-plugins",
                           "--prefix=#{prefix}"
     system "make", "install"
   end
 
   test do
-    system "profanity", "-v"
+    system "#{bin}/profanity", "-v"
   end
 end

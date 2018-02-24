@@ -1,11 +1,12 @@
 class Cunit < Formula
   desc "Lightweight unit testing framework for C"
-  homepage "http://cunit.sourceforge.net/"
+  homepage "https://cunit.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/cunit/CUnit/2.1-3/CUnit-2.1-3.tar.bz2"
   sha256 "f5b29137f845bb08b77ec60584fdb728b4e58f1023e6f249a464efa49a40f214"
 
   bottle do
     cellar :any
+    sha256 "23fdc88eeb1c4cf8d58e281e046f2e45a56860c0091e5c76f757f01679d143d2" => :high_sierra
     sha256 "dc987998ebcfc175c9c9e70c6b83db4197bd5b79d383235b85ee8a30835785df" => :sierra
     sha256 "0b92535641c86f38bf7a3a1b08a07aa6523e4c0135792dd92829e00579a5e3a9" => :el_capitan
     sha256 "63c1d2905cf9214281b8dad71a7d86fcf57d46ccbeb026a43dc73dddac569840" => :yosemite
@@ -24,7 +25,7 @@ class Cunit < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <stdio.h>
       #include <string.h>
       #include "CUnit/Basic.h"

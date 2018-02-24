@@ -1,40 +1,25 @@
 class Tcpreplay < Formula
   desc "Replay saved tcpdump files at arbitrary speeds"
-  homepage "http://tcpreplay.appneta.com"
-  url "https://github.com/appneta/tcpreplay/releases/download/v4.1.1/tcpreplay-4.1.1.tar.gz"
-  sha256 "61b916ef91049cad2a9ddc8de6f5e3e3cc5d9998dbb644dc91cf3a798497ffe4"
+  homepage "https://tcpreplay.appneta.com/"
+  url "https://github.com/appneta/tcpreplay/releases/download/v4.2.6/tcpreplay-4.2.6.tar.gz"
+  sha256 "043756c532dab93e2be33a517ef46b1341f7239278a1045ae670041dd8a4531d"
 
   bottle do
     cellar :any
-    sha256 "ab4bf20934207921bfbe370d620098c7a41aad6722f9bd124591e56294569fe2" => :sierra
-    sha256 "bdef98f3c5bfd5daeb2d99c2361ef3be11661c37acf19536ed210b4a2cb5ba89" => :el_capitan
-    sha256 "6faba215d8a394c2761476661c5e62cfff8be36068a71e28c8562d2a7da1286b" => :yosemite
-    sha256 "fb831dbf6c074d5b1f639a22711428610c8e99c396637f2b2014eadb32953060" => :mavericks
+    sha256 "9be61ec3aeeac7be8cd51225d5914a7ba7ee8f0c9fbd4393e452f6b9447a53c7" => :high_sierra
+    sha256 "569bdb4ac12e4ff62c723b1fdabad4b037c54423a70742306ba852f9bc43e25d" => :sierra
+    sha256 "b5ba1668dddf52946866c866bc1ba2ab2983b67d99c69b6c41fabe91e816139a" => :el_capitan
+    sha256 "3eaba6e1af68c8af3f7d1d0a15c2563b178368a74a760e3fafa5b3c4774f9129" => :yosemite
   end
 
   depends_on "libdnet"
 
   def install
-    args = %W[
-      --disable-dependency-tracking
-      --disable-debug
-      --prefix=#{prefix}
-      --enable-dynamic-link
-    ]
-
-    if MacOS::Xcode.installed?
-      args << "--with-macosx-sdk=#{MacOS.sdk.version}"
-    else
-      # Allows the CLT to be used if Xcode's not available
-      # Reported 11 Jul 2016: https://github.com/appneta/tcpreplay/issues/254
-      inreplace "configure" do |s|
-        s.gsub! /^.*Could not figure out the location of a Mac OS X SDK.*$/,
-                "MACOSX_SDK_PATH=\"\""
-        s.gsub! " -isysroot $MACOSX_SDK_PATH", ""
-      end
-    end
-
-    system "./configure", *args
+    system "./configure", "--disable-debug",
+                          "--disable-dependency-tracking",
+                          "--disable-silent-rules",
+                          "--prefix=#{prefix}",
+                          "--enable-dynamic-link"
     system "make", "install"
   end
 

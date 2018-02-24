@@ -1,16 +1,16 @@
 class Rbenv < Formula
   desc "Ruby version manager"
   homepage "https://github.com/rbenv/rbenv#readme"
-  url "https://github.com/rbenv/rbenv/archive/v1.0.0.tar.gz"
-  sha256 "4658f2d8604ef847b39cb8216bb0d8a8aa000f504b6d06b30e008f92e6fa5210"
+  url "https://github.com/rbenv/rbenv/archive/v1.1.1.tar.gz"
+  sha256 "41f1a60714c55eceb21d692a469aee1ec4f46bba351d0dfcb0c660ff9cf1a1c9"
   head "https://github.com/rbenv/rbenv.git"
 
   bottle do
     cellar :any
-    sha256 "624804d691177a450b546d0122fcbc6afeda0be7051df44cae4fe464dda69c23" => :sierra
-    sha256 "02457958c3aae15e162436c481581639782134c7600c7cfd8eb9af1275f7b922" => :el_capitan
-    sha256 "5f2bda33e2574d02eb076c70ef8de3e7765b40a8945c2fcc9749e9d9f9d7685c" => :yosemite
-    sha256 "a8af7a2dfbf2aa9e1ce1dd0951550482e5456efb2b59ccc72c06b60d7186943b" => :mavericks
+    sha256 "ffafe9cbf0f10545e0c7db8a5ea0ed3056226441391911d2992b2373de94afe3" => :high_sierra
+    sha256 "a99c9b4ba77938ce03b8e06e0e4d7670c611214b07b78d2b5e1bc9a7571f9186" => :sierra
+    sha256 "9d1a7da30fb133b43b243e562167ffdde6c125f054c3fde7a866a0b15173f269" => :el_capitan
+    sha256 "e3e0e0b32a1bb337178d915a91ac7f552153cbf351973f9ef1692d9644824f61" => :yosemite
   end
 
   depends_on "ruby-build" => :recommended
@@ -35,16 +35,6 @@ class Rbenv < Formula
     end
 
     prefix.install ["bin", "completions", "libexec", "rbenv.d"]
-  end
-
-  def caveats; <<-EOS.undent
-    Rbenv stores data under ~/.rbenv by default. If you absolutely need to
-    store everything under Homebrew's prefix, include this in your profile:
-      export RBENV_ROOT=#{var}/rbenv
-
-    To enable shims and autocompletion, run this and follow the instructions:
-      rbenv init
-    EOS
   end
 
   test do

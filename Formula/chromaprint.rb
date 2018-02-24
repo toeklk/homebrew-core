@@ -1,31 +1,20 @@
 class Chromaprint < Formula
   desc "Core component of the AcoustID project (Audio fingerprinting)"
   homepage "https://acoustid.org/chromaprint"
-  url "https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-1.3.tar.gz"
-  sha256 "3dc3ff97abdce63abc1f52d5f5f8e72c22f9a690dd6625271aa96d3a585b695a"
-  revision 1
+  url "https://github.com/acoustid/chromaprint/releases/download/v1.4.3/chromaprint-1.4.3.tar.gz"
+  sha256 "ea18608b76fb88e0203b7d3e1833fb125ce9bb61efe22c6e169a50c52c457f82"
 
   bottle do
     cellar :any
-    sha256 "754258c5927d7e5f7894e4747ece4ea93da369b77bf34d7c4b212569db4a7a09" => :sierra
-    sha256 "05fa1392a131c834416a04943216724b534c5b5a5ed059fb4f591dd46aaae7c4" => :el_capitan
-    sha256 "21b0e47b870d43696ded14ea40a7022b98fdd1b08f0057a14a966b4caa4103fe" => :yosemite
-    sha256 "611f98dcc4855ad23b30ae5db399e5c6c6b659dc31fb09d5c7e573002e335448" => :mavericks
+    sha256 "3d0ae4279d4d3fa0fad24c434e82032384256ed1613e89e7b601e1f02ceaa596" => :high_sierra
+    sha256 "fc91e7116562484496de75f3e3e0a7a61771b9826b6f3a4497af411df2683290" => :sierra
+    sha256 "799c9c907b020aed48763162b996a672d42b3b8dde5a53381e28818ccd0981dc" => :el_capitan
   end
-
-  option "without-examples", "Don't build examples (including fpcalc)"
 
   depends_on "cmake" => :build
-  depends_on "ffmpeg" if build.with? "examples"
 
   def install
-    args = std_cmake_args
-    args << "-DBUILD_EXAMPLES=ON" if build.with? "examples"
-    system "cmake", ".", *args
+    system "cmake", ".", *std_cmake_args
     system "make", "install"
-  end
-
-  test do
-    system "#{bin}/fpcalc", test_fixtures("test.mp3") if build.with? "examples"
   end
 end

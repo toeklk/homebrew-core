@@ -1,14 +1,14 @@
 class Ats2Postiats < Formula
-  desc "ATS programming language implementation"
+  desc "Programming language with formal specification features"
   homepage "http://www.ats-lang.org/"
-  url "https://downloads.sourceforge.net/project/ats2-lang/ats2-lang/ats2-postiats-0.2.11/ATS2-Postiats-0.2.11.tgz"
-  sha256 "0fe99975fe5eb86b884c4bcfd3c5b6d0015793f2d8c8455c5b21649744f01d90"
+  url "https://downloads.sourceforge.net/project/ats2-lang/ats2-lang/ats2-postiats-0.3.9/ATS2-Postiats-0.3.9.tgz"
+  sha256 "c69a7c58964df26227e77656659129ca4c05205d2ebcacc7084edba818fb6e81"
 
   bottle do
     cellar :any
-    sha256 "dd2987c2c5a30b7fdb0863597e69bcb58c17cda9385675e15d95d740849eea33" => :sierra
-    sha256 "11b07486d678c6a7c6f0363ccb3b00a04b244783eea91cbe7f32104d8c633694" => :el_capitan
-    sha256 "2b6c12b3bed10dd3a04ab72a35e21ada97281b222a2b401511cf83c9afb797b8" => :yosemite
+    sha256 "45a0f5428914af012b5292a062bf7af032d9955c49b66e4d12b638505b2ad03d" => :high_sierra
+    sha256 "305068e69e2519a2d1ecb212e7b3f32d22fc98932088c6d959fddb3c76cb2c73" => :sierra
+    sha256 "1a2f22aa7d162b238a171dcebe7d87675601ec8028638f3f5aec55eaba8838fc" => :el_capitan
   end
 
   depends_on "gmp"
@@ -20,7 +20,7 @@ class Ats2Postiats < Formula
   end
 
   test do
-    (testpath/"hello.dats").write <<-EOS.undent
+    (testpath/"hello.dats").write <<~EOS
       val _ = print ("Hello, world!\n")
       implement main0 () = ()
     EOS

@@ -3,33 +3,32 @@ class CharmTools < Formula
 
   desc "Tools for authoring and maintaining juju charms"
   homepage "https://github.com/juju/charm-tools"
-  url "https://github.com/juju/charm-tools/releases/download/v2.1.2/charm-tools-2.1.2.tar.gz"
-  sha256 "81ec4363df3b79556260ee51690227ea02ef288ebbfdd73a0261ae2177ad0002"
+  url "https://files.pythonhosted.org/packages/99/4d/16d7398fe5eefc602a8870fb3e93597aabe681b0f1497749148695cba4a1/charm-tools-2.2.3.tar.gz"
+  sha256 "ea659f59041cb3dff0be862d657830591e656a9a259931064edab7477875245b"
   revision 1
 
   bottle do
     cellar :any
-    sha256 "f7fee0bca5d96e591f44906d9aaac41f9a34cb481e27ddb5e05581e1b467e43d" => :sierra
-    sha256 "2c405203fffc1bf829d456f443fc48a655fc6ec7e9813eb67438c18d6f03acf1" => :el_capitan
-    sha256 "ead9927592752ba74d0535db1b68b97ddafb314da2fb78693b4a81282d21365f" => :yosemite
+    sha256 "b8d51dd57ac254a3dab630164fe72cf60494888cfd49493301a60b02969ae22c" => :high_sierra
+    sha256 "4b0673f38036e9e5f2e8b9e9af617a35ed94115ddac2c7643fa22c14c487283d" => :sierra
+    sha256 "d061bc544b4a40f7e3e44ac94ce6b6100e57985724e6ff8cf17cdd7f02801496" => :el_capitan
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "libyaml"
-  depends_on :hg
+  depends_on "mercurial"
   depends_on "charm"
-  depends_on "openssl@1.1"
+  depends_on "openssl"
 
   # Additionally include ndg-httpsclient for requests[security]
-
   resource "Cheetah" do
     url "https://files.pythonhosted.org/packages/cd/b0/c2d700252fc251e91c08639ff41a8a5203b627f4e0a2ae18a6b662ab32ea/Cheetah-2.4.4.tar.gz"
     sha256 "be308229f0c1e5e5af4f27d7ee06d90bb19e6af3059794e5fd536a6f29a9b550"
   end
 
   resource "Markdown" do
-    url "https://files.pythonhosted.org/packages/d4/32/642bd580c577af37b00a1eb59b0eaa996f2d11dfe394f3dd0c7a8a2de81a/Markdown-2.6.7.tar.gz"
-    sha256 "daebf24846efa7ff269cfde8c41a48bb2303920c7b2c7c5e04fa82e6282d05c0"
+    url "https://files.pythonhosted.org/packages/29/82/dfe242bcfd9eec0e7bf93a80a8f8d8515a95b980c44f5c0b45606397a423/Markdown-2.6.9.tar.gz"
+    sha256 "73af797238b95768b3a9b6fe6270e250e5c09d988b8e5b223fd5efa4e06faf81"
   end
 
   resource "PyYAML" do
@@ -37,9 +36,14 @@ class CharmTools < Formula
     sha256 "c36c938a872e5ff494938b33b14aaa156cb439ec67548fcab3535bb78b0846e8"
   end
 
-  resource "argparse" do
-    url "https://files.pythonhosted.org/packages/18/dd/e617cfc3f6210ae183374cd9f6a26b20514bbb5a792af97949c5aacddf0f/argparse-1.4.0.tar.gz"
-    sha256 "62b089a55be1d8949cd2bc7e0df0bddb9e028faefc8c32038cc84862aefdd6e4"
+  resource "SecretStorage" do
+    url "https://files.pythonhosted.org/packages/a5/a5/0830cfe34a4cfd0d1c3c8b614ede1edb2aaf999091ac8548dd19cb352e79/SecretStorage-2.3.1.tar.gz"
+    sha256 "3af65c87765323e6f64c83575b05393f9e003431959c9395d1791d51497f29b6"
+  end
+
+  resource "asn1crypto" do
+    url "https://files.pythonhosted.org/packages/31/53/8bca924b30cb79d6d70dbab6a99e8731d1e4dd3b090b7f3d8412a8d8ffbc/asn1crypto-0.23.0.tar.gz"
+    sha256 "0874981329cfebb366d6584c3d16e913f2a0eb026c9463efcc4aaf42a9d94d70"
   end
 
   resource "blessings" do
@@ -48,18 +52,23 @@ class CharmTools < Formula
   end
 
   resource "cffi" do
-    url "https://files.pythonhosted.org/packages/0a/f3/686af8873b70028fccf67b15c78fd4e4667a3da995007afc71e786d61b0a/cffi-1.8.3.tar.gz"
-    sha256 "c321bd46faa7847261b89c0469569530cad5a41976bb6dba8202c0159f476568"
+    url "https://files.pythonhosted.org/packages/c9/70/89b68b6600d479034276fed316e14b9107d50a62f5627da37fafe083fde3/cffi-1.11.2.tar.gz"
+    sha256 "ab87dd91c0c4073758d07334c1e5f712ce8fe48f007b86f8238773963ee700a6"
   end
 
   resource "colander" do
-    url "https://files.pythonhosted.org/packages/62/23/14a8cf54ce7d521680a29061e02133885016ae53bdccd132662c53382a4e/colander-1.3.1.tar.gz"
-    sha256 "48bdbb5e8f50fcf2f05aab6bb2c0ab58d6ec7eed81a72b7d0272744fe72fafc2"
+    url "https://files.pythonhosted.org/packages/4d/bc/48b9751b5c532ec74e78f3a8c09d26994f8e748e4895bbc5d2f6c8c5734b/colander-1.0b1.tar.gz"
+    sha256 "8a342bf278227be6ac96e90befa949c235e667254db17e773e79d834459be971"
   end
 
   resource "cryptography" do
-    url "https://files.pythonhosted.org/packages/6c/c5/7fc1f8384443abd2d71631ead026eb59863a58cad0149b94b89f08c8002f/cryptography-1.5.3.tar.gz"
-    sha256 "cf82ddac919b587f5e44247579b433224cc2e03332d2ea4d89aa70d7e6b64ae5"
+    url "https://files.pythonhosted.org/packages/f3/7c/ec4f94489719803cb14d35e9625d1f5a613b9c4b8d01ee52a4c77485e681/cryptography-2.1.3.tar.gz"
+    sha256 "68a26c353627163d74ee769d4749f2ee243866e9dac43c93bb33ebd8fbed1199"
+  end
+
+  resource "ecdsa" do
+    url "https://files.pythonhosted.org/packages/f9/e5/99ebb176e47f150ac115ffeda5fedb6a3dbb3c00c74a59fd84ddf12f5857/ecdsa-0.13.tar.gz"
+    sha256 "64cf1ee26d1cde3c73c6d7d107f835fed7c6a2904aef9eac223d57ad800c43fa"
   end
 
   resource "enum34" do
@@ -73,23 +82,18 @@ class CharmTools < Formula
   end
 
   resource "httplib2" do
-    url "https://files.pythonhosted.org/packages/ff/a9/5751cdf17a70ea89f6dde23ceb1705bfb638fd8cee00f845308bf8d26397/httplib2-0.9.2.tar.gz"
-    sha256 "c3aba1c9539711551f4d83e857b316b5134a1c4ddce98a875b7027be7dd6d988"
+    url "https://files.pythonhosted.org/packages/e4/2e/a7e27d2c36076efeb8c0e519758968b20389adf57a9ce3af139891af2696/httplib2-0.10.3.tar.gz"
+    sha256 "e404d3b7bd86c1bc931906098e7c1305d6a3a6dcef141b8bb1059903abb3ceeb"
   end
 
   resource "idna" do
-    url "https://files.pythonhosted.org/packages/fb/84/8c27516fbaa8147acd2e431086b473c453c428e24e8fb99a1d89ce381851/idna-2.1.tar.gz"
-    sha256 "ed36f281aebf3cd0797f163bb165d84c31507cedd15928b095b1675e2d04c676"
+    url "https://files.pythonhosted.org/packages/f4/bd/0467d62790828c23c47fc1dfa1b1f052b24efdf5290f071c7a91d0d82fd3/idna-2.6.tar.gz"
+    sha256 "2c6a5de3089009e3da7c5dde64a141dbc8551d5b7f6cf4ed7c2568d0cc520a8f"
   end
 
   resource "ipaddress" do
-    url "https://files.pythonhosted.org/packages/bb/26/3b64955ff73f9e3155079b9ed31812afdfa5333b5c76387454d651ef593a/ipaddress-1.0.17.tar.gz"
-    sha256 "3a21c5a15f433710aaa26f1ae174b615973a25182006ae7f9c26de151cd51716"
-  end
-
-  resource "iso8601" do
-    url "https://files.pythonhosted.org/packages/c0/75/c9209ee4d1b5975eb8c2cba4428bde6b61bd55664a98290dd015cdb18e98/iso8601-0.1.11.tar.gz"
-    sha256 "e8fb52f78880ae063336c94eb5b87b181e6a0cc33a6c008511bac9a6e980ef30"
+    url "https://files.pythonhosted.org/packages/4e/13/774faf38b445d0b3a844b65747175b2e0500164b7c28d78e34987a5bfe06/ipaddress-1.0.18.tar.gz"
+    sha256 "5d8534c8e185f2d8a1fda1ef73f2c8f4b23264e8e30063feeb9511d492a413e1"
   end
 
   resource "jsonschema" do
@@ -98,28 +102,23 @@ class CharmTools < Formula
   end
 
   resource "jujubundlelib" do
-    url "https://files.pythonhosted.org/packages/03/0b/9bb2296c3a9d5262c2abffddbe7ff47efc60db0fe49ad2a1ad516ad4fb8c/jujubundlelib-0.5.2.tar.gz"
-    sha256 "8baa49aa4f714b4b9dc268e38dddf9dde3c372d90c59ab332222b0217fc0bec3"
+    url "https://files.pythonhosted.org/packages/f5/79/862a0f62f725ed537e298e04942742a6c0110d2da4404040d77ca3e0d8d5/jujubundlelib-0.5.5.tar.gz"
+    sha256 "125383aee2f60af66bb909682aa0757d8e0be083e3f8125473e18a9f3f2d4f3d"
   end
 
   resource "keyring" do
-    url "https://files.pythonhosted.org/packages/2b/b2/ccc3d598524a179b9ebbb9887885c8e1e428bd21b892a1f83cf774b1378c/keyring-10.0.2.tar.gz"
-    sha256 "91c31fd805b3ce6343406c7c51437f7505f3e9abb6e14ccac8242ea1fc912d77"
+    url "https://files.pythonhosted.org/packages/37/0c/034139cd798dac3ceb4fcb4ed85e20c27f3e579c25cdaf066aad1552da3d/keyring-10.4.0.tar.gz"
+    sha256 "901a3f4ed0dfba473060281b58fd3b649ce70f59cb34a9cf6cb5551218283b26"
   end
 
   resource "launchpadlib" do
-    url "https://files.pythonhosted.org/packages/6e/db/150e8325ee03c6eb88e14e02efbd83c90fcfec23d615d02fccb5a6349eb0/launchpadlib-1.10.4.tar.gz"
-    sha256 "d24ede127d4fc56a1557ec115e6fc9b64756e0d60c4fd0ee13ca448d593d3f0e"
-  end
-
-  resource "lazr.authentication" do
-    url "https://files.pythonhosted.org/packages/90/da/525645ece5afd54a22a7f95a194b84ada61cc3cbbc0eb98ac0af6e43367b/lazr.authentication-0.1.3.tar.gz"
-    sha256 "23b66ba6a135168e22e0142f9c18b5fa3c1ed37b08c6ef71c8acd7adb244fa11"
+    url "https://files.pythonhosted.org/packages/e6/2b/721606eba8d52e66c6aa436d05ef4b8def963e3d6cbfbb61a05b3891bda3/launchpadlib-1.10.5.tar.gz"
+    sha256 "b9c32cf960de042ba73e77ac4d4d0f694135713715f0afa1ca2630ffb03ba2a7"
   end
 
   resource "lazr.restfulclient" do
-    url "https://files.pythonhosted.org/packages/0a/ad/30ac2d266a6890646d2a180d720aea58da382390e80e9252ab8c759ca0de/lazr.restfulclient-0.13.1.tar.gz"
-    sha256 "0b678412b61e3f9722525c07f7bbfd3a15173c3869d3dab30f2671c9bead7f2a"
+    url "https://files.pythonhosted.org/packages/aa/3e/87b8658c0e4fe272c4da0c4f9d0e219c42ee7ddb149a063b8c3a95f265af/lazr.restfulclient-0.13.5.tar.gz"
+    sha256 "722f27a8baefa83c347fe3a6330de5fe381d8473d3bb7c5726762cabf9556800"
   end
 
   resource "lazr.uri" do
@@ -128,13 +127,13 @@ class CharmTools < Formula
   end
 
   resource "libcharmstore" do
-    url "https://files.pythonhosted.org/packages/54/a3/823a444fd6df0c670940ab089aa466621a58d575349e3d8d84b8ea02dd83/libcharmstore-0.0.3.tar.gz"
-    sha256 "1beb37a662e9e0d60bbebc65ec360f2f8333316706c6ae0c59d437a8a8d76ecc"
+    url "https://files.pythonhosted.org/packages/06/57/710e53ba029bbcdd86da4b9be293105ef4eb14178e283cf57188e89ba55c/libcharmstore-0.0.7.tar.gz"
+    sha256 "19a6c83d565a0b91726f4289b664a68bbc766f8c80cc6d9f8230b030706cf990"
   end
 
   resource "ndg-httpsclient" do
-    url "https://files.pythonhosted.org/packages/a2/a7/ad1c1c48e35dc7545dab1a9c5513f49d5fa3b5015627200d2be27576c2a0/ndg_httpsclient-0.4.2.tar.gz"
-    sha256 "580987ef194334c50389e0d7de885fccf15605c13c6eecaabd8d6c43768eb8ac"
+    url "https://files.pythonhosted.org/packages/25/4c/28c412126f0394dbb3d8005465357581f087fc7ec100b0e83838a90009b7/ndg_httpsclient-0.4.3.tar.gz"
+    sha256 "7bfd8c5cfcbc241a93ca6a4e45f952650f5c7ecf7c49b1dbcf5f4d390240be0b"
   end
 
   resource "oauth" do
@@ -148,43 +147,43 @@ class CharmTools < Formula
   end
 
   resource "paramiko" do
-    url "https://files.pythonhosted.org/packages/6b/4e/971b8c917456a2ec9666311f7e695493002a64022397cd668150b5efd2a8/paramiko-2.0.2.tar.gz"
-    sha256 "411bf90fa22b078a923ff19ef9772c1115a0953702db93549a2848acefd141dc"
+    url "https://files.pythonhosted.org/packages/23/1d/1d0254566e13a86e61931f24d2cf72cc32d1286636b581ac2999a2ec1787/paramiko-1.18.4.tar.gz"
+    sha256 "c5f9e14d44bd4940244a7dccde6019d97472122f07585e1081fc4c7327ea2765"
   end
 
   resource "parse" do
-    url "https://files.pythonhosted.org/packages/c3/e3/c2ca7f10c481b84ba7bf8c35c595ee4825d828fce7838fffc57f0ea0acc9/parse-1.6.6.tar.gz"
-    sha256 "71435aaac494e08cec76de646de2aab8392c114e56fe3f81c565ecc7eb886178"
+    url "https://files.pythonhosted.org/packages/13/71/e0b5c968c552f75a938db18e88a4e64d97dc212907b4aca0ff71293b4c80/parse-1.8.2.tar.gz"
+    sha256 "8048dde3f5ca07ad7ac7350460952d83b63eaacecdac1b37f45fd74870d849d2"
   end
 
   resource "path.py" do
-    url "https://files.pythonhosted.org/packages/85/80/d13c3e5058c14f0bf3c19e9596a70f1e805fcda8510531f338b9e96cc5c7/path.py-8.2.1.tar.gz"
-    sha256 "c9ad2d462a7f8d7f6f6d2b89220bd50425221e399a4b8dfe5fa6725eb26fd708"
+    url "https://files.pythonhosted.org/packages/90/bb/3440e0734cb2dcfbf3644546dad7dfc08b197d5dd52877de95f95fd459b2/path.py-8.1.2.tar.gz"
+    sha256 "ada95d117c4559abe64080961daf5badda68561afdd34c278f8ca20f2fa466d2"
   end
 
   resource "pathspec" do
-    url "https://files.pythonhosted.org/packages/67/f6/ad4d6964da803ffe0ec9d513b0be6924be0f502636c17781308561f08034/pathspec-0.5.0.tar.gz"
-    sha256 "aa3a071054d4740b963c91a3127a5e0e1358351718bae2a3f731ec24fb0bdd1f"
+    url "https://files.pythonhosted.org/packages/14/9d/c9d790d373d6f6938d793e9c549b87ad8670b6fa7fc6176485e6ef11c1a4/pathspec-0.3.4.tar.gz"
+    sha256 "7605ca5c26f554766afe1d177164a2275a85bb803b76eba3428f422972f66728"
   end
 
   resource "pbr" do
-    url "https://files.pythonhosted.org/packages/c3/2c/63275fab26a0fd8cadafca71a3623e4d0f0ee8ed7124a5bb128853d178a7/pbr-1.10.0.tar.gz"
-    sha256 "186428c270309e6fdfe2d5ab0949ab21ae5f7dea831eab96701b86bd666af39c"
+    url "https://files.pythonhosted.org/packages/d5/d6/f2bf137d71e4f213b575faa9eb426a8775732432edb67588a8ee836ecb80/pbr-3.1.1.tar.gz"
+    sha256 "05f61c71aaefc02d8e37c0a3eeb9815ff526ea28b3b76324769e6158d7f95be1"
   end
 
   resource "pyOpenSSL" do
-    url "https://files.pythonhosted.org/packages/0c/d6/b1fe519846a21614fa4f8233361574eddb223e0bc36b182140d916acfb3b/pyOpenSSL-16.2.0.tar.gz"
-    sha256 "7779a3bbb74e79db234af6a08775568c6769b5821faecf6e2f4143edb227516e"
+    url "https://files.pythonhosted.org/packages/ee/6a/cd78737dd990297205943cc4dcad3d3c502807fd2c5b18c5f33dc90ca214/pyOpenSSL-17.3.0.tar.gz"
+    sha256 "29630b9064a82e04d8242ea01d7c93d70ec320f5e3ed48e95fcabc6b1d0f6c76"
   end
 
   resource "pyasn1" do
-    url "https://files.pythonhosted.org/packages/f7/83/377e3dd2e95f9020dbd0dfd3c47aaa7deebe3c68d3857a4e51917146ae8b/pyasn1-0.1.9.tar.gz"
-    sha256 "853cacd96d1f701ddd67aa03ecc05f51890135b7262e922710112f12a2ed2a7f"
+    url "https://files.pythonhosted.org/packages/3c/a6/4d6c88aa1694a06f6671362cb3d0350f0d856edea4685c300785200d1cd9/pyasn1-0.3.7.tar.gz"
+    sha256 "187f2a66d617683f8e82d5c00033b7c8a0287e1da88a9d577aebec321cad4965"
   end
 
   resource "pycparser" do
-    url "https://files.pythonhosted.org/packages/be/64/1bb257ffb17d01f4a38d7ce686809a736837ad4371bcc5c42ba7a715c3ac/pycparser-2.17.tar.gz"
-    sha256 "0aac31e917c24cb3357f5a4d5566f2cc91a19ca41862f6c3c22dc60a629673b6"
+    url "https://files.pythonhosted.org/packages/8c/2d/aad7f16146f4197a11f8e91fb81df177adcc2073d36a17b1491fd09df6ed/pycparser-2.18.tar.gz"
+    sha256 "99a8ca03e29851d96616ad0404b4aad7d9ee16f25c9f9708a11faf2810f7b226"
   end
 
   resource "pycrypto" do
@@ -193,23 +192,28 @@ class CharmTools < Formula
   end
 
   resource "requests" do
-    url "https://files.pythonhosted.org/packages/2e/ad/e627446492cc374c284e82381215dcd9a0a87c4f6e90e9789afefe6da0ad/requests-2.11.1.tar.gz"
-    sha256 "5acf980358283faba0b897c73959cecf8b841205bb4b2ad3ef545f46eae1a133"
+    url "https://files.pythonhosted.org/packages/f9/6d/07c44fb1ebe04d069459a189e7dab9e4abfe9432adcd4477367c25332748/requests-2.9.1.tar.gz"
+    sha256 "c577815dd00f1394203fc44eb979724b098f88264a9ef898ee45b8e5e9cf587f"
+  end
+
+  resource "ruamel.base" do
+    url "https://files.pythonhosted.org/packages/ea/77/60a0945f4b4eac4b6bd74d1b8e103ae58d0f07b934f962bb4c49e6ec205e/ruamel.base-1.0.0.tar.gz"
+    sha256 "c041333a0f0f00cd6593eb36aa83abb1a9e7544e83ba7a42aa7ac7476cee5cf3"
   end
 
   resource "ruamel.ordereddict" do
-    url "https://files.pythonhosted.org/packages/b1/17/97868578071068fe7d115672b52624d421ff24e5e802f65d6bf3ea184e8f/ruamel.ordereddict-0.4.9.tar.gz"
-    sha256 "7058c470f131487a3039fb9536dda9dd17004a7581bdeeafa836269a36a2b3f6"
+    url "https://files.pythonhosted.org/packages/b1/8f/3b1b407ff387e006a4a33e62182b212077bed41676451d60327955a50c3c/ruamel.ordereddict-0.4.13.tar.gz"
+    sha256 "bf0a198c8ce5d973c24e5dba12d3abc254996788ca6ad8448eabc6aa710db149"
   end
 
   resource "ruamel.yaml" do
-    url "https://files.pythonhosted.org/packages/f1/5c/95172cdd6e9f8a014718d40382ca378db697f2a6f9a7fc1505a3f8dac400/ruamel.yaml-0.12.15.tar.gz"
-    sha256 "def928a0cf7a4859c5af528199b7a420caefff765beeff410eacf7bfc08d4198"
+    url "https://files.pythonhosted.org/packages/e1/fe/0021f94b54f7aa5a730b765f5a4eead9675be98c7f46c206c240fb9ef819/ruamel.yaml-0.10.23.tar.gz"
+    sha256 "895347f81297f5542e1071092c6760ed13d86547764ebbaedbc2972eb8385dd8"
   end
 
   resource "six" do
-    url "https://files.pythonhosted.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-1.10.0.tar.gz"
-    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
+    url "https://files.pythonhosted.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"
+    sha256 "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
   end
 
   resource "stuf" do
@@ -223,8 +227,8 @@ class CharmTools < Formula
   end
 
   resource "theblues" do
-    url "https://files.pythonhosted.org/packages/de/72/dde64e7f7224a641396cbf5824a6cbbb0795dbb53410c6e9b1cfe2be5788/theblues-0.3.7.tar.gz"
-    sha256 "d4e328981944b6197b6c95697a073b6406cdaa2f397c639454770de3bcda5060"
+    url "https://files.pythonhosted.org/packages/ab/09/21a4718cb6f06573153de35af742e4c251ca9b628c9001d06f6ed4b2cae5/theblues-0.3.8.tar.gz"
+    sha256 "649f4013d3b9024f7990a7e0b42aed2196daea64a7c8501dde4f1f57ab8aa031"
   end
 
   resource "translationstring" do
@@ -232,14 +236,9 @@ class CharmTools < Formula
     sha256 "4ee44cfa58c52ade8910ea0ebc3d2d84bdcad9fa0422405b1801ec9b9a65b72d"
   end
 
-  resource "typing" do
-    url "https://files.pythonhosted.org/packages/19/2f/b1090ace275335a9c0dde9a4623b109b7960a2b5370ae59d1eb1539afd8a/typing-3.5.2.2.tar.gz"
-    sha256 "2bce34292653af712963c877f3085250a336738e64f99048d1b8509bebc4772f"
-  end
-
   resource "virtualenv" do
-    url "https://files.pythonhosted.org/packages/8b/2c/c0d3e47709d0458816167002e1aa3d64d03bdeb2a9d57c5bd18448fd24cd/virtualenv-15.0.3.tar.gz"
-    sha256 "6d9c760d3fc5fa0894b0f99b9de82a4647e1164f0b700a7f99055034bf548b1d"
+    url "https://files.pythonhosted.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/virtualenv-15.1.0.tar.gz"
+    sha256 "02f8102c2436bb03b3ee6dede1919d1dac8a427541652e5ec95171ec8adbc93a"
   end
 
   resource "wadllib" do
@@ -247,17 +246,9 @@ class CharmTools < Formula
     sha256 "140e43fc16d4352a98a90a450c6326bee5e6de73ae373a569947f3b505405034"
   end
 
-  resource "wsgi_intercept" do
-    url "https://files.pythonhosted.org/packages/b7/42/56e25f6444d6254ae24b60d0da9cd8f4652db356088de91baffc1d42c624/wsgi_intercept-1.4.1.tar.gz"
-    sha256 "a244cd7de9a06fab53d769668190d912d77e5d36aa38b6034d4413084c6f1458"
-  end
-
-  resource "zope.interface" do
-    url "https://files.pythonhosted.org/packages/38/1b/d55c39f2cf442bd9fb2c59760ed058c84b57d25c680819c25f3aff741e1f/zope.interface-4.3.2.tar.gz"
-    sha256 "6a0e224a052e3ce27b3a7b1300a24747513f7a507217fcc2a4cb02eb92945cee"
-  end
-
   def install
+    ENV.prepend "CPPFLAGS", "-I#{MacOS.sdk_path}/usr/include/ffi"
+
     virtualenv_install_with_resources
   end
 

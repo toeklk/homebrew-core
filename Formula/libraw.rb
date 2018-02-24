@@ -1,16 +1,15 @@
 class Libraw < Formula
   desc "Library for reading RAW files from digital photo cameras"
-  homepage "http://www.libraw.org/"
-  url "http://www.libraw.org/data/LibRaw-0.17.2.tar.gz"
-  mirror "https://fossies.org/linux/privat/LibRaw-0.17.2.tar.gz"
-  mirror "https://distfiles.macports.org/libraw/LibRaw-0.17.2.tar.gz"
-  sha256 "92b0c42c7666eca9307e5e1f97d6fefc196cf0b7ee089e22880259a76fafd15c"
+  homepage "https://www.libraw.org/"
+  url "https://www.libraw.org/data/LibRaw-0.18.7.tar.gz"
+  mirror "https://fossies.org/linux/privat/LibRaw-0.18.7.tar.gz"
+  sha256 "87e347c261a8e87935d9a23afd750d27676b99f540e8552314d40db0ea315771"
 
   bottle do
     cellar :any
-    sha256 "0bbd0febe93f3b3e48defb05f1c5aec20e7ebc304ba076791a97e65a091ce509" => :sierra
-    sha256 "cf305fe8431d27c8e364260a2915e02549fc40ee4ab5c77c314df4ea5dcbcc10" => :el_capitan
-    sha256 "82f4141814a8e15a5b791a5d7cbecbb5048fb7c14935a193a756a70f8aa75d06" => :yosemite
+    sha256 "c93c6a23fc43c54a6227026ad20aa8a0fe868f05a54214286969bc3db2d53e07" => :high_sierra
+    sha256 "cb53d16050ed62b23d3293f4e4f360102dfaf574f1db87ed2867772850a1fdd6" => :sierra
+    sha256 "84795c768365115fe8aa6ff21369d644a8e4a9d7c33c04445935f6a6cc0f4a95" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -25,15 +24,15 @@ class Libraw < Formula
   end
 
   resource "gpl2" do
-    url "http://www.libraw.org/data/LibRaw-demosaic-pack-GPL2-0.17.2.tar.gz"
-    mirror "https://distfiles.macports.org/libraw/LibRaw-demosaic-pack-GPL2-0.17.2.tar.gz"
-    sha256 "a2e5e9cc04fa8f3e94070110dce8a06aa3b0b2f573ed99c5fc3e327d15f014b7"
+    url "https://www.libraw.org/data/LibRaw-demosaic-pack-GPL2-0.18.7.tar.gz"
+    mirror "https://ftp.osuosl.org/pub/gentoo/distfiles/LibRaw-demosaic-pack-GPL2-0.18.7.tar.gz"
+    sha256 "4264c6fb586dade28a3a05e46d2b189938700117cb91ec19c7f826b9c7b6b08a"
   end
 
   resource "gpl3" do
-    url "http://www.libraw.org/data/LibRaw-demosaic-pack-GPL3-0.17.2.tar.gz"
-    mirror "https://distfiles.macports.org/libraw/LibRaw-demosaic-pack-GPL3-0.17.2.tar.gz"
-    sha256 "b00cd0f54851bd3c8a66be4cacbf049e4508f1bac8ff85cb4528d8979739ed36"
+    url "https://www.libraw.org/data/LibRaw-demosaic-pack-GPL3-0.18.7.tar.gz"
+    mirror "https://ftp.osuosl.org/pub/gentoo/distfiles/LibRaw-demosaic-pack-GPL3-0.18.7.tar.gz"
+    sha256 "dca6166456d73bf57be1102a6c46308da2f1969073f5af936c7dc85c33803de0"
   end
 
   def install

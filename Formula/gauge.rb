@@ -1,40 +1,25 @@
-require "language/go"
-
 class Gauge < Formula
   desc "Test automation tool that supports executable documentation"
-  homepage "http://getgauge.io"
-  url "https://github.com/getgauge/gauge/archive/v0.6.2.tar.gz"
-  sha256 "1349c105ffeff9ddfb227f6b88c263eb069b2af768ac806a87d260a5c3390464"
+  homepage "https://getgauge.io"
+  url "https://github.com/getgauge/gauge/archive/v0.9.7.tar.gz"
+  sha256 "e656d32a55505d0c862ecd808309aa36d5538702ecc97f2f9ec9437580fa3b27"
   head "https://github.com/getgauge/gauge.git"
 
   bottle do
-    sha256 "3aa0d0a2621ed6742cff4f1575432f511f734a6d7f93080ea6c6d5fa9f2c5412" => :sierra
-    sha256 "0b5fa1edfbf86c2263df3a4b716fc914e261d077cbc99add429a7e582aecb788" => :el_capitan
-    sha256 "3ad5bb700139d027aa05e3a766b44b9f15cc868fb6958b39eda3d3902fc48bd8" => :yosemite
+    sha256 "1e82dfc7eaed111730eb75b830fdb3888617ecddde9f493b70901133c4ca0ada" => :high_sierra
+    sha256 "a5d4aa1090d8266080b3c68daddc6475113dbe1857d7185b6c03a3b28a3f7820" => :sierra
+    sha256 "89c8bab4f0fd5f3d8681c672587bff6246c2d063d7f727977a6f265c5b9370e5" => :el_capitan
   end
 
   depends_on "go" => :build
   depends_on "godep" => :build
 
-  go_resource "github.com/getgauge/gauge_screenshot" do
-    url "https://github.com/getgauge/gauge_screenshot.git",
-        :revision => "d04c2acc873b408211df8408f0217d4eafd327fe"
-  end
-
   def install
     ENV["GOPATH"] = buildpath
     ENV["GOROOT"] = Formula["go"].opt_libexec
-
-    # Avoid executing `go get`
-    inreplace "build/make.go", /\tgetGaugeScreenshot\(\)\n/, ""
-
     dir = buildpath/"src/github.com/getgauge/gauge"
     dir.install buildpath.children
     ln_s buildpath/"src", dir
-
-    Language::Go.stage_deps resources, buildpath/"src"
-    ln_s "gauge_screenshot", "src/github.com/getgauge/screenshot"
-
     cd dir do
       system "godep", "restore"
       system "go", "run", "build/make.go"
@@ -43,6 +28,6 @@ class Gauge < Formula
   end
 
   test do
-    assert_match version.to_s, shell_output("#{bin}/gauge -v")
+    assert_match version.to_s[0, 5], shell_output("#{bin}/gauge -v")
   end
 end

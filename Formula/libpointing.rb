@@ -1,14 +1,15 @@
 class Libpointing < Formula
   desc "Provides direct access to HID pointing devices"
   homepage "http://libpointing.org"
-  url "https://github.com/INRIA/libpointing/releases/download/v1.0.3/libpointing-mac-1.0.3.tar.gz"
-  sha256 "0c0461bb7470595650fd34735283a21ba7fafe9e476887ef8e63b7b35c040e90"
+  url "https://github.com/INRIA/libpointing/releases/download/v1.0.7/libpointing-mac-1.0.7.tar.gz"
+  sha256 "29f12da75727d1b03ff952a2754ce79b88aec39b5e03a52d3b0ff7440f08f147"
 
   bottle do
     cellar :any
-    sha256 "2fa16b6c03d0e36f59ce686ab327cc949d0970b9d79e8f3e6c0f4bf7069e5756" => :sierra
-    sha256 "2fa16b6c03d0e36f59ce686ab327cc949d0970b9d79e8f3e6c0f4bf7069e5756" => :el_capitan
-    sha256 "a69e8fb6eb703b0f190cc10e2dc121d94d33be4b5499e43d740fbf4ba60535c0" => :yosemite
+    sha256 "078c97a802303ac5db84dfe72ae189f1bd261c193612fbe36d9e92451da725c2" => :high_sierra
+    sha256 "6ba8dbbb5a606a1e4b78512868986b80c4c3c971be04c90fbea59250dc6103ee" => :sierra
+    sha256 "6ba8dbbb5a606a1e4b78512868986b80c4c3c971be04c90fbea59250dc6103ee" => :el_capitan
+    sha256 "7120c106e54576154687dd63cdedb72633644e27213c7dbc1aa515a1227a8f3c" => :yosemite
   end
 
   needs :cxx11
@@ -20,7 +21,7 @@ class Libpointing < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <pointing/pointing.h>
       #include <iostream>
       int main() {

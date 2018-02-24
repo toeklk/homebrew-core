@@ -1,19 +1,17 @@
 class MupdfTools < Formula
   desc "Lightweight PDF and XPS viewer"
-  homepage "http://mupdf.com"
-  url "http://mupdf.com/downloads/archive/mupdf-1.9a-source.tar.gz"
-  sha256 "8015c55f4e6dd892d3c50db4f395c1e46660a10b460e2ecd180a497f55bbc4cc"
-  head "git://git.ghostscript.com/mupdf.git"
+  homepage "https://mupdf.com/"
+  url "https://mupdf.com/downloads/mupdf-1.12.0-source.tar.gz"
+  sha256 "5c6353a82f1512f4f5280cf69a3725d1adac9c8b22377ec2a447c4fc45528755"
+  head "https://git.ghostscript.com/mupdf.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "31a46e996dc2afb9348f64f3303833ed1c43ef8c4556e9510b3915a58d7a6745" => :sierra
-    sha256 "091b901203e9633c053fccdd02644043ff9ab3d7e5c2ec72547d1966cfe74204" => :el_capitan
-    sha256 "d626c89c21af7f672342d08675e6694f819deae30af76a66e7a0301c093a87de" => :yosemite
-    sha256 "0dfd41dbe9c11575ce9a84449997d5291f8dca58066ac2fe4817b69178d09a6b" => :mavericks
+    rebuild 1
+    sha256 "02061e5a4e373b4d8283a23728ecef4d6a04d4562fce187d3354fdec65a595f4" => :high_sierra
+    sha256 "a9c8080aea6e6f055c601c6ad4ff7752ad650ecf226e276b88a21c0eb21b317f" => :sierra
+    sha256 "9cff7b00e334fd3f90ed6aee94fa57f02904db7a76b0af9aa611f37aff174004" => :el_capitan
   end
-
-  depends_on :macos => :snow_leopard
 
   def install
     system "make", "install",
@@ -29,7 +27,6 @@ class MupdfTools < Formula
   end
 
   test do
-    pdf = test_fixtures("test.pdf")
-    assert_match "Homebrew test", shell_output("#{bin}/mutool draw -F txt #{pdf}")
+    assert_match "Homebrew test", shell_output("#{bin}/mutool draw -F txt #{test_fixtures("test.pdf")}")
   end
 end

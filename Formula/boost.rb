@@ -1,50 +1,31 @@
 class Boost < Formula
   desc "Collection of portable C++ source libraries"
   homepage "https://www.boost.org/"
-  url "https://downloads.sourceforge.net/project/boost/boost/1.62.0/boost_1_62_0.tar.bz2"
-  sha256 "36c96b0f6155c98404091d8ceb48319a28279ca0333fba1ad8611eb90afb2ca0"
+  url "https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.bz2"
+  sha256 "5721818253e6a0989583192f96782c4a98eb6204965316df9f5ad75819225ca9"
   head "https://github.com/boostorg/boost.git"
 
   bottle do
     cellar :any
-    sha256 "22763fd3647255018dc31832f2513c03f36a56c3461c03e03cf5e8866cc64ce5" => :sierra
-    sha256 "5c639c9f61b56ed1d99a5b8b25d149c366543330b654c429fe939e57fae9541b" => :el_capitan
-    sha256 "527fdbeaa9f685e3de45938bf897e145292471250c6e47ea50ff1635f121b67a" => :yosemite
+    sha256 "78cb090c515e20aa7307c6619a055ffd8858cc6a3bd756958edbf34f463e4bc1" => :high_sierra
+    sha256 "51e3b67625b8def53f5e5183a5ef98071e17b0b760dfc6baa65877d4528141ca" => :sierra
+    sha256 "6352d4f65d7595c1eff62c6ce07588944122fa3305a77813fdbc16747b7dddce" => :el_capitan
   end
 
-  env :userpaths
-
-  option :universal
   option "with-icu4c", "Build regexp engine with icu support"
   option "without-single", "Disable building single-threading variant"
   option "without-static", "Disable building static library variant"
-  option "with-mpi", "Build with MPI support"
-  option :cxx11
 
   deprecated_option "with-icu" => "with-icu4c"
 
-  if build.cxx11?
-    depends_on "icu4c" => [:optional, "c++11"]
-    depends_on "open-mpi" => "c++11" if build.with? "mpi"
-  else
-    depends_on "icu4c" => :optional
-    depends_on :mpi => [:cc, :cxx, :optional]
-  end
+  depends_on "icu4c" => :optional
 
-  fails_with :llvm do
-    build 2335
-    cause "Dropped arguments to functions when linking with boost"
-  end
-
-  needs :cxx11 if build.cxx11?
+  needs :cxx11
 
   def install
-    ENV.universal_binary if build.universal?
-
     # Force boost to compile with the desired compiler
     open("user-config.jam", "a") do |file|
       file.write "using darwin : : #{ENV.cxx} ;\n"
-      file.write "using mpi ;\n" if build.with? "mpi"
     end
 
     # libdir should be set by --prefix but isn't
@@ -58,31 +39,22 @@ class Boost < Formula
     end
 
     # Handle libraries that will not be built.
-    without_libraries = ["python"]
-
-    # The context library is implemented as x86_64 ASM, so it
-    # won't build on PPC or 32-bit builds
-    # see https://github.com/Homebrew/homebrew/issues/17646
-    if Hardware::CPU.ppc? || Hardware::CPU.is_32_bit? || build.universal?
-      without_libraries << "context"
-      # The coroutine library depends on the context library.
-      without_libraries << "coroutine"
-    end
+    without_libraries = ["python", "mpi"]
 
     # Boost.Log cannot be built using Apple GCC at the moment. Disabled
     # on such systems.
-    without_libraries << "log" if ENV.compiler == :gcc || ENV.compiler == :llvm
-    without_libraries << "mpi" if build.without? "mpi"
+    without_libraries << "log" if ENV.compiler == :gcc
 
     bootstrap_args << "--without-libraries=#{without_libraries.join(",")}"
 
-    # layout should be synchronized with boost-python
+    # layout should be synchronized with boost-python and boost-mpi
     args = ["--prefix=#{prefix}",
             "--libdir=#{lib}",
             "-d2",
             "-j#{ENV.make_jobs}",
             "--layout=tagged",
             "--user-config=user-config.jam",
+            "-sNO_LZMA=1",
             "install"]
 
     if build.with? "single"
@@ -97,15 +69,11 @@ class Boost < Formula
       args << "link=shared"
     end
 
-    args << "address-model=32_64" << "architecture=x86" << "pch=off" if build.universal?
-
     # Trunk starts using "clang++ -x c" to select C compiler which breaks C++11
     # handling using ENV.cxx11. Using "cxxflags" and "linkflags" still works.
-    if build.cxx11?
-      args << "cxxflags=-std=c++11"
-      if ENV.compiler == :clang
-        args << "cxxflags=-stdlib=libc++" << "linkflags=-stdlib=libc++"
-      end
+    args << "cxxflags=-std=c++11"
+    if ENV.compiler == :clang
+      args << "cxxflags=-stdlib=libc++" << "linkflags=-stdlib=libc++"
     end
 
     system "./bootstrap.sh", *bootstrap_args
@@ -118,17 +86,8 @@ class Boost < Formula
     # ENV.compiler doesn't exist in caveats. Check library availability
     # instead.
     if Dir["#{lib}/libboost_log*"].empty?
-      s += <<-EOS.undent
-
-      Building of Boost.Log is disabled because it requires newer GCC or Clang.
-      EOS
-    end
-
-    if Hardware::CPU.ppc? || Hardware::CPU.is_32_bit? || build.universal?
-      s += <<-EOS.undent
-
-      Building of Boost.Context and Boost.Coroutine is disabled as they are
-      only supported on x86_64.
+      s += <<~EOS
+        Building of Boost.Log is disabled because it requires newer GCC or Clang.
       EOS
     end
 
@@ -136,7 +95,7 @@ class Boost < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <boost/algorithm/string.hpp>
       #include <string>
       #include <vector>

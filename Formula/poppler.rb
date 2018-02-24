@@ -1,22 +1,24 @@
 class Poppler < Formula
   desc "PDF rendering library (based on the xpdf-3.0 code base)"
   homepage "https://poppler.freedesktop.org/"
-  url "https://poppler.freedesktop.org/poppler-0.49.0.tar.xz"
-  sha256 "14485f0e1e43dcddf49cfc02c2ccb92910ba3e0e91e06f4bd2642ec00cb3a79f"
+  url "https://poppler.freedesktop.org/poppler-0.62.0.tar.xz"
+  sha256 "5b9a73dfd4d6f61d165ada1e4f0abd2d420494bf9d0b1c15d0db3f7b83a729c6"
 
   bottle do
-    sha256 "6e62caef27967e0a4034574bfd850f8170983c781118c99090d7241b167ce10f" => :sierra
-    sha256 "a1607a3aa87bfec520b2835b7df3daaef7f569b6a5da112ca9c4c25c949657f3" => :el_capitan
-    sha256 "eed10583d2b0c5fcc3665cdfdf7419b2a5f6deb6176c161ed8ae6a5aaacda38a" => :yosemite
+    sha256 "e7ef8133d2a55b7b9d060e1bb39e85daa421805315b78cdaac2eb74e6ee7e50b" => :high_sierra
+    sha256 "67553e08dc541aa5db51e480b768a289095cf236279fe46defb4061783967bf8" => :sierra
+    sha256 "3797b24ecd422d96b7418c942c26937dd14af4e4e0b135c15cb1164a109ab5af" => :el_capitan
   end
 
-  option "with-qt5", "Build Qt5 backend"
+  option "with-qt", "Build Qt5 backend"
   option "with-little-cms2", "Use color management system"
+  option "with-nss", "Use NSS library for PDF signature validation"
 
-  deprecated_option "with-qt4" => "with-qt5"
-  deprecated_option "with-qt" => "with-qt5"
+  deprecated_option "with-qt4" => "with-qt"
+  deprecated_option "with-qt5" => "with-qt"
   deprecated_option "with-lcms2" => "with-little-cms2"
 
+  depends_on "cmake" => :build
   depends_on "pkg-config" => :build
   depends_on "cairo"
   depends_on "fontconfig"
@@ -28,44 +30,55 @@ class Poppler < Formula
   depends_on "libpng"
   depends_on "libtiff"
   depends_on "openjpeg"
-  depends_on "qt5" => :optional
+  depends_on "qt" => :optional
   depends_on "little-cms2" => :optional
+  depends_on "nss" => :optional
 
-  conflicts_with "pdftohtml", :because => "both install `pdftohtml` binaries"
+  conflicts_with "pdftohtml", "pdf2image", "xpdf",
+    :because => "poppler, pdftohtml, pdf2image, and xpdf install conflicting executables"
 
   resource "font-data" do
-    url "https://poppler.freedesktop.org/poppler-data-0.4.7.tar.gz"
-    sha256 "e752b0d88a7aba54574152143e7bf76436a7ef51977c55d6bd9a48dccde3a7de"
+    url "https://poppler.freedesktop.org/poppler-data-0.4.8.tar.gz"
+    sha256 "1096a18161f263cccdc6d8a2eb5548c41ff8fcf9a3609243f1b6296abdf72872"
   end
 
-  needs :cxx11 if build.with?("qt5") || MacOS.version < :mavericks
+  needs :cxx11 if build.with?("qt") || MacOS.version < :mavericks
 
   def install
-    ENV.cxx11 if build.with?("qt5") || MacOS.version < :mavericks
-    ENV["LIBOPENJPEG_CFLAGS"] = "-I#{Formula["openjpeg"].opt_include}/openjpeg-2.1"
+    ENV.cxx11 if build.with?("qt") || MacOS.version < :mavericks
 
-    args = %W[
-      --disable-dependency-tracking
-      --prefix=#{prefix}
-      --enable-xpdf-headers
-      --enable-poppler-glib
-      --disable-gtk-test
-      --enable-introspection=yes
-      --disable-poppler-qt4
+    args = std_cmake_args + %w[
+      -DENABLE_XPDF_HEADERS=ON
+      -DENABLE_GLIB=ON
+      -DBUILD_GTK_TESTS=OFF
+      -DWITH_GObjectIntrospection=ON
+      -DENABLE_QT4=OFF
     ]
 
-    if build.with? "qt5"
-      args << "--enable-poppler-qt5"
+    if build.with? "qt"
+      args << "-DENABLE_QT5=ON"
     else
-      args << "--disable-poppler-qt5"
+      args << "-DENABLE_QT5=OFF"
     end
 
-    args << "--enable-cms=lcms2" if build.with? "little-cms2"
+    if build.with? "little-cms2"
+      args << "-DENABLE_CMS=lcms2"
+    else
+      args << "-DENABLE_CMS=none"
+    end
 
-    system "./configure", *args
+    system "cmake", ".", *args
     system "make", "install"
     resource("font-data").stage do
       system "make", "install", "prefix=#{prefix}"
+    end
+
+    libpoppler = (lib/"libpoppler.dylib").readlink
+    ["#{lib}/libpoppler-cpp.dylib", "#{lib}/libpoppler-glib.dylib",
+     *Dir["#{bin}/*"]].each do |f|
+      macho = MachO.open(f)
+      macho.change_dylib("@rpath/#{libpoppler}", "#{lib}/#{libpoppler}")
+      macho.write!
     end
   end
 

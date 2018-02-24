@@ -1,15 +1,15 @@
 class Armor < Formula
   desc "Uncomplicated HTTP server, supports HTTP/2 and auto TLS"
   homepage "https://github.com/labstack/armor"
-  url "https://github.com/labstack/armor/archive/v0.2.3.tar.gz"
-  sha256 "fd98ee471e44c6cb701c524818962933e71420b066a11513744d954564d423bc"
+  url "https://github.com/labstack/armor/archive/0.3.8.tar.gz"
+  sha256 "4f14a21eb613403e51e12b52af2d10427dbd384696177487e2992b9018a62e5f"
   head "https://github.com/labstack/armor.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "021d1e27f3d79c3900ac617dfc80ff5bde1b72599fc3cebc6357f958a9053300" => :sierra
-    sha256 "ffef92c5c6a5d9c648b6e3eff43930b27578b2b4be6af05a0f20af5aa17027bf" => :el_capitan
-    sha256 "da6eab3c8251643b22086aa7924d5167dad38ab530808493b57ae8980c96f999" => :yosemite
+    sha256 "024ee7b30d9f73b7eef35f54e949d45b480db324ccdecb150987a2702f001d39" => :high_sierra
+    sha256 "5b1b21b9707f13722054aebc5427dfae316a1cdee4a0eecb5e5a948eb667d5f3" => :sierra
+    sha256 "919efcc06f0b91d9c113593bb0082f47e3871f214e9138e8812b036603520d84" => :el_capitan
   end
 
   depends_on "go" => :build

@@ -1,26 +1,26 @@
 class Sfk < Formula
-  desc "Command Line Tools Collection"
+  desc "Command-line tools collection"
   homepage "http://stahlworks.com/dev/swiss-file-knife.html"
-  url "https://downloads.sourceforge.net/project/swissfileknife/1-swissfileknife/1.7.6/sfk-1.7.6.tar.gz"
-  sha256 "14a5a28903b73d466bfc4c160ca2624df4edb064ea624a94651203247d1f6794"
+  url "https://downloads.sourceforge.net/project/swissfileknife/1-swissfileknife/1.8.9.2/sfk-1.8.9.tar.gz"
+  version "1.8.9.2"
+  sha256 "b95a2840af410a15856b5f6e56858cb9284ae7675ac5676e418da78a1111cbd8"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "a6297dac82e1ed14dd9b2d37a90384113bcd526b93053dd03db0f5154063245f" => :el_capitan
-    sha256 "d5be7f90c20799b81c6de1ec6ab2ebdbf8cdad63a551603061a21afde43aab56" => :yosemite
-    sha256 "3c8d89606a20039aa02a45614c877dc6d0d6d2365e13cb4e143f7bc99187ba16" => :mavericks
+    sha256 "d863bf1411f43dfd13c5e29e65eb3bdf7566e52a57562b5aa65ededaff9141c2" => :high_sierra
+    sha256 "d51e7807904fc018f26b5d3fb84c67912e33ceeac8f0c4a8d02dd4829861f87c" => :sierra
+    sha256 "f743a00bedba7b74ef4a5e6886f0878b846b113cea28f3b07c1bea4c8e31778e" => :el_capitan
   end
 
   def install
-    # Using the standard ./configure && make install method does not work with sfk as of this version
-    # As per the build instructions for macOS, this is all you need to do to build sfk
-    system ENV.cxx, "-DMAC_OS_X", "sfk.cpp", "sfkext.cpp", "-o", "sfk"
+    ENV.libstdcxx
 
-    # The sfk binary is all you need. There are no man pages or share files
-    bin.install "sfk"
+    system "./configure", "--prefix=#{prefix}"
+    system "make"
+    system "make", "install"
   end
 
   test do
-    system "sfk", "ip"
+    system "#{bin}/sfk", "ip"
   end
 end

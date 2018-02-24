@@ -1,30 +1,33 @@
 class PerconaServer < Formula
   desc "Drop-in MySQL replacement"
   homepage "https://www.percona.com"
-  url "https://www.percona.com/downloads/Percona-Server-5.7/Percona-Server-5.7.14-7/source/tarball/percona-server-5.7.14-7.tar.gz"
-  sha256 "b204ffac56bfc8cf092acca3ce73d63b00450b59f554acd1daeb5a573eec2c1d"
+  url "https://www.percona.com/downloads/Percona-Server-5.7/Percona-Server-5.7.21-20/source/tarball/percona-server-5.7.21-20.tar.gz"
+  sha256 "842785e9b73c606be00ea74f568615d3427362fbeed5c136d8f509f03c9d43a6"
 
   bottle do
-    sha256 "2931e0ee93052e3589ac53dc0e2634187fc80e90b8fb98b98d9d0ff9ec8e6050" => :sierra
-    sha256 "97f8be4a8a2dde3956076b716fe85befa1ec0e28865ec1991f791132677efe81" => :el_capitan
-    sha256 "2494b5f19cb1e45fa7ae377f1586fa6465ed7773cac741f308ff6d6b16b23f4e" => :yosemite
-    sha256 "e77d870f147a8a1951af2ea57db8d28c792b378a940ac062623db7f846839ee6" => :mavericks
+    sha256 "f486ad7e346bc716f258eecb66fb852da697333141a286f0a0076fa48f5e743c" => :high_sierra
+    sha256 "c9cec18ec850f01cb7db22dd379aabe5bcbd00cb94269068cc1102c10c96d7c7" => :sierra
+    sha256 "e16b3560518cf0625196e0076c33176b1af5e90d57e528b726dde89704bc59d1" => :el_capitan
   end
 
-  option :universal
-  option "with-test", "Build with unit tests"
+  option "with-debug", "Build with debug support"
   option "with-embedded", "Build the embedded server"
   option "with-local-infile", "Build with local infile loading support"
+  option "with-memcached", "Build with InnoDB Memcached plugin"
+  option "with-test", "Build with unit tests"
 
+  deprecated_option "enable-debug" => "with-debug"
   deprecated_option "enable-local-infile" => "with-local-infile"
+  deprecated_option "enable-memcached" => "with-memcached"
   deprecated_option "with-tests" => "with-test"
 
   depends_on "cmake" => :build
-  depends_on "pidof" unless MacOS.version >= :mountain_lion
   depends_on "openssl"
 
-  conflicts_with "mysql-connector-c",
-    :because => "both install `mysql_config`"
+  # https://github.com/Homebrew/homebrew-core/issues/1475
+  # Needs at least Clang 3.3, which shipped alongside Lion.
+  # Note: MySQL themselves don't support anything below El Capitan.
+  depends_on :macos => :lion
 
   conflicts_with "mariadb", "mysql", "mysql-cluster",
     :because => "percona, mariadb, and mysql install the same binaries."
@@ -32,11 +35,6 @@ class PerconaServer < Formula
     :because => "both install MySQL client libraries"
   conflicts_with "mariadb-connector-c",
     :because => "both install plugins"
-
-  fails_with :llvm do
-    build 2334
-    cause "https://github.com/Homebrew/homebrew/issues/issue/144"
-  end
 
   resource "boost" do
     url "https://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.bz2"
@@ -56,51 +54,53 @@ class PerconaServer < Formula
   end
 
   def install
-    # Don't hard-code the libtool path. See:
-    # https://github.com/Homebrew/homebrew/issues/20185
-    inreplace "cmake/libutils.cmake",
-      "COMMAND /usr/bin/libtool -static -o ${TARGET_LOCATION}",
-      "COMMAND libtool -static -o ${TARGET_LOCATION}"
+    # Set HAVE_MEMSET_S flag to fix compilation
+    # https://bugs.launchpad.net/percona-server/+bug/1741647
+    ENV.prepend "CPPFLAGS", "-DHAVE_MEMSET_S=1"
 
-    # Build without compiler or CPU specific optimization flags to facilitate
-    # compilation of gems and other software that queries `mysql-config`.
-    ENV.minimal_optimization
-
+    # https://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html
+    # -DINSTALL_* are relative to `CMAKE_INSTALL_PREFIX` (`prefix`)
     args = %W[
-      -DCMAKE_INSTALL_PREFIX=#{prefix}
-      -DCMAKE_FIND_FRAMEWORK=LAST
-      -DCMAKE_VERBOSE_MAKEFILE=ON
-      -DMYSQL_DATADIR=#{datadir}
-      -DINSTALL_INCLUDEDIR=include/mysql
-      -DINSTALL_MANDIR=share/man
-      -DINSTALL_DOCDIR=share/doc/#{name}
-      -DINSTALL_INFODIR=share/info
-      -DINSTALL_MYSQLSHAREDIR=share/mysql
-      -DWITH_SSL=yes
+      -DCOMPILATION_COMMENT=Homebrew
       -DDEFAULT_CHARSET=utf8
       -DDEFAULT_COLLATION=utf8_general_ci
+      -DINSTALL_DOCDIR=share/doc/#{name}
+      -DINSTALL_INCLUDEDIR=include/mysql
+      -DINSTALL_INFODIR=share/info
+      -DINSTALL_MANDIR=share/man
+      -DINSTALL_MYSQLSHAREDIR=share/mysql
+      -DINSTALL_PLUGINDIR=lib/plugin
+      -DMYSQL_DATADIR=#{datadir}
       -DSYSCONFDIR=#{etc}
-      -DCOMPILATION_COMMENT=Homebrew
       -DWITH_EDITLINE=system
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      -DWITH_SSL=yes
     ]
-
-    # PAM plugin is Linux-only at the moment
-    args.concat %w[
-      -DWITHOUT_AUTH_PAM=1
-      -DWITHOUT_AUTH_PAM_COMPAT=1
-      -DWITHOUT_DIALOG=1
-    ]
-
-    # TokuDB is broken on MacOsX
-    # https://bugs.launchpad.net/percona-server/+bug/1531446
-    args.concat %w[-DWITHOUT_TOKUDB=1]
 
     # MySQL >5.7.x mandates Boost as a requirement to build & has a strict
     # version check in place to ensure it only builds against expected release.
     # This is problematic when Boost releases don't align with MySQL releases.
-    (buildpath/"boost_1_59_0").install resource("boost")
-    args << "-DWITH_BOOST=#{buildpath}/boost_1_59_0"
+    (buildpath/"boost").install resource("boost")
+    args << "-DWITH_BOOST=#{buildpath}/boost"
+
+    # Percona MyRocks does not compile on macOS
+    # https://bugs.launchpad.net/percona-server/+bug/1741639
+    args.concat %w[-DWITHOUT_ROCKSDB=1]
+
+    # TokuDB does not compile on macOS
+    # https://bugs.launchpad.net/percona-server/+bug/1531446
+    args.concat %w[-DWITHOUT_TOKUDB=1]
+
+    # Build with debug support
+    args << "-DWITH_DEBUG=1" if build.with? "debug"
+
+    # Build the embedded server
+    args << "-DWITH_EMBEDDED_SERVER=ON" if build.with? "embedded"
+
+    # Build with local infile loading support
+    args << "-DENABLED_LOCAL_INFILE=1" if build.with? "local-infile"
+
+    # Build with InnoDB Memcached plugin
+    args << "-DWITH_INNODB_MEMCACHED=ON" if build.with? "memcached"
 
     # To enable unit testing at build, we need to download the unit testing suite
     if build.with? "test"
@@ -109,54 +109,67 @@ class PerconaServer < Formula
       args << "-DWITH_UNIT_TESTS=OFF"
     end
 
-    # Build the embedded server
-    args << "-DWITH_EMBEDDED_SERVER=ON" if build.with? "embedded"
-
-    # Build with InnoDB Memcached plugin
-    args << "-DWITH_INNODB_MEMCACHED=ON" if build.with? "memcached"
-
-    # Make universal for binding to universal applications
-    if build.universal?
-      ENV.universal_binary
-      args << "-DCMAKE_OSX_ARCHITECTURES=#{Hardware::CPU.universal_archs.as_cmake_arch_flags}"
-    end
-
-    # Build with local infile loading support
-    args << "-DENABLED_LOCAL_INFILE=1" if build.with? "local-infile"
-
-    system "cmake", *args
+    system "cmake", ".", *std_cmake_args, *args
     system "make"
     system "make", "install"
 
-    # Don't create databases inside of the prefix!
-    # See: https://github.com/Homebrew/homebrew/issues/4975
-    rm_rf prefix+"data"
-
-    # Fix up the control script and link into bin
-    inreplace "#{prefix}/support-files/mysql.server" do |s|
-      s.gsub!(/^(PATH=".*)(")/, "\\1:#{HOMEBREW_PREFIX}/bin\\2")
-      # pidof can be replaced with pgrep from proctools on Mountain Lion
-      s.gsub!(/pidof/, "pgrep") if MacOS.version >= :mountain_lion
+    (prefix/"mysql-test").cd do
+      system "./mysql-test-run.pl", "status", "--vardir=#{Dir.mktmpdir}"
     end
 
+    # Remove the tests directory if they are not built
+    rm_rf prefix/"mysql-test" if build.without? "test"
+
+    # Don't create databases inside of the prefix!
+    # See: https://github.com/Homebrew/homebrew/issues/4975
+    rm_rf prefix/"data"
+
+    # Fix up the control script and link into bin.
+    inreplace "#{prefix}/support-files/mysql.server",
+              /^(PATH=".*)(")/,
+              "\\1:#{HOMEBREW_PREFIX}/bin\\2"
     bin.install_symlink prefix/"support-files/mysql.server"
+
+    # Install my.cnf that binds to 127.0.0.1 by default
+    (buildpath/"my.cnf").write <<~EOS
+      # Default Homebrew MySQL server config
+      [mysqld]
+      # Only allow connections from localhost
+      bind-address = 127.0.0.1
+    EOS
+    etc.install "my.cnf"
   end
 
-  def caveats; <<-EOS.undent
-    A "/etc/my.cnf" from another install may interfere with a Homebrew-built
-    server starting up correctly.
+  def post_install
+    # Make sure the datadir exists
+    datadir.mkpath
+    unless (datadir/"mysql/user.frm").exist?
+      ENV["TMPDIR"] = nil
+      system bin/"mysqld", "--initialize-insecure", "--user=#{ENV["USER"]}",
+        "--basedir=#{prefix}", "--datadir=#{datadir}", "--tmpdir=/tmp"
+    end
+  end
 
-    To connect:
-        mysql -uroot
-
-    To initialize the data directory:
-        mysqld --initialize --datadir=#{datadir} --user=#{ENV["USER"]}
+  def caveats
+    s = <<~EOS
+      We've installed your MySQL database without a root password. To secure it run:
+          mysql_secure_installation
+      MySQL is configured to only allow connections from localhost by default
+      To connect run:
+          mysql -uroot
     EOS
+    if my_cnf = ["/etc/my.cnf", "/etc/mysql/my.cnf"].find { |x| File.exist? x }
+      s += <<~EOS
+        A "#{my_cnf}" from another install may interfere with a Homebrew-built
+        server starting up correctly.
+      EOS
+    end
+    s
   end
 
   plist_options :manual => "mysql.server start"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -165,14 +178,38 @@ class PerconaServer < Formula
       <true/>
       <key>Label</key>
       <string>#{plist_name}</string>
-      <key>Program</key>
-      <string>#{opt_bin}/mysqld_safe</string>
+      <key>ProgramArguments</key>
+      <array>
+        <string>#{opt_bin}/mysqld_safe</string>
+        <string>--datadir=#{datadir}</string>
+      </array>
       <key>RunAtLoad</key>
       <true/>
       <key>WorkingDirectory</key>
-      <string>#{var}</string>
+      <string>#{datadir}</string>
     </dict>
     </plist>
     EOS
+  end
+
+  test do
+    begin
+      # Expects datadir to be a completely clean dir, which testpath isn't.
+      dir = Dir.mktmpdir
+      system bin/"mysqld", "--initialize-insecure", "--user=#{ENV["USER"]}",
+      "--basedir=#{prefix}", "--datadir=#{dir}", "--tmpdir=#{dir}"
+
+      pid = fork do
+        exec bin/"mysqld", "--bind-address=127.0.0.1", "--datadir=#{dir}"
+      end
+      sleep 2
+
+      output = shell_output("curl 127.0.0.1:3306")
+      output.force_encoding("ASCII-8BIT") if output.respond_to?(:force_encoding)
+      assert_match version.to_s, output
+    ensure
+      Process.kill(9, pid)
+      Process.wait(pid)
+    end
   end
 end

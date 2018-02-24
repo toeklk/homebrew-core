@@ -1,14 +1,13 @@
 class Libgit2Glib < Formula
   desc "Glib wrapper library around libgit2 git access library"
   homepage "https://github.com/GNOME/libgit2-glib"
-  url "https://download.gnome.org/sources/libgit2-glib/0.24/libgit2-glib-0.24.4.tar.xz"
-  sha256 "3a211f756f250042f352b3070e7314a048c88e785dba9d118b851253a7c60220"
-  revision 1
+  url "https://download.gnome.org/sources/libgit2-glib/0.26/libgit2-glib-0.26.2.tar.xz"
+  sha256 "2ad6f20db2e38bbfdb6cb452704fe8a911036b86de82dc75bb0f3b20db40ce9c"
 
   bottle do
-    sha256 "5bdad256a9562f73998e774adfc365fa16b3ed3a7d04f426906e44ccd95e34f2" => :sierra
-    sha256 "641b3e4494b86f6ead4fedd260b6ff7e1477ed253d1e3e1870e4e07e26457e98" => :el_capitan
-    sha256 "dd438cd28d5a7e398dad1b25795cb73d7df383abe91e569987996bcba59b6a5d" => :yosemite
+    sha256 "41e72a9af021ede5b2d2a6388d87d1a3cf91828257512291b443622973b4fdda" => :high_sierra
+    sha256 "20c1bd5ed07328d63aedc9c15c974d3ce970f8a67cfd2fb1d3e5c1471a1d0259" => :sierra
+    sha256 "d50c3cfe95b48a7542d79606f1673c9f03cab6653098da2bb9ac4a809546db32" => :el_capitan
   end
 
   head do
@@ -27,7 +26,7 @@ class Libgit2Glib < Formula
   depends_on "gobject-introspection"
   depends_on "glib"
   depends_on "vala" => :optional
-  depends_on :python => :optional
+  depends_on "python" => :optional
 
   def install
     args = %W[

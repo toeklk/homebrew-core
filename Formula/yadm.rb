@@ -1,19 +1,21 @@
 class Yadm < Formula
   desc "Yet Another Dotfiles Manager"
   homepage "https://thelocehiliosan.github.io/yadm/"
-  url "https://github.com/TheLocehiliosan/yadm/archive/1.05.tar.gz"
-  sha256 "2989b458f62cd08a65ee4f43e7ecf18f539b52d4bbb20c52b0ecff619f5e76cd"
+  url "https://github.com/TheLocehiliosan/yadm/archive/1.12.0.tar.gz"
+  sha256 "c3d612d01e2027d5f457e0f7d120bc67251b716c373d99fe70638bd86edf107f"
 
   bottle :unneeded
 
   def install
     bin.install "yadm"
     man1.install "yadm.1"
+    bash_completion.install "completion/yadm.bash_completion"
+    zsh_completion.install  "completion/yadm.zsh_completion" => "_yadm"
   end
 
   test do
     system bin/"yadm", "init"
-    assert File.exist?(testpath/".yadm/repo.git/config"), "Failed to init repository."
+    assert_predicate testpath/".yadm/repo.git/config", :exist?, "Failed to init repository."
     assert_match testpath.to_s, shell_output("#{bin}/yadm gitconfig core.worktree")
 
     # disable auto-alt

@@ -1,55 +1,61 @@
 class Rocksdb < Formula
   desc "Embeddable, persistent key-value store for fast storage"
-  homepage "http://rocksdb.org"
-  url "https://github.com/facebook/rocksdb/archive/v4.11.2.tar.gz"
-  sha256 "9374be06fdfccbbdbc60de90b72b5db7040e1bc4e12532e4c67aaec8181b45be"
+  homepage "https://rocksdb.org/"
+  url "https://github.com/facebook/rocksdb/archive/v5.10.3.tar.gz"
+  sha256 "ca83e444f42df39e8641c7d1e7e0aaa8835cf7fd4fd7441e763c511785ada34f"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "df25c15c8f1a4b41ff5e5273fa8c3c21a186b9241c5cfce0226f4ef6f58e8b36" => :sierra
-    sha256 "0bfffdb6a3ad9b446a9d8936e43462adaa6c2195f70068c43785feed4bef537d" => :el_capitan
-    sha256 "c2a7a1f67add41b293cf5b059b9eef93f641f00c4c2e286b48973b887ebfbe3c" => :yosemite
+    sha256 "506b7eca8f45ec8a0e8191f302078dd67ac9d127bfb9f93674304fc0f1738272" => :high_sierra
+    sha256 "539f41aeed4fe9152916c6fb7664cfdb53fdd6b26f1fabb75c37ec404598f265" => :sierra
+    sha256 "092817c80c098f129c6abd8579322b540b3f7002fbb43e2b90c26dceb22f0485" => :el_capitan
   end
-
-  option "with-lite", "Build mobile/non-flash optimized lite version"
-  option "with-tools", "Build tools"
 
   needs :cxx11
   depends_on "snappy"
   depends_on "lz4"
-  depends_on "gflags" if build.with? "lite"
+  depends_on "gflags"
 
   def install
     ENV.cxx11
     ENV["PORTABLE"] = "1" if build.bottle?
-    ENV.append_to_cflags "-DROCKSDB_LITE=1" if build.with? "lite"
+    ENV["DEBUG_LEVEL"] = "0"
+    ENV["USE_RTTI"] = "1"
+    ENV["DISABLE_JEMALLOC"] = "1" # prevent opportunistic linkage
+
+    # build regular rocksdb
     system "make", "clean"
     system "make", "static_lib"
     system "make", "shared_lib"
-    system "make", "tools" if build.with? "tools"
+    system "make", "tools"
     system "make", "install", "INSTALL_PATH=#{prefix}"
-    if build.with? "tools"
-      bin.install "sst_dump" => "rocksdb_sst_dump"
-      bin.install "db_sanity_test" => "rocksdb_sanity_test"
-      bin.install "db_stress" => "rocksdb_stress"
-      bin.install "write_stress" => "rocksdb_write_stress"
-      bin.install "ldb" => "rocksdb_ldb"
-      bin.install "db_repl_stress" => "rocksdb_repl_stress"
-      bin.install "rocksdb_dump"
-      bin.install "rocksdb_undump"
-    end
+
+    bin.install "sst_dump" => "rocksdb_sst_dump"
+    bin.install "db_sanity_test" => "rocksdb_sanity_test"
+    bin.install "db_stress" => "rocksdb_stress"
+    bin.install "write_stress" => "rocksdb_write_stress"
+    bin.install "ldb" => "rocksdb_ldb"
+    bin.install "db_repl_stress" => "rocksdb_repl_stress"
+    bin.install "rocksdb_dump"
+    bin.install "rocksdb_undump"
+
+    # build rocksdb_lite
+    ENV.append_to_cflags "-DROCKSDB_LITE=1"
+    ENV["LIBNAME"] = "librocksdb_lite"
+    system "make", "clean"
+    system "make", "static_lib"
+    system "make", "shared_lib"
+    system "make", "install", "INSTALL_PATH=#{prefix}"
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <assert.h>
       #include <rocksdb/options.h>
       #include <rocksdb/memtablerep.h>
       using namespace rocksdb;
       int main() {
         Options options;
-        options.memtable_factory.reset(NewHashSkipListRepFactory(16));
         return 0;
       }
     EOS
@@ -57,20 +63,18 @@ class Rocksdb < Formula
     system ENV.cxx, "test.cpp", "-o", "db_test", "-v",
                                 "-std=c++11", "-stdlib=libc++", "-lstdc++",
                                 "-lz", "-lbz2",
-                                "-L#{lib}", "-lrocksdb",
+                                "-L#{lib}", "-lrocksdb_lite",
                                 "-L#{Formula["snappy"].opt_lib}", "-lsnappy",
                                 "-L#{Formula["lz4"].opt_lib}", "-llz4"
     system "./db_test"
 
-    if build.with? "tools"
-      system "#{bin}/rocksdb_sst_dump", "--help"
-      system "#{bin}/rocksdb_sanity_test", "--help"
-      system "#{bin}/rocksdb_stress", "--help"
-      system "#{bin}/rocksdb_write_stress", "--help"
-      system "#{bin}/rocksdb_ldb", "--help"
-      system "#{bin}/rocksdb_repl_stress", "--help"
-      system "#{bin}/rocksdb_dump", "--help"
-      system "#{bin}/rocksdb_undump", "--help"
-    end
+    assert_match "sst_dump --file=", shell_output("#{bin}/rocksdb_sst_dump --help 2>&1", 1)
+    assert_match "rocksdb_sanity_test <path>", shell_output("#{bin}/rocksdb_sanity_test --help 2>&1", 1)
+    assert_match "rocksdb_stress [OPTIONS]...", shell_output("#{bin}/rocksdb_stress --help 2>&1", 1)
+    assert_match "rocksdb_write_stress [OPTIONS]...", shell_output("#{bin}/rocksdb_write_stress --help 2>&1", 1)
+    assert_match "ldb - RocksDB Tool", shell_output("#{bin}/rocksdb_ldb --help 2>&1", 1)
+    assert_match "rocksdb_repl_stress:", shell_output("#{bin}/rocksdb_repl_stress --help 2>&1", 1)
+    assert_match "rocksdb_dump:", shell_output("#{bin}/rocksdb_dump --help 2>&1", 1)
+    assert_match "rocksdb_undump:", shell_output("#{bin}/rocksdb_undump --help 2>&1", 1)
   end
 end

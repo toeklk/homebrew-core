@@ -2,14 +2,15 @@ class Upscaledb < Formula
   desc "Database for embedded devices"
   homepage "https://upscaledb.com/"
   url "http://files.upscaledb.com/dl/upscaledb-2.2.0.tar.gz"
+  mirror "https://dl.bintray.com/homebrew/mirror/upscaledb-2.2.0.tar.gz"
   sha256 "7d0d1ace47847a0f95a9138637fcaaf78b897ef682053e405e2c0865ecfd253e"
-  revision 3
+  revision 7
 
   bottle do
     cellar :any
-    sha256 "d71b4d4de5ad6f093172811e2111df415b0ace32b6b3e1abc7b1ba0a66265fcd" => :sierra
-    sha256 "bf4000ab48c79c23ad2c7ca280fdbe27e56cb7bf7fb914b79d38a19a7e28ba5d" => :el_capitan
-    sha256 "8799b226b4565f9a56d507e42da66088aeacedaa76edaac8b2a93cbd0904937b" => :yosemite
+    sha256 "26d334d0ad7a36582834575895ee1dd04aeb9db13db52442cb60a2188807c268" => :high_sierra
+    sha256 "4d438ae443c577725d03b7dfceb1d6d078bc2037d4fa28799e662ed997326fbe" => :sierra
+    sha256 "0db006a03d8fc4e4952484d56fb4d59afffe4b7b225669effcb407f5cb12a6c4" => :el_capitan
   end
 
   head do
@@ -21,13 +22,15 @@ class Upscaledb < Formula
   end
 
   option "without-java", "Do not build the Java wrapper"
-  option "without-remote", "Disable access to remote databases"
+  option "without-protobuf", "Disable access to remote databases"
+
+  deprecated_option "without-remote" => "without-protobuf"
 
   depends_on "boost"
   depends_on "gnutls"
   depends_on "openssl"
   depends_on :java => :recommended
-  depends_on "protobuf" if build.with? "remote"
+  depends_on "protobuf" => :recommended
 
   resource "libuv" do
     url "https://github.com/libuv/libuv/archive/v0.10.37.tar.gz"
@@ -37,10 +40,6 @@ class Upscaledb < Formula
   fails_with :clang do
     build 503
     cause "error: member access into incomplete type 'const std::type_info"
-  end
-  fails_with :llvm do
-    build 2336
-    cause "error: forward declaration of 'const struct std::type_info'"
   end
 
   def install
@@ -64,7 +63,7 @@ class Upscaledb < Formula
       args << "--disable-java"
     end
 
-    if build.with? "remote"
+    if build.with? "protobuf"
       resource("libuv").stage do
         system "make", "libuv.dylib", "SO_LDFLAGS=-Wl,-install_name,#{libexec}/libuv/lib/libuv.dylib"
         (libexec/"libuv/lib").install "libuv.dylib"

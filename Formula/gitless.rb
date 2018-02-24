@@ -3,17 +3,17 @@ class Gitless < Formula
 
   desc "Simplified version control system on top of git"
   homepage "http://gitless.com/"
-  url "https://github.com/sdg-mit/gitless/archive/v0.8.4.tar.gz"
-  sha256 "ecde4887eb20109a0345a1bfee420140522f981deff335d552908a00952853c8"
+  url "https://github.com/sdg-mit/gitless/archive/v0.8.6.tar.gz"
+  sha256 "e1d009bf9d7c89428d7029394cc85a0d91bd2af73f019508ddc92c98faeed8e5"
 
   bottle do
     cellar :any
-    sha256 "bd1545c968545a16a7e31ccfa25831ff0876b16211b55bf9ddb3d0bda64ee09c" => :sierra
-    sha256 "2c2bc83a6dbd36d8a633bea71c0ce3d788bd94eb5a2285b48ba6f16329968757" => :el_capitan
-    sha256 "25bf5005b47da1e75fb3757d213d1e77d6ec3f129de2d1ab3446c2b3a6ae6d1e" => :yosemite
+    sha256 "61a08eb451abe8bdbb8150f18de71281fdc4bd87d752e500e2a066cbdbe04bbc" => :high_sierra
+    sha256 "ffa5383d713facc865249064e16289f4d38c6d29234decaf3fbf58a43a9038e6" => :sierra
+    sha256 "080a6ac35724acf0e10a3e113c16d2a06f66f5d3e49b3af745b057205998200f" => :el_capitan
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "libgit2"
 
   resource "args" do
@@ -22,8 +22,8 @@ class Gitless < Formula
   end
 
   resource "cffi" do
-    url "https://files.pythonhosted.org/packages/0a/f3/686af8873b70028fccf67b15c78fd4e4667a3da995007afc71e786d61b0a/cffi-1.8.3.tar.gz"
-    sha256 "c321bd46faa7847261b89c0469569530cad5a41976bb6dba8202c0159f476568"
+    url "https://files.pythonhosted.org/packages/10/f7/3b302ff34045f25065091d40e074479d6893882faef135c96f181a57ed06/cffi-1.11.4.tar.gz"
+    sha256 "df9083a992b17a28cd4251a3f5c879e0198bb26c9e808c4647e0a18739f1d11d"
   end
 
   resource "clint" do
@@ -32,23 +32,23 @@ class Gitless < Formula
   end
 
   resource "pycparser" do
-    url "https://files.pythonhosted.org/packages/6d/31/666614af3db0acf377876d48688c5d334b6e493b96d21aa7d332169bee50/pycparser-2.14.tar.gz"
-    sha256 "7959b4a74abdc27b312fed1c21e6caf9309ce0b29ea86b591fd2e99ecdf27f73"
+    url "https://files.pythonhosted.org/packages/8c/2d/aad7f16146f4197a11f8e91fb81df177adcc2073d36a17b1491fd09df6ed/pycparser-2.18.tar.gz"
+    sha256 "99a8ca03e29851d96616ad0404b4aad7d9ee16f25c9f9708a11faf2810f7b226"
   end
 
   resource "pygit2" do
-    url "https://files.pythonhosted.org/packages/aa/56/84dcce942a48d4b7b970cfb7a779b8db1d904e5ec5f71e7a67a63a23a4e2/pygit2-0.24.1.tar.gz"
-    sha256 "4d1d0196b38d6012faf0a7c45e235c208315672b6035da504566c605ba494064"
+    url "https://files.pythonhosted.org/packages/29/78/c2d5c7b0394e99cf20c683927871e676ff796d69d8c2c322e0edabb6e9c6/pygit2-0.26.3.tar.gz"
+    sha256 "29baa530d6fcbf7cca6a75cf9c78fb88613ca81afb39c62fe492f226f6b61800"
   end
 
   resource "sh" do
-    url "https://files.pythonhosted.org/packages/39/ca/1db6ebefdde0a7b5fb639ebc0527d8aab1cdc6119a8e4ac7c1c0cc222ec5/sh-1.11.tar.gz"
-    sha256 "590fb9b84abf8b1f560df92d73d87965f1e85c6b8330f8a5f6b336b36f0559a4"
+    url "https://files.pythonhosted.org/packages/7c/71/199d27d3e7e78bf448bcecae0105a1d5b29173ffd2bbadaa95a74c156770/sh-1.12.14.tar.gz"
+    sha256 "b52bf5833ed01c7b5c5fb73a7f71b3d98d48e9b9b8764236237bdc7ecae850fc"
   end
 
   resource "six" do
-    url "https://files.pythonhosted.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-1.10.0.tar.gz"
-    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
+    url "https://files.pythonhosted.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"
+    sha256 "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
   end
 
   def install

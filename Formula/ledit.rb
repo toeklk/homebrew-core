@@ -1,16 +1,14 @@
 class Ledit < Formula
   desc "Line editor for interactive commands"
   homepage "http://pauillac.inria.fr/~ddr/ledit/"
-  url "http://pauillac.inria.fr/~ddr/ledit/distrib/src/ledit-2.03.tgz"
-  sha256 "ce08a8568c964009ccb0cbba45ae78b9a96c823f42a4fd61431a5b0c2c7a19ce"
+  url "http://pauillac.inria.fr/~ddr/ledit/distrib/src/ledit-2.04.tgz"
+  sha256 "484897016b001b6d64eb24e38a213177b230ebf8e0d9808a969b62f012e70ee4"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "39ec89e6a2bd3e584fbf04344e5d001d1554d3baffc16e52487faf2ccf788748" => :sierra
-    sha256 "5046bdcbf4e86ff4d8f5788366b88b50bf4d327a1dfd96b51da14bb48eaba9ef" => :el_capitan
-    sha256 "7ea1c26486320fc35269fa7bf2a1dd577f504a04ac3dca3278c568224661e99e" => :yosemite
-    sha256 "a5d80c1e40de9d3d8ab06ca88e412fc3d5e105d99f2439ef62b063eed3efb4e5" => :mavericks
-    sha256 "338e160cde4ece1c167ec07e8b202f599ba0267ac5c3b6ca896b569067cb2e20" => :mountain_lion
+    sha256 "55df7d80dfcfb5c04274f9a33a5fc03a4a1b9b2b1fb4f3b08c0cef83759c74a3" => :high_sierra
+    sha256 "b7e2b19079d843f9704572bf21de6251e7a6619d809ce230e22be5440517ab57" => :sierra
+    sha256 "952162580a2542b7038b2702b8a2ed9223e519ca703b221daf054566723ecd59" => :el_capitan
   end
 
   depends_on "ocaml"
@@ -27,7 +25,7 @@ class Ledit < Formula
   test do
     history = testpath/"history"
     pipe_output("#{bin}/ledit -x -h #{history} bash", "exit\n", 0)
-    assert history.exist?
+    assert_predicate history, :exist?
     assert_equal "exit\n", history.read
   end
 end

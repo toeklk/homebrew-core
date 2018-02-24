@@ -1,24 +1,20 @@
-require "language/node"
-
 class Grafana < Formula
-  desc "Gorgeous metric visualizations and dashboards for timeseries databases."
-  homepage "http://grafana.org"
-  url "https://github.com/grafana/grafana/archive/v3.1.1.tar.gz"
-  sha256 "77bff57f02e507fb998d6d2492798801db4cb10c82c1378e32bd1dde963dba3d"
-
+  desc "Gorgeous metric visualizations and dashboards for timeseries databases"
+  homepage "https://grafana.com"
+  url "https://github.com/grafana/grafana/archive/v4.6.3.tar.gz"
+  sha256 "75959d1cd8f66d362b3bb885481dce77693417f51c2e81ab091e3d16650f1a69"
   head "https://github.com/grafana/grafana.git"
 
   bottle do
     cellar :any_skip_relocation
-    rebuild 1
-    sha256 "12ecd8800a3948b7f24160b78100a686c4fe9dbe1caa8e0e65280f75b6a7d9b7" => :sierra
-    sha256 "0a188a184ad09b6c6a5b66350d8563ef47c81cf360d807ec5b76006777d9d205" => :el_capitan
-    sha256 "426a722b7bdba4eb0f9004296c056df3aa06c27f4d58728f3985ede035aa5fff" => :yosemite
-    sha256 "96701f8bcc4ccbbcceb316084fe26ff7bd5ba9a478b5fb04fc8aadfa4361908e" => :mavericks
+    sha256 "b3272aea332d21682b01f5874da634a2d9e551c36b1d9bd1f4874f2b43ed4664" => :high_sierra
+    sha256 "731fe63695b57c858d50328f6325b9552a0655928b0806d384df0f6cb0163280" => :sierra
+    sha256 "e7a820ff92fd3fd49642ac1b2711fd688f614c89f3dc43eae144214e07a163fb" => :el_capitan
   end
 
   depends_on "go" => :build
   depends_on "node" => :build
+  depends_on "yarn" => :build
 
   def install
     ENV["GOPATH"] = buildpath
@@ -26,11 +22,14 @@ class Grafana < Formula
     grafana_path.install buildpath.children
 
     cd grafana_path do
-      system "go", "run", "build.go", "setup"
       system "go", "run", "build.go", "build"
-      system "npm", "install", *Language::Node.local_npm_install_args
-      system "npm", "install", "grunt-cli", *Language::Node.local_npm_install_args
-      system "node_modules/grunt-cli/bin/grunt", "build"
+
+      system "yarn", "install", "--ignore-engines"
+
+      args = ["build"]
+      # Avoid PhantomJS error "unrecognized selector sent to instance"
+      args << "--force" unless build.bottle?
+      system "node_modules/grunt-cli/bin/grunt", *args
 
       bin.install "bin/grafana-cli"
       bin.install "bin/grafana-server"
@@ -38,8 +37,8 @@ class Grafana < Formula
       cp("conf/sample.ini", "conf/grafana.ini.example")
       etc.install "conf/sample.ini" => "grafana/grafana.ini"
       etc.install "conf/grafana.ini.example" => "grafana/grafana.ini.example"
-      pkgshare.install "conf", "vendor"
-      pkgshare.install "public_gen" => "public"
+      pkgshare.install "conf", "vendor", "public"
+      prefix.install_metafiles
     end
   end
 
@@ -50,7 +49,7 @@ class Grafana < Formula
 
   plist_options :manual => "grafana-server --config=#{HOMEBREW_PREFIX}/etc/grafana/grafana.ini --homepath #{HOMEBREW_PREFIX}/share/grafana cfg:default.paths.logs=#{HOMEBREW_PREFIX}/var/log/grafana cfg:default.paths.data=#{HOMEBREW_PREFIX}/var/lib/grafana cfg:default.paths.plugins=#{HOMEBREW_PREFIX}/var/lib/grafana/plugins"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -109,7 +108,11 @@ class Grafana < Formula
     end
     Dir.chdir(pkgshare)
 
-    res = PTY.spawn(bin/"grafana-server", "cfg:default.paths.logs=#{logdir}", "cfg:default.paths.data=#{datadir}", "cfg:default.paths.plugins=#{plugdir}", "cfg:default.server.http_port=50100")
+    res = PTY.spawn(bin/"grafana-server",
+      "cfg:default.paths.logs=#{logdir}",
+      "cfg:default.paths.data=#{datadir}",
+      "cfg:default.paths.plugins=#{plugdir}",
+      "cfg:default.server.http_port=50100")
     r = res[0]
     w = res[1]
     pid = res[2]
@@ -117,7 +120,7 @@ class Grafana < Formula
     listening = Timeout.timeout(5) do
       li = false
       r.each do |l|
-        if l =~ /Listen/
+        if l =~ /Initializing HTTP Server/
           li = true
           break
         end

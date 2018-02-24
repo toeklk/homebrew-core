@@ -3,11 +3,11 @@ class RRequirement < Requirement
 
   satisfy { which("r") }
 
-  def message; <<-EOS.undent
+  def message; <<~EOS
     R not found. The R integration module requires R.
     Do one of the following:
     - install R
-    -- run brew install homebrew/science/r or brew install Caskroom/cask/r
+    -- run brew install r or brew cask install r-app
     - remove the --with-r option
     EOS
   end
@@ -16,13 +16,13 @@ end
 class Monetdb < Formula
   desc "Column-store database"
   homepage "https://www.monetdb.org/"
-  url "https://www.monetdb.org/downloads/sources/Jun2016-SP2/MonetDB-11.23.13.zip"
-  sha256 "596beca727303b4419916faa00a5613229f0a753a839b71cde6327226e105045"
+  url "https://www.monetdb.org/downloads/sources/Jul2017-SP4/MonetDB-11.27.13.tar.xz"
+  sha256 "888828a2a242a60eb4b0ad3b22a3ff5cbdd8089ce34b1e16561199775d68d210"
 
   bottle do
-    sha256 "d66d65bde17e3bc07b115653d0f68ed94089c0ebbfc1770a4e1cea4ed87279f2" => :sierra
-    sha256 "77611fda0d1254f0f517c611c8c0cbbca48b7f7adf653198970a7a888e0d87d0" => :el_capitan
-    sha256 "5983ca877dfc2c0859062f091755aceadddd92b6571594f376a2de91da6e710c" => :yosemite
+    sha256 "ad9ff71fe14164688e2e97b9146a09f06b1f9218e0df940f4cc2b9d863f00bd6" => :high_sierra
+    sha256 "f3702e4412c01d9104131311e01b8038877052fe2d90197dd1c67e16642654fc" => :sierra
+    sha256 "1689e0383fa91424f89e95f31326fa494980f34b903d242c9d63a7ba9df61174" => :el_capitan
   end
 
   head do
@@ -41,7 +41,7 @@ class Monetdb < Formula
   depends_on RRequirement => :optional
 
   depends_on "pkg-config" => :build
-  depends_on :ant => :build
+  depends_on "ant" => :build
   depends_on "libatomic_ops" => [:build, :recommended]
   depends_on "pcre"
   depends_on "readline" # Compilation fails with libedit.
@@ -50,7 +50,7 @@ class Monetdb < Formula
   depends_on "unixodbc" => :optional # Build the ODBC driver
   depends_on "geos" => :optional # Build the GEOM module
   depends_on "gsl" => :optional
-  depends_on "homebrew/science/cfitsio" => :optional
+  depends_on "cfitsio" => :optional
   depends_on "homebrew/php/libsphinxclient" => :optional
 
   def install

@@ -1,15 +1,15 @@
 class GoogleBenchmark < Formula
   desc "C++ microbenchmark support library"
   homepage "https://github.com/google/benchmark"
-  url "https://github.com/google/benchmark/archive/v1.1.0.tar.gz"
-  sha256 "e7334dd254434c6668e33a54c8f839194c7c61840d52f4b6258eee28e9f3b20e"
+  url "https://github.com/google/benchmark/archive/v1.3.0.tar.gz"
+  sha256 "f19559475a592cbd5ac48b61f6b9cedf87f0b6775d1443de54cfe8f53940b28d"
   head "https://github.com/google/benchmark.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "747b86dbce83cc3b846b1a2dd5564409d8a8778363c5144f01d0c5b9bfc4b0b8" => :sierra
-    sha256 "ba23e2238556ac482048ab2b720ead87b1bea0ed8ac58c36707395ee33e8057e" => :el_capitan
-    sha256 "2e4cfa40e4c57b6a14c5fef8e93434a901ae4962801bae15756820a0e1144bb8" => :yosemite
+    sha256 "cd223b9dfaed9208c8c683e933525c46f0a871a3e4bad67b818577f3b1d761ab" => :high_sierra
+    sha256 "59851a02622cbb62c485cf9d42a7b364ded70c0b40ce11c133f79195e2ea9844" => :sierra
+    sha256 "5052dafe9ca883c844dcf1f85270851d4163d7a2d134b2ebb96a592b30c53590" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -26,7 +26,7 @@ class GoogleBenchmark < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <string>
       #include <benchmark/benchmark.h>
       static void BM_StringCreation(benchmark::State& state) {

@@ -1,13 +1,14 @@
 class Clucene < Formula
   desc "C++ port of Lucene: high-performance, full-featured text search engine"
-  homepage "http://clucene.sourceforge.net"
+  homepage "https://clucene.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/clucene/clucene-core-unstable/2.3/clucene-core-2.3.3.4.tar.gz"
   sha256 "ddfdc433dd8ad31b5c5819cc4404a8d2127472a3b720d3e744e8c51d79732eab"
-  head "git://clucene.git.sourceforge.net/gitroot/clucene/clucene"
+  head "https://git.code.sf.net/p/clucene/code.git"
 
   bottle do
     cellar :any
     rebuild 1
+    sha256 "3986feb447660b2732e2983f54d22086b10da442cb2d7b6ceac45a91ad58f09b" => :high_sierra
     sha256 "5d25768dc355533553e6c1605a1dc89985ddd26b4d17d10078c39d6b085c03fb" => :sierra
     sha256 "5ee0c98072c18c75dd8c25fd309ccb49f033300d474367a8e325ec601c427f66" => :el_capitan
     sha256 "182db4f73e058e9d28b77cbbd642c40ecc403fbf1d9dc8357387b2c54dba8d1e" => :yosemite

@@ -1,24 +1,25 @@
 class Uwsgi < Formula
   desc "Full stack for building hosting services"
   homepage "https://uwsgi-docs.readthedocs.org/en/latest/"
-  url "https://projects.unbit.it/downloads/uwsgi-2.0.14.tar.gz"
-  sha256 "21b3d1ef926d835ff23576193a2c60d4c896d8e21567850cf0677a4764122887"
+  url "https://projects.unbit.it/downloads/uwsgi-2.0.16.tar.gz"
+  sha256 "a911f48f3cc51ac82fdabc4e001f18a32569128680beb5a833ebc3ff6edcc1f4"
   head "https://github.com/unbit/uwsgi.git"
 
   bottle do
-    sha256 "a651f0ac7fe61dc1f550f58691958147cec11d8ab9674d029949cf393d2a4db0" => :sierra
-    sha256 "1d2536f6050440d0451ec0c39681efeff984601147d6cf47830f2b7d6f79f1b5" => :el_capitan
-    sha256 "1a12d456801270b232d319878340ddff923bc94963f76558218ab89b71d7409a" => :yosemite
+    sha256 "7ab9c0ad695d6dc03b6537f2b84fe92c511f9f412232f8e60a08a0da9d2a2b14" => :high_sierra
+    sha256 "836e7caa01dde37bd5bb5cc6846d33fee4a48741f01d4e53e2fc656bb0ab68ea" => :sierra
+    sha256 "fc380472c86ab122827f2592bb63ae22cc4d1fe0d3d43325bf7092cc5749ab5c" => :el_capitan
   end
 
   option "with-java", "Compile with Java support"
-  option "with-php", "Compile with PHP support (PHP must be built for embedding)"
   option "with-ruby", "Compile with Ruby support"
+
+  deprecated_option "with-lua51" => "with-lua@5.1"
 
   depends_on "pkg-config" => :build
   depends_on "pcre"
   depends_on "openssl"
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
 
   depends_on "geoip" => :optional
   depends_on "gloox" => :optional
@@ -27,7 +28,7 @@ class Uwsgi < Formula
   depends_on "libffi" => :optional
   depends_on "libxslt" => :optional
   depends_on "libyaml" => :optional
-  depends_on "lua51" => :optional
+  depends_on "lua@5.1" => :optional
   depends_on "mongodb" => :optional
   depends_on "mongrel2" => :optional
   depends_on "mono" => :optional
@@ -51,6 +52,12 @@ class Uwsgi < Formula
   end
 
   def install
+    # Fix file not found errors for /usr/lib/system/libsystem_symptoms.dylib and
+    # /usr/lib/system/libsystem_darwin.dylib on 10.11 and 10.12, respectively
+    if MacOS.version == :sierra || MacOS.version == :el_capitan
+      ENV["SDKROOT"] = MacOS.sdk_path
+    end
+
     ENV.append %w[CFLAGS LDFLAGS], "-arch #{MacOS.preferred_arch}"
     openssl = Formula["openssl"]
     ENV.prepend "CFLAGS", "-I#{openssl.opt_include}"
@@ -59,10 +66,11 @@ class Uwsgi < Formula
     json = build.with?("jansson") ? "jansson" : "yajl"
     yaml = build.with?("libyaml") ? "libyaml" : "embedded"
 
-    (buildpath/"buildconf/brew.ini").write <<-EOS.undent
+    (buildpath/"buildconf/brew.ini").write <<~EOS
       [uwsgi]
       ssl = true
       json = #{json}
+      xml = libxml2
       yaml = #{yaml}
       inherit = base
       plugin_dir = #{libexec}/uwsgi
@@ -71,22 +79,22 @@ class Uwsgi < Formula
 
     system "python", "uwsgiconfig.py", "--verbose", "--build", "brew"
 
-    plugins = ["airbrake", "alarm_curl", "alarm_speech", "asyncio", "cache",
-               "carbon", "cgi", "cheaper_backlog2", "cheaper_busyness",
-               "corerouter", "curl_cron", "cplusplus", "dumbloop", "dummy",
-               "echo", "emperor_amqp", "fastrouter", "forkptyrouter", "gevent",
-               "http", "logcrypto", "logfile", "ldap", "logpipe", "logsocket",
-               "msgpack", "notfound", "pam", "ping", "psgi", "pty", "rawrouter",
-               "router_basicauth", "router_cache", "router_expires",
-               "router_hash", "router_http", "router_memcached",
-               "router_metrics", "router_radius", "router_redirect",
-               "router_redis", "router_rewrite", "router_static",
-               "router_uwsgi", "router_xmldir", "rpc", "signal", "spooler",
-               "sqlite3", "sslrouter", "stats_pusher_file",
-               "stats_pusher_socket", "symcall", "syslog",
-               "transformation_chunked", "transformation_gzip",
-               "transformation_offload", "transformation_tofile",
-               "transformation_toupper", "ugreen", "webdav", "zergpool"]
+    plugins = %w[airbrake alarm_curl alarm_speech asyncio cache
+                 carbon cgi cheaper_backlog2 cheaper_busyness
+                 corerouter curl_cron cplusplus dumbloop dummy
+                 echo emperor_amqp fastrouter forkptyrouter gevent
+                 http logcrypto logfile ldap logpipe logsocket
+                 msgpack notfound pam ping psgi pty rawrouter
+                 router_basicauth router_cache router_expires
+                 router_hash router_http router_memcached
+                 router_metrics router_radius router_redirect
+                 router_redis router_rewrite router_static
+                 router_uwsgi router_xmldir rpc signal spooler
+                 sqlite3 sslrouter stats_pusher_file
+                 stats_pusher_socket symcall syslog
+                 transformation_chunked transformation_gzip
+                 transformation_offload transformation_tofile
+                 transformation_toupper ugreen webdav zergpool]
 
     plugins << "alarm_xmpp" if build.with? "gloox"
     plugins << "emperor_mongodb" if build.with? "mongodb"
@@ -98,14 +106,13 @@ class Uwsgi < Formula
     plugins << "jvm" if build.with? "java"
     plugins << "jwsgi" if build.with? "java"
     plugins << "libtcc" if build.with? "tcc"
-    plugins << "lua" if build.with? "lua"
+    plugins << "lua" if build.with? "lua@5.1"
     plugins << "mongodb" if build.with? "mongodb"
     plugins << "mongodblog" if build.with? "mongodb"
     plugins << "mongrel2" if build.with? "mongrel2"
     plugins << "mono" if build.with? "mono"
     plugins << "nagios" if build.with? "nagios"
     plugins << "pypy" if build.with? "pypy"
-    plugins << "php" if build.with? "php"
     plugins << "rack" if build.with? "ruby"
     plugins << "rbthreads" if build.with? "ruby"
     plugins << "ring" if build.with? "java"
@@ -121,10 +128,13 @@ class Uwsgi < Formula
       system "python", "uwsgiconfig.py", "--verbose", "--plugin", "plugins/#{plugin}", "brew"
     end
 
-    python_versions = ["python", "python2"]
-    python_versions << "python3" if build.with? "python3"
-    python_versions.each do |v|
-      system "python", "uwsgiconfig.py", "--verbose", "--plugin", "plugins/python", "brew", v
+    python_versions = {
+      "python"=>"python",
+      "python2"=>"python",
+    }
+    python_versions["python3"] = "python3" if build.with? "python3"
+    python_versions.each do |k, v|
+      system v, "uwsgiconfig.py", "--verbose", "--plugin", "plugins/python", "brew", k
     end
 
     bin.install "uwsgi"
@@ -132,7 +142,7 @@ class Uwsgi < Formula
 
   plist_options :manual => "uwsgi"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -166,7 +176,7 @@ class Uwsgi < Formula
   end
 
   test do
-    (testpath/"helloworld.py").write <<-EOS.undent
+    (testpath/"helloworld.py").write <<~EOS
       def application(env, start_response):
         start_response('200 OK', [('Content-Type','text/html')])
         return [b"Hello World"]

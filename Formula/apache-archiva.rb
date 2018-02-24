@@ -1,8 +1,8 @@
 class ApacheArchiva < Formula
   desc "The Build Artifact Repository Manager"
   homepage "https://archiva.apache.org/"
-  url "https://www.apache.org/dyn/closer.cgi?path=archiva/2.2.0/binaries/apache-archiva-2.2.0-bin.tar.gz"
-  sha256 "6af7c3c47c35584f729a9c139675a01f9a9819d0cdde292552fc783284a34cfa"
+  url "https://www.apache.org/dyn/closer.cgi?path=archiva/2.2.3/binaries/apache-archiva-2.2.3-bin.tar.gz"
+  sha256 "cf90d097e7c2763f6ff8df458b64be0348b35847de8b238c3e1e28e006da8bad"
 
   bottle :unneeded
 
@@ -24,7 +24,7 @@ class ApacheArchiva < Formula
 
   plist_options :manual => "ARCHIVA_BASE=#{HOMEBREW_PREFIX}/var/archiva #{HOMEBREW_PREFIX}/opt/apache-archiva/bin/archiva console"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

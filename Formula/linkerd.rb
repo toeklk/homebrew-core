@@ -1,8 +1,8 @@
 class Linkerd < Formula
   desc "Drop-in RPC proxy designed for microservices"
   homepage "https://linkerd.io/"
-  url "https://github.com/BuoyantIO/linkerd/releases/download/0.8.2/linkerd-0.8.2.tgz"
-  sha256 "a7e7e8bb6aa9e8889ddd180816997d7c3a98a4aad0558ac2487bae263d3b7e6e"
+  url "https://github.com/linkerd/linkerd/releases/download/1.3.5/linkerd-1.3.5.tgz"
+  sha256 "601fc82f944c8ce575a4442ca661cca6755c445ee0f890d0ba6c79035452b2d7"
 
   bottle :unneeded
 
@@ -11,8 +11,8 @@ class Linkerd < Formula
   def install
     inreplace "config/linkerd.yaml", "disco", etc/"linkerd/disco"
 
-    libexec.install "linkerd-#{version}-exec"
-    bin.install_symlink libexec/"linkerd-#{version}-exec" => "linkerd"
+    libexec.install "linkerd-#{version}-32b-exec"
+    bin.install_symlink libexec/"linkerd-#{version}-32b-exec" => "linkerd"
 
     pkgshare.mkpath
     cp buildpath/"config/linkerd.yaml", pkgshare/"default.yaml"
@@ -31,7 +31,7 @@ class Linkerd < Formula
 
   plist_options :manual => "linkerd #{HOMEBREW_PREFIX}/etc/linkerd/linkerd.yaml"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -68,7 +68,7 @@ class Linkerd < Formula
       exec "#{bin}/linkerd #{pkgshare}/default.yaml"
     end
 
-    sleep 5
+    sleep 10
 
     begin
       assert_match /It works!/, shell_output("curl -s -H 'Host: web' http://localhost:4140")

@@ -1,27 +1,27 @@
 class Gdbm < Formula
   desc "GNU database manager"
   homepage "https://www.gnu.org/software/gdbm/"
-  url "https://ftpmirror.gnu.org/gdbm/gdbm-1.12.tar.gz"
-  mirror "https://ftp.gnu.org/gnu/gdbm/gdbm-1.12.tar.gz"
-  sha256 "d97b2166ee867fd6ca5c022efee80702d6f30dd66af0e03ed092285c3af9bcea"
+  url "https://ftp.gnu.org/gnu/gdbm/gdbm-1.14.1.tar.gz"
+  mirror "https://ftpmirror.gnu.org/gdbm/gdbm-1.14.1.tar.gz"
+  sha256 "cdceff00ffe014495bed3aed71c7910aa88bf29379f795abc0f46d4ee5f8bc5f"
+  revision 1
 
   bottle do
     cellar :any
-    sha256 "ffe92893d1d2d331e749be3e6f530de13b598adb7ebfe95eaea81e2d0ccbf0ce" => :sierra
-    sha256 "80ee188768a6029012a576c29be718149378d058e1803c6149ee8a36ce879f58" => :el_capitan
-    sha256 "fa512dd57e18dc3db293cfcf305356d137a3fad0f85240a9788dc4057290ce9c" => :yosemite
-    sha256 "87bfecf948e8b6182519f627f95c244531b2a48c1941352bee0980275b515f43" => :mavericks
+    sha256 "72e9246d6863e40f2a552113ded63acb544ff1be01b362f5bbb738f92a2bf7da" => :high_sierra
+    sha256 "ea9588f15f24f3fc82dda8d41f669df639787481f3a7a3663e4b0f384ae7251f" => :sierra
+    sha256 "31da3139f5dc5bb66d02c3e677b9f975a2fd2f74ff1a8a6cb6468f39eb7d7e8d" => :el_capitan
   end
 
-  option :universal
   option "with-libgdbm-compat", "Build libgdbm_compat, a compatibility layer which provides UNIX-like dbm and ndbm interfaces."
 
+  # Use --without-readline because readline detection is broken in 1.13
+  # https://github.com/Homebrew/homebrew-core/pull/10903
   def install
-    ENV.universal_binary if build.universal?
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
+      --without-readline
       --prefix=#{prefix}
     ]
 
@@ -29,11 +29,14 @@ class Gdbm < Formula
 
     system "./configure", *args
     system "make", "install"
+
+    # Avoid breaking zsh login shells unnecessarily
+    ln_s "libgdbm.5.dylib", lib/"libgdbm.4.dylib"
   end
 
   test do
     pipe_output("#{bin}/gdbmtool --norc --newdb test", "store 1 2\nquit\n")
-    assert File.exist?("test")
+    assert_predicate testpath/"test", :exist?
     assert_match /2/, pipe_output("#{bin}/gdbmtool --norc test", "fetch 1\nquit\n")
   end
 end

@@ -1,14 +1,14 @@
 class Advancecomp < Formula
   desc "Recompression utilities for .PNG, .MNG, .ZIP, and .GZ files"
-  homepage "http://www.advancemame.it/comp-readme.html"
-  url "https://github.com/amadvance/advancecomp/archive/v1.22.tar.gz"
-  sha256 "b8c482027a5f78d9a7f871cbba19cc896ed61653d1d93034c9dbe55484952605"
+  homepage "https://www.advancemame.it/comp-readme.html"
+  url "https://github.com/amadvance/advancecomp/archive/v2.1.tar.gz"
+  sha256 "6113c2b6272334af710ba486e8312faa3cee5bd6dc8ca422d00437725e2b602a"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "ff4d62b3b8b0c90df02d65ecf1bd6bbfb923cbffe4a03aa080c870199e723f9e" => :sierra
-    sha256 "da7379176da00e673a7719a794f257cc835f1d1c7f85fab7688dea503a7f9e76" => :el_capitan
-    sha256 "84eb20d542907c22b5695afe49f3c305b668ab5efcf78a1fe9776b1bd70854cf" => :yosemite
+    sha256 "4e02eb49cfa3587545852bb5412ec4bed7a5a23bf7348798aa508fb1fe3c3840" => :high_sierra
+    sha256 "0142bd73b77ee344b76be047323dea7593a03ee08b7041f789d8e1a330c5f7ec" => :sierra
+    sha256 "adf23429f3c808c367520a4225caee3b2c7a2a8c4dea5bc8b28c8654f7e5b989" => :el_capitan
   end
 
   depends_on "autoconf" => :build

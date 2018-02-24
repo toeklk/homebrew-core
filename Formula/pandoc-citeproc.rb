@@ -5,34 +5,28 @@ class PandocCiteproc < Formula
 
   desc "Library and executable for using citeproc with pandoc"
   homepage "https://github.com/jgm/pandoc-citeproc"
-  url "https://hackage.haskell.org/package/pandoc-citeproc-0.10.2.1/pandoc-citeproc-0.10.2.1.tar.gz"
-  sha256 "025f88b4e1d5014692d1703d897f145a107752033d7aef202cac18b4d7887f5f"
+  url "https://hackage.haskell.org/package/pandoc-citeproc-0.14.1.4/pandoc-citeproc-0.14.1.4.tar.gz"
+  sha256 "a0b5c57fc45ef457f232304d3cd20c000404ba5b8c019ec4f0183a9d203eeca9"
   head "https://github.com/jgm/pandoc-citeproc.git"
 
   bottle do
-    sha256 "48bcea158acefbbb1e2b9973a52394f94ac6889212f956b945e0ed62375f584a" => :sierra
-    sha256 "4398b169e21cf93282a4211cf43e35cbfcbc814b80590d776a7ab501091e815f" => :el_capitan
-    sha256 "f7b904982f1bd1332dccd75c2ddaa91fd89004ef01aea9971fe772a3bcb77d65" => :yosemite
+    sha256 "58aea109acada764ad4f8e829766e84a17e46fa669dcc3d409accb27ab46ee43" => :high_sierra
+    sha256 "386b68cbace2437556cefb0369846f7976007a294dca884b6f4f9f2516e964e1" => :sierra
+    sha256 "b4e50fc277e06126ef95cfc5bbc5970300535ff5ac0e259d45ffbbd428f74b23" => :el_capitan
   end
 
-  depends_on "ghc" => :build
   depends_on "cabal-install" => :build
+  depends_on "ghc" => :build
   depends_on "pandoc"
 
   def install
-    # Build error with aeson >= 1.0.0.0: "Overlapping instances for FromJSON"
-    # Reported 27 Oct 2016 https://github.com/jgm/pandoc-citeproc/issues/263
-    inreplace "pandoc-citeproc.cabal",
-      "aeson >= 0.7 && < 1.1, text, vector,",
-      "aeson >= 0.7 && < 1.0.0.0, text, vector,"
-
     args = []
     args << "--constraint=cryptonite -support_aesni" if MacOS.version <= :lion
     install_cabal_package *args
   end
 
   test do
-    (testpath/"test.bib").write <<-EOS.undent
+    (testpath/"test.bib").write <<~EOS
       @Book{item1,
       author="John Doe",
       title="First Book",
@@ -41,7 +35,7 @@ class PandocCiteproc < Formula
       publisher="Cambridge University Press"
       }
     EOS
-    expected = <<-EOS.undent
+    expected = <<~EOS
       ---
       references:
       - id: item1
@@ -50,7 +44,7 @@ class PandocCiteproc < Formula
         - family: Doe
           given: John
         issued:
-        - year: '2005'
+        - year: 2005
         title: First book
         publisher: Cambridge University Press
         publisher-place: Cambridge

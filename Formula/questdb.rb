@@ -1,14 +1,16 @@
 class Questdb < Formula
   desc "Time Series Database"
   homepage "https://www.questdb.org"
-  url "https://www.questdb.org/download/questdb-1.0.2-bin.tar.gz"
-  sha256 "7521d2cf7c61f26181503342b076fe9ea4d2fafa221655d4c35e195cb0c2d3f4"
+  url "https://www.questdb.org/download/questdb-1.0.4-bin.tar.gz"
+  sha256 "a8d907d88c5bf67aeb465540c7e16ad45eccd13d152b34cdcf4e5056ad908739"
+  revision 1
 
   bottle :unneeded
 
-  depends_on :java => "1.7+"
+  depends_on :java => "1.8"
 
   def install
+    inreplace "questdb.sh", "1.7+", "1.8"
     rm_rf "questdb.exe"
     libexec.install Dir["*"]
     bin.install_symlink "#{libexec}/questdb.sh" => "questdb"
@@ -16,7 +18,7 @@ class Questdb < Formula
 
   plist_options :manual => "questdb start"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

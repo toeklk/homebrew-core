@@ -1,22 +1,23 @@
 class Fobis < Formula
   include Language::Python::Virtualenv
 
-  desc "KISS build tool for automaticaly building modern Fortran projects."
+  desc "KISS build tool for automaticaly building modern Fortran projects"
   homepage "https://github.com/szaghi/FoBiS"
-  url "https://files.pythonhosted.org/packages/e1/46/a1f93037bc1e56abf3acfadd04b8c41ba083a2a396b8a2d1113ea8382abc/FoBiS.py-2.1.0.tar.gz"
-  sha256 "a95e5c960e19bf0dcdab49049c528ee7a54353408ce63a5ced03cd4e3ae42bae"
+  url "https://files.pythonhosted.org/packages/20/1c/60fcdc15055ac42d220f7e0089f53937f44e615d6c33ae2c8ed98b9e5848/FoBiS.py-2.2.8.tar.gz"
+  sha256 "e56aa3d75fb4b915a679a315fd8e8c19aa6f26332b9647cbbbf7f2103b6a5c8b"
+  revision 1
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "aebecf7fcfd2111adf871b8eb996b146559e75fbe6aecebba11d992adccd60d1" => :sierra
-    sha256 "64e5755b49db27325a95808a7cc8a28ac1ed4e3c4002385ac805e7d1004a56d8" => :el_capitan
-    sha256 "451468120f0cc001d14768e03730a443879b9911b2b1efcc1e7ba2ca6faa9717" => :yosemite
+    sha256 "2d4192dd769121cba4317c8d49c340d40bcc3b2fa556593df072dfff073ba228" => :high_sierra
+    sha256 "95af060c96e1516d0d969324a4bb2c74c6be548cfb553c1ba0adaae288ce65b5" => :sierra
+    sha256 "6521158dc1a0753e06244ac05737ea495fbc81712306dec31bab8ead2cd41016" => :el_capitan
   end
 
   option "without-pygooglechart", "Disable support for coverage charts generated with pygooglechart"
 
-  depends_on :python if MacOS.version <= :snow_leopard
-  depends_on :fortran
+  depends_on "gcc" # for gfortran
+  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "graphviz" => :recommended
 
   resource "pygooglechart" do
@@ -25,8 +26,8 @@ class Fobis < Formula
   end
 
   resource "graphviz" do
-    url "https://files.pythonhosted.org/packages/3a/ef/4be504e14ef8c96503aeb774937b1539aa2c6982e1edffd655ac3b7f2041/graphviz-0.5.1.zip"
-    sha256 "d8f8f369a5c109d3fc971bbc1860b6848515d210aee8f5019c460351dbb00a50"
+    url "https://files.pythonhosted.org/packages/a9/a6/ee6721349489a2da6eedd3dba124f2b5ac15ee1e0a7bd4d3cfdc4fff0327/graphviz-0.8.1.zip"
+    sha256 "6bffbec8b7a0619fe745515039d0d6bb41b6632f3dee02bcd2601581abc63f03"
   end
 
   def install
@@ -37,14 +38,13 @@ class Fobis < Formula
   end
 
   test do
-    ENV.fortran
-    (testpath/"test-mod.f90").write <<-EOS.undent
+    (testpath/"test-mod.f90").write <<~EOS
       module fobis_test_m
         implicit none
         character(*), parameter :: message = "Hello FoBiS"
       end module
     EOS
-    (testpath/"test-prog.f90").write <<-EOS.undent
+    (testpath/"test-prog.f90").write <<~EOS
       program fobis_test
         use iso_fortran_env, only: stdout => output_unit
         use fobis_test_m, only: message

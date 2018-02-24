@@ -1,24 +1,18 @@
 class Lfe < Formula
   desc "Concurrent Lisp for the Erlang VM"
   homepage "http://lfe.io/"
-  url "https://github.com/rvirding/lfe/archive/v1.2.0.tar.gz"
-  sha256 "0abc6e95e3ccb3eff2bc323418e6a095fbdeee7750e12f9f76c67c69d6558e17"
+  url "https://github.com/rvirding/lfe/archive/v1.3.tar.gz"
+  sha256 "1946c0df595ae49ac33fe583f359812dec6349da6acf43c1458534de3267036b"
   head "https://github.com/rvirding/lfe.git", :branch => "develop"
 
   bottle do
-    sha256 "34db1c733113d753278a30046da6a2dd1f6d9681880ad456abfe392b64506c9f" => :sierra
-    sha256 "6e9d0e8c471e57009658f2ea18bd7e60e20fe3c1892240e3df2ba53dac2812a0" => :el_capitan
-    sha256 "ace4bea3a112b20507a58c11afe8e14111168a846cfa3c05788163e29f3e34ff" => :yosemite
+    sha256 "1a0f582845e8c0c87331c9e9148b06dde79483847cc1bb31674596fe2d3c3422" => :high_sierra
+    sha256 "a6f27b9dd837d866fb471db3556677112c4f8ca3df386596f975083a939c8a16" => :sierra
+    sha256 "47827019926bdbfb6b0fa0c7fe123b0007482670aa651408e736f00c4796ce01" => :el_capitan
+    sha256 "aab3e33761e9db3c4e5cceb8769edca70f2eb618e0bed5e3658ab2fdc3bae2ac" => :yosemite
   end
 
   depends_on "erlang"
-
-  # Prevents build failure "Error in process <0.49.0> with exit value ..."
-  # Reported 18 Oct 2016 in PR "Fix parallelized builds"
-  patch do
-    url "https://github.com/rvirding/lfe/pull/292.patch"
-    sha256 "966db8bc444273f3a790c7eaa0b35c7c8d0a407d5c2c3039674f1c4d9ab5a758"
-  end
 
   def install
     system "make"

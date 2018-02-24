@@ -1,8 +1,8 @@
 class Akka < Formula
   desc "Toolkit for building concurrent, distributed, and fault tolerant apps"
-  homepage "http://akka.io/"
-  url "https://downloads.typesafe.com/akka/akka_2.11-2.4.10.zip"
-  sha256 "2410405a11a943444cf1f574f74722b5cbabf4c9fcf8672eb7880c13dab972d8"
+  homepage "https://github.com/akka/akka"
+  url "https://downloads.typesafe.com/akka/akka_2.11-2.4.17.zip"
+  sha256 "d5a9d3b4235a917173438fa5711d7af1bd100dd98f7567249390e202d5f06316"
 
   bottle :unneeded
 
@@ -28,7 +28,7 @@ class Akka < Formula
   end
 
   test do
-    (testpath/"src/main/java/sample/hello/HelloWorld.java").write <<-EOS.undent
+    (testpath/"src/main/java/sample/hello/HelloWorld.java").write <<~EOS
       package sample.hello;
 
       import akka.actor.Props;
@@ -55,7 +55,7 @@ class Akka < Formula
         }
       }
     EOS
-    (testpath/"src/main/java/sample/hello/Greeter.java").write <<-EOS.undent
+    (testpath/"src/main/java/sample/hello/Greeter.java").write <<~EOS
       package sample.hello;
 
       import akka.actor.UntypedActor;
@@ -77,7 +77,7 @@ class Akka < Formula
 
       }
     EOS
-    (testpath/"src/main/java/sample/hello/Main.java").write <<-EOS.undent
+    (testpath/"src/main/java/sample/hello/Main.java").write <<~EOS
       package sample.hello;
 
       public class Main {

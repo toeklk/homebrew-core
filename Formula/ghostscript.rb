@@ -1,33 +1,18 @@
 class Ghostscript < Formula
   desc "Interpreter for PostScript and PDF"
-  homepage "http://www.ghostscript.com/"
-
-  stable do
-    url "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs919/ghostscript-9.19.tar.gz"
-    sha256 "cf3c0dce67db1557a87366969945f9c5235887989c0b585e037af366dc035989"
-
-    # http://djvu.sourceforge.net/gsdjvu.html
-    # Can't get 1.8 to compile, but feel free to open PR if you can.
-    resource "djvu" do
-      url "https://downloads.sourceforge.net/project/djvu/GSDjVu/1.6/gsdjvu-1.6.tar.gz"
-      sha256 "6236b14b79345eda87cce9ba22387e166e7614cca2ca86b1c6f0d611c26005df"
-    end
-  end
+  homepage "https://www.ghostscript.com/"
+  url "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs922/ghostscript-9.22.tar.xz"
+  sha256 "c1f862e6f40f997dbe3feba89355e8cb05d55818994e10f4932b0dd9b627d1bb"
 
   bottle do
-    sha256 "70d001f1d73c2e270dc2a0d438f038150e091118dabb12a1edb36843c781e10c" => :sierra
-    sha256 "eeca121b96926b72e10f2bc75be45a2739ce9b57eba5ebbc6eac945db01aa542" => :el_capitan
-    sha256 "85459cef5b92ffb8ee30ab6af1a0649b2698716b4a9c23f12cf39f4435b3e542" => :yosemite
-    sha256 "bbf4584ed19c2c38530c9b1e77c543370a77e441b759f519bb8b80fa9b41ebec" => :mavericks
+    sha256 "dec4d99345c0d402cd78e12fc2b6d1c2efa9fc9e207480bb665b60cbcfef1c21" => :high_sierra
+    sha256 "45a8136781fc46574f134114b7db8417994406c81160211ad4e7252b17154810" => :sierra
+    sha256 "f935b2fc2d7a5dc580e530f4e571bca53ed2423633461e1a8c34957990258adf" => :el_capitan
   end
 
   head do
     # Can't use shallow clone. Doing so = fatal errors.
-    url "git://git.ghostscript.com/ghostpdl.git", :shallow => false
-
-    resource "djvu" do
-      url "git://git.code.sf.net/p/djvu/gsdjvu-git"
-    end
+    url "https://git.ghostscript.com/ghostpdl.git", :shallow => false
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
@@ -36,11 +21,8 @@ class Ghostscript < Formula
 
   patch :DATA # Uncomment macOS-specific make vars
 
-  option "with-djvu", "Build drivers for DjVU file format"
-
   depends_on "pkg-config" => :build
   depends_on "little-cms2"
-  depends_on "djvulibre" if build.with? "djvu"
   depends_on :x11 => :optional
 
   # https://sourceforge.net/projects/gs-fonts/
@@ -50,21 +32,13 @@ class Ghostscript < Formula
   end
 
   def install
-    if build.with? "djvu"
-      resource("djvu").stage do
-        inreplace "gsdjvu.mak", "$(GL", "$(DEV"
-        (buildpath+"devices").install "gdevdjvu.c"
-        (buildpath+"lib").install "ps2utf8.ps"
-        ENV["EXTRA_INIT_FILES"] = "ps2utf8.ps"
-        (buildpath/"devices/contrib.mak").open("a") { |f| f.write(File.read("gsdjvu.mak")) }
-      end
-    end
-
     args = %W[
       --prefix=#{prefix}
       --disable-cups
       --disable-compile-inits
       --disable-gtk
+      --disable-fontconfig
+      --without-libidn
     ]
     args << "--without-x" if build.without? "x11"
 
@@ -72,12 +46,6 @@ class Ghostscript < Formula
       system "./autogen.sh", *args
     else
       system "./configure", *args
-    end
-
-    if build.with? "djvu"
-      inreplace "Makefile" do |s|
-        s.change_make_var!("DEVICE_DEVS17", "$(DD)djvumask.dev $(DD)djvusep.dev")
-      end
     end
 
     # Install binaries and libraries

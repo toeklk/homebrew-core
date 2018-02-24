@@ -1,12 +1,13 @@
 class Lsh < Formula
   desc "GNU implementation of the Secure Shell (SSH) protocols"
   homepage "https://www.lysator.liu.se/~nisse/lsh/"
-  url "https://ftpmirror.gnu.org/lsh/lsh-2.1.tar.gz"
-  mirror "https://ftp.gnu.org/gnu/lsh/lsh-2.1.tar.gz"
+  url "https://ftp.gnu.org/gnu/lsh/lsh-2.1.tar.gz"
+  mirror "https://ftpmirror.gnu.org/lsh/lsh-2.1.tar.gz"
   sha256 "8bbf94b1aa77a02cac1a10350aac599b7aedda61881db16606debeef7ef212e3"
   revision 1
 
   bottle do
+    sha256 "2db1726494a9ff362a3fd9644e6a966b9762ea62f921ecc217c5ca842f67864c" => :high_sierra
     sha256 "ec3239a890387f33979336941411a1fb9c26696ecaf1f3edd519c89b3f63f848" => :sierra
     sha256 "0fdcabfd979222e6156220f78077e404da9e43b4ce958c606b6b7bd52bb612d4" => :el_capitan
     sha256 "7250d308a5d19b50d44ff99c1863aac5e8123ca0733bfadd2c57c702a294cef7" => :yosemite

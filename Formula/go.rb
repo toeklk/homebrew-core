@@ -1,29 +1,27 @@
 class Go < Formula
-  desc "The Go programming language"
+  desc "Open source programming language to build simple/reliable/efficient software"
   homepage "https://golang.org"
 
   stable do
-    url "https://storage.googleapis.com/golang/go1.7.3.src.tar.gz"
-    mirror "https://fossies.org/linux/misc/go1.7.3.src.tar.gz"
-    version "1.7.3"
-    sha256 "79430a0027a09b0b3ad57e214c4c1acfdd7af290961dd08d322818895af1ef44"
+    url "https://dl.google.com/go/go1.10.src.tar.gz"
+    mirror "https://fossies.org/linux/misc/go1.10.src.tar.gz"
+    sha256 "f3de49289405fda5fd1483a8fe6bd2fa5469e005fd567df64485c4fa000c7f24"
 
     go_version = version.to_s.split(".")[0..1].join(".")
     resource "gotools" do
       url "https://go.googlesource.com/tools.git",
-          :branch => "release-branch.go#{go_version}",
-          :revision => "26c35b4dcf6dfcb924e26828ed9f4d028c5ce05a"
+          :branch => "release-branch.go#{go_version}"
     end
   end
 
   bottle do
-    sha256 "225c78822090415a2e6dade491086b4277650cb2ea7b14f71afcc5288251d422" => :sierra
-    sha256 "0174cd69ed115c6c5290cdcab5d0bb1320ac189650ce866dbb65a9d8faf88c89" => :el_capitan
-    sha256 "70b606845a76a8654594bf23ecc7e6e41b5f3553580776279b1a3045fecf2c8b" => :yosemite
+    sha256 "79739d1c83ee38cfeae45e38a75b4caefed5d813504aadfe5a9de8a3eedb1fde" => :high_sierra
+    sha256 "c17cc09f1fe9248f830e7b9dfef30f4855e828d00f991612f18dcac1fda07ed9" => :sierra
+    sha256 "ba59a6ed0c5bb01df3fda5eaa2566c079aaf021518725e7d163889938f33aec7" => :el_capitan
   end
 
   head do
-    url "https://github.com/golang/go.git"
+    url "https://go.googlesource.com/go.git"
 
     resource "gotools" do
       url "https://go.googlesource.com/tools.git"
@@ -31,13 +29,11 @@ class Go < Formula
   end
 
   option "without-cgo", "Build without cgo (also disables race detector)"
-  option "without-godoc", "godoc will not be installed for you"
   option "without-race", "Build without race detector"
 
   depends_on :macos => :mountain_lion
 
-  # Should use the last stable binary release to bootstrap.
-  # More explicitly, leave this at 1.7 when 1.7.1 is released.
+  # Don't update this unless this version cannot bootstrap the new version.
   resource "gobootstrap" do
     url "https://storage.googleapis.com/golang/go1.7.darwin-amd64.tar.gz"
     version "1.7"
@@ -45,15 +41,13 @@ class Go < Formula
   end
 
   def install
-    ENV.permit_weak_imports
-
     (buildpath/"gobootstrap").install resource("gobootstrap")
     ENV["GOROOT_BOOTSTRAP"] = buildpath/"gobootstrap"
 
     cd "src" do
       ENV["GOROOT_FINAL"] = libexec
       ENV["GOOS"]         = "darwin"
-      ENV["CGO_ENABLED"]  = build.with?("cgo") ? "1" : "0"
+      ENV["CGO_ENABLED"]  = "0" if build.without?("cgo")
       system "./make.bash", "--no-clean"
     end
 
@@ -68,23 +62,20 @@ class Go < Formula
       system bin/"go", "install", "-race", "std"
     end
 
-    if build.with? "godoc"
-      ENV.prepend_path "PATH", bin
-      ENV["GOPATH"] = buildpath
-      (buildpath/"src/golang.org/x/tools").install resource("gotools")
-
-      if build.with? "godoc"
-        cd "src/golang.org/x/tools/cmd/godoc/" do
-          system "go", "build"
-          (libexec/"bin").install "godoc"
-        end
-        bin.install_symlink libexec/"bin/godoc"
-      end
+    # Build and install godoc
+    ENV.prepend_path "PATH", bin
+    ENV["GOPATH"] = buildpath
+    (buildpath/"src/golang.org/x/tools").install resource("gotools")
+    cd "src/golang.org/x/tools/cmd/godoc/" do
+      system "go", "build"
+      (libexec/"bin").install "godoc"
     end
+    bin.install_symlink libexec/"bin/godoc"
   end
 
-  def caveats; <<-EOS.undent
-    As of go 1.2, a valid GOPATH is required to use the `go get` command:
+  def caveats; <<~EOS
+    A valid GOPATH is required to use the `go get` command.
+    If $GOPATH is not specified, $HOME/go will be used by default:
       https://golang.org/doc/code.html#GOPATH
 
     You may wish to add the GOROOT-based install location to your PATH:
@@ -93,23 +84,27 @@ class Go < Formula
   end
 
   test do
-    (testpath/"hello.go").write <<-EOS.undent
-    package main
+    (testpath/"hello.go").write <<~EOS
+      package main
 
-    import "fmt"
+      import "fmt"
 
-    func main() {
-        fmt.Println("Hello World")
-    }
+      func main() {
+          fmt.Println("Hello World")
+      }
     EOS
     # Run go fmt check for no errors then run the program.
     # This is a a bare minimum of go working as it uses fmt, build, and run.
     system bin/"go", "fmt", "hello.go"
     assert_equal "Hello World\n", shell_output("#{bin}/go run hello.go")
 
-    if build.with? "godoc"
-      assert File.exist?(libexec/"bin/godoc")
-      assert File.executable?(libexec/"bin/godoc")
+    # godoc was installed
+    assert_predicate libexec/"bin/godoc", :exist?
+    assert_predicate libexec/"bin/godoc", :executable?
+
+    if build.with? "cgo"
+      ENV["GOOS"] = "freebsd"
+      system bin/"go", "build", "hello.go"
     end
   end
 end

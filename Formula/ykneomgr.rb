@@ -3,13 +3,13 @@ class Ykneomgr < Formula
   homepage "https://developers.yubico.com/libykneomgr/"
   url "https://developers.yubico.com/libykneomgr/Releases/libykneomgr-0.1.8.tar.gz"
   sha256 "2749ef299a1772818e63c0ff5276f18f1694f9de2137176a087902403e5df889"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "bd8c3ef8fc604446ee754af14e96c91e087f8b50419c4048bd2ea441dd6b9db2" => :sierra
-    sha256 "56a5439c432c82b45b9722f22157b7194ed5604d0e67ab4189a9a07f2abf0325" => :el_capitan
-    sha256 "cd80f8068e58d2c4982198eb398a85e816f772306efd7263e10a38d680c67190" => :yosemite
-    sha256 "8c9a67b67b45f981fec4f6fa3a8a512e2d39055866b8c3df941fc16bcbf5c4c0" => :mavericks
+    sha256 "256291cea42d30f95754e2203cec73a7acef9436be3ad0040ce7d966fc9d8470" => :high_sierra
+    sha256 "7917d4068d2c68d3309b32ff443622c0540829a9e3cf0053913697c321c74067" => :sierra
+    sha256 "4ee15391465d785920dde2347b716af4f9c2aa9b38faf8021d7d18f041b7c277" => :el_capitan
   end
 
   head do
@@ -20,15 +20,11 @@ class Ykneomgr < Formula
     depends_on "gengetopt" => :build
   end
 
-  option :universal
-
   depends_on "help2man" => :build
   depends_on "pkg-config" => :build
   depends_on "libzip"
 
   def install
-    ENV.universal_binary if build.universal?
-
     system "make", "autoreconf" if build.head?
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",

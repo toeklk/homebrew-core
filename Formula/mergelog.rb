@@ -1,11 +1,12 @@
 class Mergelog < Formula
   desc "Merges httpd logs from web servers behind round-robin DNS"
-  homepage "http://mergelog.sourceforge.net/"
+  homepage "https://mergelog.sourceforge.io/"
   url "https://downloads.sourceforge.net/mergelog/mergelog-4.5.tar.gz"
   sha256 "fd97c5b9ae88fbbf57d3be8d81c479e0df081ed9c4a0ada48b1ab8248a82676d"
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "87f4253bd8e0d556dadfabcb376d4f138d6d07a5884c331074692b21cff16397" => :high_sierra
     sha256 "8f74bd002165acfb3009054be72f89794c11427194bb4bda229ea1c55fe0f4fb" => :sierra
     sha256 "70f188fb9d576b86d968a82bc5b19daabeb17660a2fa155b31b1006d27767deb" => :el_capitan
     sha256 "0c8abf1099d637be9dc4398c6fdde6cfa8a09c71fdb89546b546913a1a9d3868" => :yosemite

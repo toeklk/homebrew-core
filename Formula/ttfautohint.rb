@@ -1,15 +1,14 @@
 class Ttfautohint < Formula
   desc "Auto-hinter for TrueType fonts"
   homepage "https://www.freetype.org/ttfautohint"
-  url "https://downloads.sourceforge.net/project/freetype/ttfautohint/1.5/ttfautohint-1.5.tar.gz"
-  sha256 "644fe721e9e7fe3390ae1f66d40c74e4459fa539d436f4e0f8635c432683efd1"
+  url "https://downloads.sourceforge.net/project/freetype/ttfautohint/1.8.1/ttfautohint-1.8.1.tar.gz"
+  sha256 "12df5120be194d2731e2a3c596892aa218681614c4f924e24279baf69bb7d4f9"
 
   bottle do
     cellar :any
-    sha256 "04406a2745534fb142976a17d6c00df057c941382b149fead95ec1ff012c4ddf" => :sierra
-    sha256 "18fe5769eed8332423805f93571e8b7dbdc26a7b51d1912aec2b3d76d40f59b5" => :el_capitan
-    sha256 "ae60250c59eb3751cc7e2c76ab319c5bef81d916bf4a81fb2428b7547177513f" => :yosemite
-    sha256 "8184c3cbfbae95edd6ff56edeb0a76f2ddc3eeef38093fb9a83a39a944307359" => :mavericks
+    sha256 "7f2882b40456aa63032c9cc0cc605867fe1b57b483f67ee755aa2be6a93908ea" => :high_sierra
+    sha256 "538f6817293c6f4db3068aec0b946e27af6b2a74a8bae8e738d0f7ece568ed6f" => :sierra
+    sha256 "2123fde31eaeb430de611383e8107862f135e3feeaba5b2e2e2c99fd0292e61c" => :el_capitan
   end
 
   head do
@@ -21,10 +20,15 @@ class Ttfautohint < Formula
     depends_on "libtool" => :build
   end
 
+  deprecated_option "with-qt5" => "with-qt"
+
+  option "with-qt", "Build ttfautohintGUI also"
+
   depends_on "pkg-config" => :build
   depends_on "freetype"
   depends_on "libpng"
   depends_on "harfbuzz"
+  depends_on "qt" => :optional
 
   def install
     args = %W[
@@ -32,8 +36,9 @@ class Ttfautohint < Formula
       --disable-silent-rules
       --prefix=#{prefix}
       --without-doc
-      --without-qt
     ]
+
+    args << "--without-qt" if build.without? "qt"
 
     system "./bootstrap" if build.head?
     system "./configure", *args
@@ -41,6 +46,10 @@ class Ttfautohint < Formula
   end
 
   test do
-    system "#{bin}/ttfautohint", "-V"
+    if build.with? "qt"
+      system "#{bin}/ttfautohintGUI", "-V"
+    else
+      system "#{bin}/ttfautohint", "-V"
+    end
   end
 end

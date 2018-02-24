@@ -1,17 +1,16 @@
 class Libgit2 < Formula
   desc "C library of Git core methods that is re-entrant and linkable"
   homepage "https://libgit2.github.com/"
-  url "https://github.com/libgit2/libgit2/archive/v0.24.3.tar.gz"
-  sha256 "0a24e6a51dbf3beecb0ebcd2cafb1e09b1212e910be6477b5de03c84a5586754"
+  url "https://github.com/libgit2/libgit2/archive/v0.26.0.tar.gz"
+  sha256 "6a62393e0ceb37d02fe0d5707713f504e7acac9006ef33da1e88960bd78b6eac"
   head "https://github.com/libgit2/libgit2.git"
 
   bottle do
-    sha256 "8beb1cb03a4c3da66753054cce18f80939e2b0a15934345622657e9f77133010" => :sierra
-    sha256 "c24adf3a7f04ea099e07f869518196c2c6e1ba63aab3c4ae5b5a8ca7a32682a3" => :el_capitan
-    sha256 "b5bb829ea74f54219b131c59c53fd441145ba8507529bfd8c17003320dfa005b" => :yosemite
+    sha256 "2858f330bff072c20375d4882042123022e81237f0f3ca8382c9e3a017f514d6" => :high_sierra
+    sha256 "1cb3dac0dfc74a62e40e061c3046ce938b8c28fe0fea15e398cc4862178aa940" => :sierra
+    sha256 "8705a0cc5f73017412ce12fd87677e9b6e14781d82b6f845a64ffe84e24ecb2f" => :el_capitan
+    sha256 "f44d62f41114ee8ecba3298986cf9da5cf4b6cb44a64a9a64dd0c316938712d1" => :yosemite
   end
-
-  option :universal
 
   depends_on "pkg-config" => :build
   depends_on "cmake" => :build
@@ -23,11 +22,6 @@ class Libgit2 < Formula
     args << "-DBUILD_EXAMPLES=YES"
     args << "-DBUILD_CLAR=NO" # Don't build tests.
     args << "-DUSE_SSH=NO" if build.without? "libssh2"
-
-    if build.universal?
-      ENV.universal_binary
-      args << "-DCMAKE_OSX_ARCHITECTURES=#{Hardware::CPU.universal_archs.as_cmake_arch_flags}"
-    end
 
     mkdir "build" do
       system "cmake", "..", *args
@@ -43,7 +37,7 @@ class Libgit2 < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <git2.h>
 
       int main(int argc, char *argv[]) {

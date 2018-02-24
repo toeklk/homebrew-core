@@ -1,25 +1,31 @@
 class Softhsm < Formula
   desc "Cryptographic store accessible through a PKCS#11 interface"
   homepage "https://www.opendnssec.org/softhsm/"
-  url "https://dist.opendnssec.org/source/softhsm-2.0.0.tar.gz"
-  sha256 "eae8065f6c472af24f4c056d6728edda0fd34306f41a818697f765a6a662338d"
+  url "https://dist.opendnssec.org/source/softhsm-2.3.0.tar.gz"
+  sha256 "5ed604c89a3a6ef9d7d1ee92c28a2c4b3cd1f86f302c808e2d12c8f39aa2c127"
 
   bottle do
-    sha256 "b92bf303a9b492a5258fe308a42b851954aab72b37a315a250d43b81a2185551" => :sierra
-    sha256 "651c97cafaf2f9c54cc32772d8d664cc91be0f7ad21f8d5325334259a9d55466" => :el_capitan
-    sha256 "6fc11217ed26c6db4c219c1bca0f264124cd0b0e7f455bcd670d2c2d481a0b90" => :yosemite
-    sha256 "1f4596c4b604987a823fb1d97631e628889fca6c1bbdba4075a0d82be6b04941" => :mavericks
-    sha256 "760f9931d96b3cea3d63be22a6f950087544f56c0810b86054099efe43fb00de" => :mountain_lion
+    sha256 "2f05fba4b689174ca866f918bbf654f6e5a712c6434a8b05214c329ab0ac0306" => :high_sierra
+    sha256 "9c13086544e0a554bfe2a687cfa0b05961e84260407282f4c4198dfb8dc6bc04" => :sierra
+    sha256 "066d911caa4a4961939403d8f08c1862a947046e5bbc042edeb9ce9a37f8116e" => :el_capitan
+    sha256 "53cad8948c14774fc54d21c241225f4d9a32bc6c98dfc74b7888420a4c0290be" => :yosemite
   end
 
-  depends_on "botan"
+  depends_on "openssl"
 
   def install
-    system "./configure", "--disable-debug",
-                          "--disable-dependency-tracking",
+    system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
-                          "--prefix=#{prefix}"
+                          "--prefix=#{prefix}",
+                          "--sysconfdir=#{etc}/softhsm",
+                          "--localstatedir=#{var}",
+                          "--with-crypto-backend=openssl",
+                          "--with-openssl=#{Formula["openssl"].opt_prefix}"
     system "make", "install"
+  end
+
+  def post_install
+    (var/"lib/softhsm/tokens").mkpath
   end
 
   test do

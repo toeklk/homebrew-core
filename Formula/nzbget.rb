@@ -1,15 +1,15 @@
 class Nzbget < Formula
   desc "Binary newsgrabber for nzb files"
-  homepage "http://nzbget.net/"
-  url "https://github.com/nzbget/nzbget/releases/download/v17.1/nzbget-17.1-src.tar.gz"
-  sha256 "4b3cf500d9bb6e9ab65b2c8451358e6c93af0368176f193eebafca17d7209c39"
-  head "https://github.com/nzbget/nzbget.git"
+  homepage "https://nzbget.net/"
+  url "https://github.com/nzbget/nzbget/releases/download/v19.1/nzbget-19.1-src.tar.gz"
+  sha256 "06df42356ac2d63bbc9f7861abe9c3216df56fa06802e09e8a50b05f4ad95ce6"
+  head "https://github.com/nzbget/nzbget.git", :branch => "develop"
 
   bottle do
-    cellar :any
-    sha256 "c5ba5c6f7045288ed4931fec0b6e49735914c3f45c5eaef1f7fbf02698f71d67" => :sierra
-    sha256 "d583653f09a83555c61b52f67c74a7f6c754e00e0556ce1da9855cbd4d957d7e" => :el_capitan
-    sha256 "11bf29190259273c4bb6de43c209743745a073bdf96f85fdc5327a8c70da4578" => :yosemite
+    sha256 "0f508d759d085ea42af708598eba3d2f589614f6025f8ca160b93c6170d5576b" => :high_sierra
+    sha256 "b2b460f1f4a850d282b3faa56a0cdc66d7d9f2072e34528fe1fc875f615e3705" => :sierra
+    sha256 "3aa8bd8510dbde22143fa6d9637d664951c4a48758c840548dcee0ce48f3b95f" => :el_capitan
+    sha256 "f9731421aa1289d62d9f30691c3e643e8548eb066d55c72511ad74d994e826e7" => :yosemite
   end
 
   depends_on "pkg-config" => :build
@@ -25,10 +25,10 @@ class Nzbget < Formula
 
   fails_with :clang do
     build 500
-    cause <<-EOS.undent
+    cause <<~EOS
       Clang older than 5.1 requires flexible array members to be POD types.
       More recent versions require only that they be trivially destructible.
-      EOS
+    EOS
   end
 
   def install
@@ -36,7 +36,8 @@ class Nzbget < Formula
 
     # Fix "ncurses library not found"
     # Reported 14 Aug 2016: https://github.com/nzbget/nzbget/issues/264
-    ENV["ncurses_CFLAGS"] = "-I/usr/include"
+    (buildpath/"brew_include").install_symlink MacOS.sdk_path/"usr/include/ncurses.h"
+    ENV["ncurses_CFLAGS"] = "-I#{buildpath}/brew_include"
     ENV["ncurses_LIBS"] = "-L/usr/lib -lncurses"
 
     # Tell configure to use OpenSSL
@@ -44,7 +45,7 @@ class Nzbget < Formula
                           "--prefix=#{prefix}",
                           "--with-tlslib=OpenSSL"
     system "make"
-    ENV.j1
+    ENV.deparallelize
     system "make", "install"
     pkgshare.install_symlink "nzbget.conf" => "webui/nzbget.conf"
 
@@ -58,7 +59,7 @@ class Nzbget < Formula
 
   plist_options :manual => "nzbget"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

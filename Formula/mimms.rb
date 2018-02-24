@@ -1,4 +1,6 @@
 class Mimms < Formula
+  include Language::Python::Virtualenv
+
   desc "Mms stream downloader"
   homepage "https://savannah.nongnu.org/projects/mimms"
   url "https://launchpad.net/mimms/trunk/3.2.1/+download/mimms-3.2.1.tar.bz2"
@@ -6,12 +8,14 @@ class Mimms < Formula
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "24e4df14c313ddf76122bef62c9eb68d12ef5e7cc4cfe7f6c9effa2eb65710ba" => :el_capitan
-    sha256 "c260595a5f7382b7665b5a1e943a7ad72d781d0777b6b31a0c2f6a8a96ae95af" => :yosemite
-    sha256 "cd2bcde21ce30010034d006883fc72b02795e0e5f544294c0d0bf275264e231b" => :mavericks
+    rebuild 1
+    sha256 "c3e7cc6b99acb9af2a0e80029f0f0e7e4714430e21af830ee5ec59cbd6c1e447" => :high_sierra
+    sha256 "a594aa43b8705e1fd8945ba78b9374eb82c805cc75e92a4ea10375fb8b443529" => :sierra
+    sha256 "9996da3980f7307ef745866b671fc56045dc951ff48333ea4e121acaa2d476ae" => :el_capitan
+    sha256 "88b2e83cfdf9abca4ff712bddacb76611ce29aa2c58218c05e8abf3ed7d0be2b" => :yosemite
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "libmms"
 
   # Switch shared library loading to Mach-O naming convention (.dylib)
@@ -19,9 +23,7 @@ class Mimms < Formula
   patch :DATA
 
   def install
-    ENV["PYTHONPATH"] = lib+"python2.7/site-packages"
-    system "python", "setup.py", "install", "--prefix=#{prefix}"
-    bin.env_script_all_files(libexec+"bin", :PYTHONPATH => ENV["PYTHONPATH"])
+    virtualenv_install_with_resources
   end
 
   test do

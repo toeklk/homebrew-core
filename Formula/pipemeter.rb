@@ -6,6 +6,7 @@ class Pipemeter < Formula
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "977077866b51a7c0620fe036431ea207b72d38bc383422d682dbfde40a90d6a6" => :high_sierra
     sha256 "19c2d3933e5d0ac8e80559ae77ea09ad83bb8746ebf313d4cdd8a30374eadaa3" => :sierra
     sha256 "bf99d50927a1277c1a481af0eea25314dfbd1449dbd1394368f7a933da367e9a" => :el_capitan
     sha256 "cee0b494c5f7647d0c597e90dbc8be2c7b759d53a12cd87f89f9620b9260c3ac" => :yosemite
@@ -27,6 +28,6 @@ class Pipemeter < Formula
   end
 
   test do
-    assert_match "3.00B", pipe_output("pipemeter -r 2>&1 >/dev/null", "foo", 0)
+    assert_match "3.00B", pipe_output("#{bin}/pipemeter -r 2>&1 >/dev/null", "foo", 0)
   end
 end

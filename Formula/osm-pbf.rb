@@ -3,13 +3,14 @@ class OsmPbf < Formula
   homepage "https://wiki.openstreetmap.org/wiki/PBF_Format"
   url "https://github.com/scrosby/OSM-binary/archive/v1.3.3.tar.gz"
   sha256 "a109f338ce6a8438a8faae4627cd08599d0403b8977c185499de5c17b92d0798"
-  revision 2
+  revision 4
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "ee2d7681e16f0931db87dd6b02b6c9f100ca2f30c7ae241f8f59cd60f1f4ca62" => :sierra
-    sha256 "adc37e7c306023ed08d729760b2296c205feb4de9c2aaa17ece81d3067da2b7c" => :el_capitan
-    sha256 "0b8aeff1975a0cdd51b835a378ae1f93487ad4e12fbc9f73ccb27e0413b4d768" => :yosemite
+    sha256 "b3e9e0d80e66fd758e6b27e3956564315265ea86a3acacd724e11ff9b0a41a0f" => :high_sierra
+    sha256 "5a8c5f67cbaf2fca7171faeeeafd535fe16f5f1cb3399bed97e67c371b2cdf7b" => :sierra
+    sha256 "c38b6254cdbb12ab370e807d8c6dcd756e081ab95b684ea5efad449238e52f00" => :el_capitan
+    sha256 "2aa7a626188511fe06efa26f99b6d438391c7299ce7026ca08fa4c4069d6cc03" => :yosemite
   end
 
   depends_on "protobuf"

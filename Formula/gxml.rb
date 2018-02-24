@@ -1,15 +1,16 @@
 class Gxml < Formula
   desc "GObject-based XML DOM API"
   homepage "https://wiki.gnome.org/GXml"
-  url "https://download.gnome.org/sources/gxml/0.12/gxml-0.12.0.tar.xz"
-  sha256 "f9310d81078df031c8a5defc90be814a4666e641fb242cd3f4b6f3b6706fb44d"
+  url "https://download.gnome.org/sources/gxml/0.16/gxml-0.16.2.tar.xz"
+  sha256 "e2c68c2a59c351066469cbf93ccae51c796f49e0d48639aed72af39c544dcef3"
 
   bottle do
-    sha256 "bfa5e9b306172cfebff6f082211097e4dd58d2ff38e539325b5bb2eb4f64e902" => :sierra
-    sha256 "311b442c57d36bce2236c3efd31be41bfbee6e1df36d6ebb3c070e7b8cfe9165" => :el_capitan
-    sha256 "39e9cbb51acb3e05455a4e7bef8f0bb0653d656c322532deb5186ff9bb8731bd" => :yosemite
+    sha256 "f620b6f5829f81e5765c1a85b9b5e07f005616829152ca63b9207a085f860671" => :high_sierra
+    sha256 "45546962152f60be6fd37f8fa6a1606d7756db29888394b5b4b8e8320607107a" => :sierra
+    sha256 "8c1c8d5fded334e196facb009f5ae73df785816a421c940f99565d730643a12e" => :el_capitan
   end
 
+  depends_on "gtk-doc" => :build
   depends_on "pkg-config" => :build
   depends_on "intltool" => :build
   depends_on "vala" => :build
@@ -40,7 +41,7 @@ class Gxml < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gxml/gxml.h>
 
       int main(int argc, char *argv[]) {
@@ -57,7 +58,7 @@ class Gxml < Formula
       -I#{libxml2.opt_include}/libxml2
       -I#{glib.opt_include}/glib-2.0
       -I#{glib.opt_lib}/glib-2.0/include
-      -I#{include}/gxml-0.12
+      -I#{include}/gxml-0.16
       -I#{libgee.opt_include}/gee-0.8
       -D_REENTRANT
       -L#{gettext.opt_lib}
@@ -69,7 +70,7 @@ class Gxml < Formula
       -lgio-2.0
       -lglib-2.0
       -lgobject-2.0
-      -lgxml-0.12
+      -lgxml-0.16
       -lintl
       -lxml2
     ]

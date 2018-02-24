@@ -1,13 +1,13 @@
 class Mono < Formula
   desc "Cross platform, open source .NET development framework"
-  homepage "http://www.mono-project.com/"
-  url "https://download.mono-project.com/sources/mono/mono-4.6.1.5.tar.bz2"
-  sha256 "3871ee72bdfc2ea5d636ffff22cf49ae6bac7c4a4f3d687214dd8ac236bbf7c3"
+  homepage "https://www.mono-project.com/"
+  url "https://download.mono-project.com/sources/mono/mono-5.4.1.6.tar.bz2"
+  sha256 "bdfda0fe9ad5ce20bb2cf9e9bf28fed40f324141297479824e1f65d97da565df"
 
   bottle do
-    sha256 "8a28d69e45374c53f375fa2e7fa96aae8f9b8db3ea970d33cb01492e9874e3a9" => :sierra
-    sha256 "7065d9c83700493e586f09d71366e64741493102fc6338ab0cea4f8ceddf978f" => :el_capitan
-    sha256 "6899f853419e379c059f56ea7fbbb815a349deabced62c83966e9790228b0b96" => :yosemite
+    sha256 "4180790335196a33a716ddb0bb1b6ba6a3487babedd8baac6de2458aff038906" => :high_sierra
+    sha256 "8ae5763ad3b6e84ac078ca83f729fe47e5f8d048a87ab0a5892c2b22b4c5854a" => :sierra
+    sha256 "8476cab8863aabdd7c64bff4a31b57aed56192baa71383b8f3ffcc8f41a45fb5" => :el_capitan
   end
 
   # xbuild requires the .exe files inside the runtime directories to
@@ -26,14 +26,14 @@ class Mono < Formula
   depends_on "automake" => :build
   depends_on "autoconf" => :build
   depends_on "pkg-config" => :build
+  depends_on "cmake" => :build
 
   conflicts_with "xsd", :because => "both install `xsd` binaries"
-  conflicts_with "czmq", :because => "both install `makecert` binaries"
 
   resource "fsharp" do
     url "https://github.com/fsharp/fsharp.git",
-        :tag => "4.0.1.13",
-        :revision => "4194b3bbb506a18f48e0f7e39e2c3fb0d7c8b566"
+        :tag => "4.1.23",
+        :revision => "35a4a5b1f26927259c3213465a47b27ffcd5cb4d"
   end
 
   def install
@@ -65,7 +65,7 @@ class Mono < Formula
     end
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     To use the assemblies from other formulae you need to set:
       export MONO_GAC_PREFIX="#{HOMEBREW_PREFIX}"
     Note that the 'mono' formula now includes F#. If you have
@@ -76,7 +76,7 @@ class Mono < Formula
   test do
     test_str = "Hello Homebrew"
     test_name = "hello.cs"
-    (testpath/test_name).write <<-EOS.undent
+    (testpath/test_name).write <<~EOS
       public class Hello1
       {
          public static void Main()
@@ -90,7 +90,7 @@ class Mono < Formula
     assert_match test_str, output.strip
 
     # Tests that xbuild is able to execute lib/mono/*/mcs.exe
-    (testpath/"test.csproj").write <<-EOS.undent
+    (testpath/"test.csproj").write <<~EOS
       <?xml version="1.0" encoding="utf-8"?>
       <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
         <PropertyGroup>
@@ -108,11 +108,14 @@ class Mono < Formula
     if build.with? "fsharp"
       # Test that fsharpi is working
       ENV.prepend_path "PATH", bin
-      output = pipe_output("#{bin}/fsharpi", "printfn \"#{test_str}\"; exit 0")
+      (testpath/"test.fsx").write <<~EOS
+        printfn "#{test_str}"; 0
+      EOS
+      output = pipe_output("#{bin}/fsharpi test.fsx")
       assert_match test_str, output
 
       # Tests that xbuild is able to execute fsc.exe
-      (testpath/"test.fsproj").write <<-EOS.undent
+      (testpath/"test.fsproj").write <<~EOS
         <?xml version="1.0" encoding="utf-8"?>
         <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
           <PropertyGroup>
@@ -120,7 +123,6 @@ class Mono < Formula
             <SchemaVersion>2.0</SchemaVersion>
             <ProjectGuid>{B6AB4EF3-8F60-41A1-AB0C-851A6DEB169E}</ProjectGuid>
             <OutputType>Exe</OutputType>
-            <DefineConstants>TRACE</DefineConstants>
             <FSharpTargetsPath>$(MSBuildExtensionsPath32)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\FSharp\\Microsoft.FSharp.Targets</FSharpTargetsPath>
           </PropertyGroup>
           <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
@@ -134,7 +136,7 @@ class Mono < Formula
           </ItemGroup>
         </Project>
       EOS
-      (testpath/"Main.fs").write <<-EOS.undent
+      (testpath/"Main.fs").write <<~EOS
         [<EntryPoint>]
         let main _ = printfn "#{test_str}"; 0
       EOS

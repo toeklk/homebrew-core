@@ -1,25 +1,25 @@
 class Fftw < Formula
   desc "C routines to compute the Discrete Fourier Transform"
   homepage "http://www.fftw.org"
-  url "http://www.fftw.org/fftw-3.3.5.tar.gz"
-  sha256 "8ecfe1b04732ec3f5b7d279fdb8efcad536d555f9d1e8fabd027037d45ea8bcf"
+  url "http://fftw.org/fftw-3.3.7.tar.gz"
+  sha256 "3b609b7feba5230e8f6dd8d245ddbefac324c5a6ae4186947670d9ac2cd25573"
+  revision 1
 
   bottle do
     cellar :any
-    sha256 "6732254af0d37777ffd9ae7a4dc16d672def6656cdd85c4d8f1e96a53571e123" => :sierra
-    sha256 "8961b3780e24d67c520deccf222aa12ce95f41eba1b6d7a7181e83bda9e4a99e" => :el_capitan
-    sha256 "d7358e5c3e9426c245425ab0d4fe29659d7bdb41158bedb43ab0c2433b165c69" => :yosemite
-    sha256 "f31992664fb2c54ae917c6e31a44e4a798b4ff062fbc66e50fcf7f56c418c791" => :mavericks
+    sha256 "9b75b4f667c2346cbdd285b9c499ad5bb8f4662a326061ed8718142894147eab" => :high_sierra
+    sha256 "d504285d5ce7d4510f14274e4738824d197c60ab4cb56d08a16284f368f8ae74" => :sierra
+    sha256 "591d1ad247fc19a1b0881dc4454c88bcf30dca774ac5f57e9f25d8bfa50724f6" => :el_capitan
   end
 
-  option "with-fortran", "Enable Fortran bindings"
-  option :universal
   option "with-mpi", "Enable MPI parallel transforms"
   option "with-openmp", "Enable OpenMP parallel transforms"
+  option "without-fortran", "Disable Fortran bindings"
 
-  depends_on :fortran => :optional
-  depends_on :mpi => [:cc, :optional]
-  needs :openmp if build.with? "openmp"
+  depends_on "open-mpi" if build.with? "mpi"
+
+  depends_on "gcc" if build.with?("fortran") || build.with?("openmp")
+  fails_with :clang if build.with? "openmp"
 
   def install
     args = ["--enable-shared",
@@ -34,8 +34,6 @@ class Fftw < Formula
     args << "--disable-fortran" if build.without? "fortran"
     args << "--enable-mpi" if build.with? "mpi"
     args << "--enable-openmp" if build.with? "openmp"
-
-    ENV.universal_binary if build.universal?
 
     # single precision
     # enable-sse2, enable-avx and enable-avx2 work for both single and double precision
@@ -62,7 +60,7 @@ class Fftw < Formula
   test do
     # Adapted from the sample usage provided in the documentation:
     # http://www.fftw.org/fftw3_doc/Complex-One_002dDimensional-DFTs.html
-    (testpath/"fftw.c").write <<-TEST_SCRIPT.undent
+    (testpath/"fftw.c").write <<~EOS
       #include <fftw3.h>
       int main(int argc, char* *argv)
       {
@@ -77,9 +75,9 @@ class Fftw < Formula
           fftw_free(in); fftw_free(out);
           return 0;
       }
-    TEST_SCRIPT
+    EOS
 
-    system ENV.cc, "-o", "fftw", "fftw.c", "-lfftw3", *ENV.cflags.to_s.split
+    system ENV.cc, "-o", "fftw", "fftw.c", "-L#{lib}", "-lfftw3", *ENV.cflags.to_s.split
     system "./fftw"
   end
 end

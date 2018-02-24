@@ -1,18 +1,18 @@
 class Googler < Formula
   desc "Google Search and News from the command-line"
   homepage "https://github.com/jarun/googler"
-  url "https://github.com/jarun/googler/archive/v2.8.tar.gz"
-  sha256 "5a9a128180992c0f6b6b7f0bd9d13191cd83cf56ff7e185fcb0e48e79740b355"
+  url "https://github.com/jarun/googler/archive/v3.5.tar.gz"
+  sha256 "55ff07648257f5d2d642d1f5d6bd682e6aa32605755d4040dac4ef787257cbea"
   head "https://github.com/jarun/googler.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "a515db8b4fe8c240d984ae6605e78c0eac54ed37c8f588bf8d863ba7cc8ad54b" => :sierra
-    sha256 "a515db8b4fe8c240d984ae6605e78c0eac54ed37c8f588bf8d863ba7cc8ad54b" => :el_capitan
-    sha256 "a515db8b4fe8c240d984ae6605e78c0eac54ed37c8f588bf8d863ba7cc8ad54b" => :yosemite
+    sha256 "e4325937b3b156751c2ee51aed335c455f63236e45c38b28b079818a9a01c4bf" => :high_sierra
+    sha256 "e4325937b3b156751c2ee51aed335c455f63236e45c38b28b079818a9a01c4bf" => :sierra
+    sha256 "e4325937b3b156751c2ee51aed335c455f63236e45c38b28b079818a9a01c4bf" => :el_capitan
   end
 
-  depends_on :python3
+  depends_on "python3"
 
   def install
     system "make", "disable-self-upgrade"

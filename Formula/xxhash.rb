@@ -1,20 +1,20 @@
 class Xxhash < Formula
   desc "Extremely fast non-cryptographic hash algorithm"
   homepage "https://github.com/Cyan4973/xxHash"
-  url "https://github.com/Cyan4973/xxHash/archive/v0.6.1.tar.gz"
-  sha256 "a940123baa6c71b75b6c02836bae2155cd2f74f7682e1a1d6f7b889f7bc9e7f8"
+  url "https://github.com/Cyan4973/xxHash/archive/v0.6.4.tar.gz"
+  sha256 "4570ccd111df6b6386502791397906bf69b7371eb209af7d41debc2f074cdb22"
+  revision 1
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "ddce071034128693298eae6ca3ee5e0e755ea8045f79b8493b0d98b997bc8db8" => :sierra
-    sha256 "221bdecb5b9a2b5833dd320ea789f05118db62d9308feec936f83348404228a1" => :el_capitan
-    sha256 "0dea56c9e511eaacecf7688edd2ce0bb73a41eb196a7722f2985f8c084dc18fb" => :yosemite
-    sha256 "30d8e9905d176797c6380bbde76954700b3ade6063c087fb9ce9dfbe8b3ccd12" => :mavericks
+    cellar :any
+    sha256 "11e7141e54a5855994b5576b4d95c95a047fde0da5ec158e41c68a6d25695413" => :high_sierra
+    sha256 "f48ea5fa26cd2554d1dd28e722302a4d9dffc0f03a6b83bc68de27aa69673729" => :sierra
+    sha256 "f6ae33c816af6f5b1e9235410937d977777872ce0656f841d9a2130248c56a26" => :el_capitan
   end
 
   def install
     system "make"
-    bin.install "xxhsum"
+    system "make", "install", "PREFIX=#{prefix}"
   end
 
   test do

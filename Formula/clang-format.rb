@@ -1,45 +1,55 @@
 class ClangFormat < Formula
   desc "Formatting tools for C, C++, Obj-C, Java, JavaScript, TypeScript"
-  homepage "http://clang.llvm.org/docs/ClangFormat.html"
-  version "2016-08-03"
+  homepage "https://clang.llvm.org/docs/ClangFormat.html"
+  version "2018-01-11"
 
   stable do
-    url "http://llvm.org/svn/llvm-project/llvm/tags/google/testing/2016-08-03/", :using => :svn
-
-    resource "clang" do
-      url "http://llvm.org/svn/llvm-project/cfe/tags/google/testing/2016-08-03/", :using => :svn
+    if MacOS.version >= :sierra
+      url "https://llvm.org/svn/llvm-project/llvm/tags/google/stable/2018-01-11/", :using => :svn
+    else
+      url "http://llvm.org/svn/llvm-project/llvm/tags/google/stable/2018-01-11/", :using => :svn
     end
 
-    resource "libcxx" do
-      url "http://llvm.org/releases/3.9.0/libcxx-3.9.0.src.tar.xz"
-      sha256 "d0b38d51365c6322f5666a2a8105785f2e114430858de4c25a86b49f227f5b06"
+    resource "clang" do
+      if MacOS.version >= :sierra
+        url "https://llvm.org/svn/llvm-project/cfe/tags/google/stable/2018-01-11/", :using => :svn
+      else
+        url "http://llvm.org/svn/llvm-project/cfe/tags/google/stable/2018-01-11/", :using => :svn
+      end
     end
   end
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "67a35cdff7ff1a4c361ce79f973ff7d5b718fd22202e5f81711d78882c3d337a" => :sierra
-    sha256 "730d8a5f7b0608dce084df537eff1c45cd1b0c12c0e2bace2f27ffcb3a86dfb8" => :el_capitan
-    sha256 "06a1aa4d1768e12d697888e829b772ced182431d20eb107817d069d0a1f91976" => :yosemite
-    sha256 "f90425f4547f526e3637f622495afd89891e29dccaf7a9a58fb8dabdaaacb29d" => :mavericks
+    sha256 "a8a1eb007f7828790a1605d2647e6848e1f9617c26c8d31bfcf56a075a20bafb" => :high_sierra
+    sha256 "b4db7e4f2623195adaa475b0d5567de7fe3c1bb70449b35888aea69136c66931" => :sierra
+    sha256 "30767fb6f85073ac7fc58a2d80135c52623d76c9f594087b489164e0df6f901c" => :el_capitan
   end
 
   head do
-    url "http://llvm.org/svn/llvm-project/llvm/trunk/", :using => :svn
-
-    resource "clang" do
-      url "http://llvm.org/svn/llvm-project/cfe/trunk/", :using => :svn
+    if MacOS.version >= :sierra
+      url "https://llvm.org/svn/llvm-project/llvm/trunk/", :using => :svn
+    else
+      url "http://llvm.org/svn/llvm-project/llvm/trunk/", :using => :svn
     end
 
-    resource "libcxx" do
-      url "http://llvm.org/releases/3.9.0/libcxx-3.9.0.src.tar.xz"
-      sha256 "d0b38d51365c6322f5666a2a8105785f2e114430858de4c25a86b49f227f5b06"
+    resource "clang" do
+      if MacOS.version >= :sierra
+        url "https://llvm.org/svn/llvm-project/cfe/trunk/", :using => :svn
+      else
+        url "http://llvm.org/svn/llvm-project/cfe/trunk/", :using => :svn
+      end
     end
   end
 
   depends_on "cmake" => :build
   depends_on "ninja" => :build
   depends_on "subversion" => :build
+
+  resource "libcxx" do
+    url "https://releases.llvm.org/5.0.0/libcxx-5.0.0.src.tar.xz"
+    sha256 "eae5981e9a21ef0decfcac80a1af584ddb064a32805f95a57c7c83a5eb28c9b1"
+  end
 
   def install
     (buildpath/"projects/libcxx").install resource("libcxx")
@@ -60,7 +70,7 @@ class ClangFormat < Formula
 
   test do
     # NB: below C code is messily formatted on purpose.
-    (testpath/"test.c").write <<-EOS
+    (testpath/"test.c").write <<~EOS
       int         main(char *args) { \n   \t printf("hello"); }
     EOS
 

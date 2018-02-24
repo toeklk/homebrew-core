@@ -1,15 +1,14 @@
 class Librem < Formula
   desc "Toolkit library for real-time audio and video processing"
   homepage "http://www.creytiv.com"
-  url "http://www.creytiv.com/pub/rem-0.4.7.tar.gz"
-  sha256 "5d084f5ee17b839680ab6b978357c095c2a85d04bdf61fa03192019e3435954e"
+  url "http://www.creytiv.com/pub/rem-0.5.2.tar.gz"
+  sha256 "fbc54e81ed4fd28a11d525f4384d06bee4c11e10975395668e8260ef0d4a64eb"
 
   bottle do
     cellar :any
-    sha256 "afaa061f5747e2b6d6991b6a4e7d10b562e62e9e643a94d6a71c2f477d74a1a7" => :sierra
-    sha256 "c7a84c2c501d6affa3860e21c266393f91d1deb4686b2e58f884f6f52b273f02" => :el_capitan
-    sha256 "39cfeb55d8c301e2cad58d361ced4e90a0ff43c6c19e335ffd84382843bdb3a1" => :yosemite
-    sha256 "e382810be23c866dbf53f20e527566b99d0cbfbd67605adb537960b79c8c6136" => :mavericks
+    sha256 "d7ded43ee81a52ebd7c845938ad7190bf91b7efaf4a547cbfd929af965a9dd81" => :high_sierra
+    sha256 "cdca7bd06d6fd9fd0eaa45db2dd5fd523ee1280ffb7d6f8fdd545839221a1688" => :sierra
+    sha256 "ffbb2918eeaecda2dc46722a77d7a03344ffe9e8c2be921c5d373f1463c407cf" => :el_capitan
   end
 
   depends_on "libre"
@@ -23,7 +22,7 @@ class Librem < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <re/re.h>
       #include <rem/rem.h>
       int main() {

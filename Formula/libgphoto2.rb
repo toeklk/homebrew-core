@@ -1,14 +1,13 @@
 class Libgphoto2 < Formula
   desc "Gphoto2 digital camera library"
   homepage "http://www.gphoto.org/proj/libgphoto2/"
-  url "https://downloads.sourceforge.net/project/gphoto/libgphoto/2.5.10/libgphoto2-2.5.10.tar.bz2"
-  sha256 "8d8668d432ba595c7466442aec2cf553bdf8782ec171291dbc65717c633a4ef2"
+  url "https://downloads.sourceforge.net/project/gphoto/libgphoto/2.5.16/libgphoto2-2.5.16.tar.bz2"
+  sha256 "e757416d1623e01a9d0d294b2e790162e434c0964f50d3b7ff1a3424b62a2906"
 
   bottle do
-    sha256 "ed0718274ed1e0508312756349688aef28ff0d0c4f130f77d704b66110334f47" => :sierra
-    sha256 "576dc15066fd0a849abac37194d820d4c61c90e00341050e239efa0d81e1be0f" => :el_capitan
-    sha256 "d8bf8c3b22dfe3c1443556a6f2a4858038ecc9b37e64c7f99df4697b38927f4e" => :yosemite
-    sha256 "ede9214875529506ee8a3537c14a5fa4685c90628d8a8241172f61cad3f48f99" => :mavericks
+    sha256 "42d67ebe5a33c3a41237fcaae5f5f89827a93e4b01da6f37becd8f59bda3d3b2" => :high_sierra
+    sha256 "f775f6c15a087e09939cf4f4514db5a3019e57cff0c16f19de8cab04a56a06d4" => :sierra
+    sha256 "4990ce77089bdb05581b0cd72fde5851a4e19df9916a46c298c50e49c6d83543" => :el_capitan
   end
 
   head do
@@ -19,8 +18,6 @@ class Libgphoto2 < Formula
     depends_on "gettext" => :build
   end
 
-  option :universal
-
   depends_on "pkg-config" => :build
   depends_on "libtool" => :run
   depends_on "libusb-compat"
@@ -28,8 +25,6 @@ class Libgphoto2 < Formula
   depends_on "libexif" => :optional
 
   def install
-    ENV.universal_binary if build.universal?
-
     system "autoreconf", "-fvi" if build.head?
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
@@ -38,14 +33,14 @@ class Libgphoto2 < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gphoto2/gphoto2-camera.h>
       int main(void) {
         Camera *camera;
         return gp_camera_new(&camera);
       }
     EOS
-    system ENV.cc, "test.c", "-lgphoto2", "-o", "test"
+    system ENV.cc, "test.c", "-L#{lib}", "-lgphoto2", "-o", "test"
     system "./test"
   end
 end

@@ -1,16 +1,25 @@
 class Itstool < Formula
   desc "Make XML documents translatable through PO files"
   homepage "http://itstool.org/"
-  url "http://files.itstool.org/itstool/itstool-2.0.2.tar.bz2"
-  sha256 "bf909fb59b11a646681a8534d5700fec99be83bb2c57badf8c1844512227033a"
-  revision 2
+  revision 1
+
+  stable do
+    url "http://files.itstool.org/itstool/itstool-2.0.4.tar.bz2"
+    sha256 "97c208b51da33e0b553e830b92655f8deb9132f8fbe9a646771f95c33226eb60"
+
+    # Upstream commit from 25 Oct 2017 "Be more careful about libxml2 memory management"
+    # See https://github.com/itstool/itstool/issues/17
+    patch do
+      url "https://github.com/itstool/itstool/commit/9b84c00.patch?full_index=1"
+      sha256 "c33f44affc27604c6a91a8ae2e992273bf588c228e635ea46d958e2c3046e9ca"
+    end
+  end
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "f1ce80023c123419edc5705d9f26a4c4d15dde6dff09c672921197f94bf7daae" => :sierra
-    sha256 "4bbeea37b4f8f887458ffae502c74306a931ffbda43c34ae0f05eb5011dffd28" => :el_capitan
-    sha256 "22b1b0163b35b35fefbea27321cea0359dba726b832cf892729825ff718add6e" => :yosemite
-    sha256 "e8e0dbf50b44a058553bc63d039809cc1d96efb8c8a8c73b5e6f9f10b568d644" => :mavericks
+    sha256 "9dc3edc35150bd1701f9107b2248a5b275d1842447aa58f77341c4af8e478d7e" => :high_sierra
+    sha256 "9dc3edc35150bd1701f9107b2248a5b275d1842447aa58f77341c4af8e478d7e" => :sierra
+    sha256 "9dc3edc35150bd1701f9107b2248a5b275d1842447aa58f77341c4af8e478d7e" => :el_capitan
   end
 
   head do
@@ -20,8 +29,8 @@ class Itstool < Formula
     depends_on "automake" => :build
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
-  depends_on "libxml2" => "with-python"
+  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "libxml2"
 
   def install
     ENV.append_path "PYTHONPATH", "#{Formula["libxml2"].opt_lib}/python2.7/site-packages"
@@ -37,7 +46,7 @@ class Itstool < Formula
   end
 
   test do
-    (testpath/"test.xml").write <<-EOS.undent
+    (testpath/"test.xml").write <<~EOS
       <tag>Homebrew</tag>
     EOS
     system bin/"itstool", "-o", "test.pot", "test.xml"

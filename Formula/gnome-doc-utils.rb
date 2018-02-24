@@ -1,28 +1,23 @@
 class GnomeDocUtils < Formula
   desc "Documentation utilities for the GNOME project"
-  homepage "https://live.gnome.org/GnomeDocUtils"
+  homepage "https://wiki.gnome.org/Projects/GnomeDocUtils"
   url "https://download.gnome.org/sources/gnome-doc-utils/0.20/gnome-doc-utils-0.20.10.tar.xz"
   sha256 "cb0639ffa9550b6ddf3b62f3b1add92fb92ab4690d351f2353cffe668be8c4a6"
+  revision 1
 
   bottle do
     cellar :any_skip_relocation
-    rebuild 1
-    sha256 "dd60bea34848049cef5c065cfd329428fbd1aca0375e65a5c50ef424a8cd8205" => :sierra
-    sha256 "dd60bea34848049cef5c065cfd329428fbd1aca0375e65a5c50ef424a8cd8205" => :el_capitan
-    sha256 "dd60bea34848049cef5c065cfd329428fbd1aca0375e65a5c50ef424a8cd8205" => :yosemite
+    sha256 "7f90a3db07a45313f84139a416127d24dc37e2e044841d70f643ec53924eecb3" => :high_sierra
+    sha256 "7f90a3db07a45313f84139a416127d24dc37e2e044841d70f643ec53924eecb3" => :sierra
+    sha256 "7f90a3db07a45313f84139a416127d24dc37e2e044841d70f643ec53924eecb3" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "intltool" => :build
-  depends_on :python
+  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "docbook"
   depends_on "gettext"
-  depends_on "libxml2" => "with-python"
-
-  fails_with :llvm do
-    build 2326
-    cause "Undefined symbols when linking"
-  end
+  depends_on "libxml2"
 
   def install
     # Find our docbook catalog
@@ -36,5 +31,9 @@ class GnomeDocUtils < Formula
     # Compilation doesn't work right if we jump straight to make install
     system "make"
     system "make", "install"
+  end
+
+  test do
+    assert_match version.to_s, shell_output("#{bin}/gnome-doc-tool --version")
   end
 end

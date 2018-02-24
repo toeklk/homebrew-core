@@ -1,42 +1,28 @@
 class Jasper < Formula
   desc "Library for manipulating JPEG-2000 images"
   homepage "https://www.ece.uvic.ca/~frodo/jasper/"
-  url "https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.28.tar.gz"
-  sha256 "e94691dc026c8c9ac26db0fc303562e93a141a4b1c9aa9a16a40b9eb345d515b"
+  url "https://github.com/mdadams/jasper/archive/version-2.0.14.tar.gz"
+  sha256 "85266eea728f8b14365db9eaf1edc7be4c348704e562bb05095b9a077cf1a97b"
 
   bottle do
-    cellar :any
-    sha256 "a9d75631f770979df6c63d9bca3537c45cc51db2df877371337395d35f24d802" => :sierra
-    sha256 "87bc77e7c58e3651780e455194d80cb8f594a903a5ccb626f4a231eb832a425c" => :el_capitan
-    sha256 "f6023e4467d3df12f916c71da84625ec4e4e2ee10c3d52bce52ad82c88e6eba5" => :yosemite
+    sha256 "086de22e8e8a01299962f3bea5374c90490b66e84b7e10a4078f172e64b0079f" => :high_sierra
+    sha256 "86058296fb5efea3ca509bd335bf7da48a83078fc237c1ccb1bb2d428ef2343b" => :sierra
+    sha256 "c481b8887b8d29e3c63735dd2151c9246e08f21bf50334033de4a054f700a6db" => :el_capitan
   end
 
-  head do
-    url "https://github.com/mdadams/jasper.git"
-
-    depends_on "autoconf" => :build
-    depends_on "automake" => :build
-    depends_on "libtool" => :build
-  end
-
-  option :universal
-
+  depends_on "cmake" => :build
   depends_on "jpeg"
 
-  fails_with :llvm do
-    build 2326
-    cause "Undefined symbols when linking"
-  end
-
   def install
-    ENV.universal_binary if build.universal?
-    system "autoreconf", "-fiv" if build.head?
-    system "./configure", "--disable-debug",
-                          "--disable-dependency-tracking",
-                          "--enable-shared",
-                          "--prefix=#{prefix}",
-                          "--mandir=#{man}"
-    system "make", "install"
+    mkdir "build" do
+      # Make sure macOS's GLUT.framework is used, not XQuartz or freeglut
+      # Reported to CMake upstream 4 Apr 2016 https://gitlab.kitware.com/cmake/cmake/issues/16045
+      glut_lib = "#{MacOS.sdk_path}/System/Library/Frameworks/GLUT.framework"
+      system "cmake", "..", "-DGLUT_glut_LIBRARY=#{glut_lib}", *std_cmake_args
+      system "make"
+      system "make", "test"
+      system "make", "install"
+    end
   end
 
   test do

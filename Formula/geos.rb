@@ -1,32 +1,23 @@
 class Geos < Formula
   desc "Geometry Engine"
   homepage "https://trac.osgeo.org/geos"
-  url "http://download.osgeo.org/geos/geos-3.5.0.tar.bz2"
-  sha256 "49982b23bcfa64a53333dab136b82e25354edeb806e5a2e2f5b8aa98b1d0ae02"
+  url "https://download.osgeo.org/geos/geos-3.6.2.tar.bz2"
+  sha256 "045a13df84d605a866602f6020fc6cbf8bf4c42fb50de237a08926e1d7d7652a"
 
   bottle do
     cellar :any
-    rebuild 2
-    sha256 "d52351433e01eaa27e35ac2b1015e4cc97b424a30990b5491078a67c1a35f19a" => :sierra
-    sha256 "44de97863f261ada672b34bc9d66e34331a449114d50b7c76134527e6ff0ef9e" => :el_capitan
-    sha256 "80cfa970463761a2056c1c080294c59a3b6f6fd8a84276627a38fcf74b045d26" => :yosemite
-    sha256 "8c49f91cfd332e092efb8efc3d4b6190029f648b23b47d20a1341b3882566c87" => :mavericks
+    sha256 "bd35ebbcc9d142b0ee4d1f1837520cd0e195e13e3ea1804c5cfd1cc99d660b9b" => :high_sierra
+    sha256 "a435dcf855256300793f56c3d0af6597f39958bde52adc29d07736f897b40c1b" => :sierra
+    sha256 "8fa4f17ee4b0f8c52bdb155f4264043f12245858e413975cfea4355d569db207" => :el_capitan
+    sha256 "5966c5ecea54189c67a3ffb5856176f4bb070ca72b3c3628ad7b76fb67e35de8" => :yosemite
   end
 
-  option :universal
-  option :cxx11
-  option "with-php", "Build the PHP extension"
   option "without-python", "Do not build the Python extension"
   option "with-ruby", "Build the ruby extension"
 
   depends_on "swig" => :build if build.with?("python") || build.with?("ruby")
 
-  fails_with :llvm
-
   def install
-    ENV.universal_binary if build.universal?
-    ENV.cxx11 if build.cxx11?
-
     # https://trac.osgeo.org/geos/ticket/771
     inreplace "configure" do |s|
       s.gsub! /PYTHON_CPPFLAGS=.*/, %Q(PYTHON_CPPFLAGS="#{`python-config --includes`.strip}")
@@ -38,7 +29,6 @@ class Geos < Formula
       "--prefix=#{prefix}",
     ]
 
-    args << "--enable-php" if build.with?("php")
     args << "--enable-python" if build.with?("python")
     args << "--enable-ruby" if build.with?("ruby")
 

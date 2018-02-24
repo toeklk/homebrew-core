@@ -1,24 +1,24 @@
 class Gucharmap < Formula
   desc "GNOME Character Map, based on the Unicode Character Database"
   homepage "https://live.gnome.org/Gucharmap"
-  url "https://download.gnome.org/sources/gucharmap/9.0/gucharmap-9.0.2.tar.xz"
-  sha256 "723ea92c8e877beae3986432b8e002807c6c2d1140590dff1c5bff34bb6ed265"
+  url "https://download.gnome.org/sources/gucharmap/10.0/gucharmap-10.0.3.tar.xz"
+  sha256 "ac07d75924e2d8f436d9492e8f7d54cf109404d34de06886a3967563cd1726a4"
 
   bottle do
-    sha256 "58a9f1ad80737df84402e88890142d94a825c0f8de99998e097c2f720abf48bf" => :sierra
-    sha256 "51cb5eda359cd14a06fa25d5b3727aacff670e9db3fcc8a0ca21ddc7fcc8aee4" => :el_capitan
-    sha256 "a3793a89b3e82a957b03a742256887f0f796b1febc1b8d48bee031743f1c5f46" => :yosemite
+    sha256 "955aebc4a270c7a845f59e2843bbdf76a6e3bfd071a4090640da99a6bde5fec9" => :high_sierra
+    sha256 "0c08f6630129f2a630a171e5113c16edd830f241d19758cee349ccdddf833c06" => :sierra
+    sha256 "abe32c50a7e60d8040a5755c9f026e34fb509727f7146c97dcd85f6304447db6" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "intltool" => :build
   depends_on "itstool" => :build
   depends_on "desktop-file-utils" => :build
-  depends_on "wget" => :build
   depends_on "coreutils" => :build
   depends_on "gtk+3"
 
   def install
+    ENV["WGET"] = "curl"
     ENV.append_path "PYTHONPATH", "#{Formula["libxml2"].opt_lib}/python2.7/site-packages"
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
@@ -28,7 +28,7 @@ class Gucharmap < Formula
                           "--disable-schemas-compile",
                           "--enable-introspection=no",
                           "--with-unicode-data=download"
-    system "make"
+    system "make", "WGETFLAGS=--remote-name --remote-time --connect-timeout 30 --retry 8"
     system "make", "install"
   end
 

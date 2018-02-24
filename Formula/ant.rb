@@ -1,22 +1,23 @@
 class Ant < Formula
   desc "Java build tool"
   homepage "https://ant.apache.org/"
-  url "https://www.apache.org/dyn/closer.cgi?path=ant/binaries/apache-ant-1.9.7-bin.tar.bz2"
-  sha256 "be2ff3026cc655dc002bbcce100bd6724d448c63f702aa82b6d9899b22db7808"
+  url "https://www.apache.org/dyn/closer.cgi?path=ant/binaries/apache-ant-1.10.2-bin.tar.xz"
+  sha256 "361c8ad2ed8341416e323e7c28af10a8297170a80fdffba294a5c2031527bb6c"
   head "https://git-wip-us.apache.org/repos/asf/ant.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "db8eac6041dae8543e34aa367cbff6da3f0556a77202a44d90a527fcbcc68ac4" => :sierra
-    sha256 "5d6d2bf3ea95ef2191ff303e4d130cc5127e6842a3edda6a838c1cf58ddfdbbf" => :el_capitan
-    sha256 "aa07fd6364c81b62289816e14ec4543c3414c2dc0824d7f732f41e9240fa2137" => :yosemite
-    sha256 "493ef77af3a5130f705d7040cc1e4abf40ca7661d0a699c7087ff0e1cc49edca" => :mavericks
+    sha256 "c2c0bc113e74a41df722ad1b04898892dc0f1746b6a3d00e12058f106d920e09" => :high_sierra
+    sha256 "c2c0bc113e74a41df722ad1b04898892dc0f1746b6a3d00e12058f106d920e09" => :sierra
+    sha256 "c2c0bc113e74a41df722ad1b04898892dc0f1746b6a3d00e12058f106d920e09" => :el_capitan
   end
 
-  keg_only :provided_by_osx if MacOS.version < :mavericks
+  keg_only :provided_by_macos if MacOS.version < :mavericks
 
   option "with-ivy", "Install ivy dependency manager"
   option "with-bcel", "Install Byte Code Engineering Library"
+
+  depends_on :java => "1.8+"
 
   resource "ivy" do
     url "https://www.apache.org/dyn/closer.cgi?path=ant/ivy/2.4.0/apache-ivy-2.4.0-bin.tar.gz"
@@ -24,8 +25,8 @@ class Ant < Formula
   end
 
   resource "bcel" do
-    url "https://search.maven.org/remotecontent?filepath=org/apache/bcel/bcel/5.2/bcel-5.2.jar"
-    sha256 "7b87e2fd9ac3205a6e5ba9ef5e58a8f0ab8d1a0e0d00cb2a761951fa298cc733"
+    url "https://www.apache.org/dyn/closer.cgi?path=commons/bcel/binaries/bcel-6.2-bin.tar.gz"
+    sha256 "e5963ed50ef1f243f852a27efaf898c050a3b39721d147ccda8418c0b7255955"
   end
 
   def install
@@ -33,7 +34,7 @@ class Ant < Formula
     libexec.install Dir["*"]
     bin.install_symlink Dir["#{libexec}/bin/*"]
     rm bin/"ant"
-    (bin/"ant").write <<-EOS.undent
+    (bin/"ant").write <<~EOS
       #!/bin/sh
       #{libexec}/bin/ant -lib #{HOMEBREW_PREFIX}/share/ant "$@"
     EOS
@@ -44,13 +45,13 @@ class Ant < Formula
     end
     if build.with? "bcel"
       resource("bcel").stage do
-        (libexec/"lib").install Dir["bcel-*.jar"]
+        (libexec/"lib").install "bcel-#{resource("bcel").version}.jar"
       end
     end
   end
 
   test do
-    (testpath/"build.xml").write <<-EOS.undent
+    (testpath/"build.xml").write <<~EOS
       <project name="HomebrewTest" basedir=".">
         <property name="src" location="src"/>
         <property name="build" location="build"/>
@@ -62,7 +63,7 @@ class Ant < Formula
         </target>
       </project>
     EOS
-    (testpath/"src/main/java/org/homebrew/AntTest.java").write <<-EOS.undent
+    (testpath/"src/main/java/org/homebrew/AntTest.java").write <<~EOS
       package org.homebrew;
       public class AntTest {
         public static void main(String[] args) {

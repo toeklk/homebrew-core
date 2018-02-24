@@ -1,14 +1,13 @@
 class Ompl < Formula
   desc "Open Motion Planning Library consists of many motion planning algorithms"
-  homepage "http://ompl.kavrakilab.org"
-  url "https://bitbucket.org/ompl/ompl/downloads/ompl-1.1.0-Source.tar.gz"
-  sha256 "4d141ad3aa322c65ee7ecfa90017a44a8114955316e159b635fae5b5e7db74f8"
+  homepage "https://ompl.kavrakilab.org/"
+  url "https://bitbucket.org/ompl/ompl/downloads/ompl-1.3.2-Source.tar.gz"
+  sha256 "c33e04089f7513780f4e87b6507182d5224cd604b0a4f4546ebb9f4a124c8f49"
 
   bottle do
-    sha256 "4a90bb34ebda949327b8873faf73cebc22b2de9e603b0f0b8fbc023935cb46f2" => :sierra
-    sha256 "5f29d3dc453e5f1d294333d250fed884b4a38fa91f0bb1048a14eaa58774b709" => :el_capitan
-    sha256 "ee99c05b5f1084ded43e0cacf7bd3ca0a1d3046bf99c1d5faafd225db2fb3a61" => :yosemite
-    sha256 "ab89e5350fdf56e044503f363c0e36ab689e45ef4f38806cf66f214908720838" => :mavericks
+    sha256 "282c1373ec4b0e790acc7008c3d3d8f8b5da3d8f1aaa76d5e7d0adb04fbe1239" => :high_sierra
+    sha256 "9d663d2cc9c32261dbc39fe28d3df6ee521ee4e20fc00c2d5828ca62c17fe616" => :sierra
+    sha256 "87f29ccd62630540a449661ef177c4662d157e94ba9114d2302db32a1f1e0fe9" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -16,13 +15,16 @@ class Ompl < Formula
   depends_on "eigen" => :optional
   depends_on "ode" => :optional
 
+  needs :cxx11
+
   def install
+    ENV.cxx11
     system "cmake", ".", *std_cmake_args
     system "make", "install"
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <ompl/base/spaces/RealVectorBounds.h>
       #include <cassert>
       int main(int argc, char *argv[]) {

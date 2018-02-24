@@ -1,9 +1,8 @@
 class Nuxeo < Formula
   desc "Enterprise Content Management"
   homepage "https://nuxeo.github.io/"
-  url "https://cdn.nuxeo.com/nuxeo-8.3/nuxeo-server-8.3-tomcat.zip"
-  version "8.3"
-  sha256 "69a51ea0f5663723a58448be80b5caf4258f9d1f8df124e4de90676224afac3c"
+  url "https://cdn.nuxeo.com/nuxeo-9.10/nuxeo-server-9.10-tomcat.zip"
+  sha256 "b0d70c28c1a01cf43a9598245f6ff2aaf71b42dad7ff9ce29fe51d3b17736642"
 
   bottle :unneeded
 
@@ -39,7 +38,7 @@ class Nuxeo < Formula
     libexec.install_symlink var/"cache/nuxeo/packages"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     You need to edit #{etc}/nuxeo.conf file to configure manually the server.
     Also, in case of upgrade, run 'nuxeoctl mp-upgrade' to ensure all
     downloaded addons are up to date.

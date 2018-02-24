@@ -1,15 +1,15 @@
 class Deisctl < Formula
   desc "Deis Control Utility"
   homepage "https://deis.io/"
-  url "https://github.com/deis/deis/archive/v1.13.3.tar.gz"
-  sha256 "a5b28a7b94e430c4dc3cf3f39459b7c99fc0b80569e14e3defa2194d046316fd"
+  url "https://github.com/deis/deis/archive/v1.13.4.tar.gz"
+  sha256 "7f1b378d884d5b42d0b03df7c79aa31cc6081bcc4c23d880101e98fdfe7cb89a"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "dc7a728554046e2f6191ca4d0d2b61ecbd7c3c6b1e5f929b2f6f71a53c94a458" => :sierra
-    sha256 "1c3ce561d7b81441c162084775d5d295919550534520ec475216ca6c9af96b56" => :el_capitan
-    sha256 "3450f08fb4a5e46768c81ac57742b5b234a1171c93c195004627445c03f8ddbf" => :yosemite
-    sha256 "7ce46bd2b45d6772625ff82f4076ec42cb0232e4f896b07bda108c5f2db59f2e" => :mavericks
+    rebuild 1
+    sha256 "8a73a808a0b8f9d995cb4dd0e41c48b13749527c50055a187ed18244db851884" => :high_sierra
+    sha256 "8661535566fe1d2484f5a0a2a4e6450ee026fe5c56490b335db9a5b34beb6984" => :sierra
+    sha256 "2294410457372fb3f076532923179782e94bcf675e8b0ccf9c65d4a691c1d382" => :el_capitan
   end
 
   depends_on "go" => :build

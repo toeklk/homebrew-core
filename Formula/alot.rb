@@ -3,63 +3,89 @@ class Alot < Formula
 
   desc "Text mode MUA using notmuch mail"
   homepage "https://github.com/pazz/alot"
-  url "https://github.com/pazz/alot/archive/0.3.7.tar.gz"
-  sha256 "fd2d4121ba109224560919e84e320b09526891fbc0038afcea26a3f1284dad26"
-  head "https://github.com/pazz/alot.git", :branch => "testing"
+  url "https://github.com/pazz/alot/archive/0.7.tar.gz"
+  sha256 "2d49a7d61241cfadc993a8456076605b2cfe264c51f5e3f18f337bad58f29a1c"
+  head "https://github.com/pazz/alot.git"
 
   bottle do
     cellar :any
-    sha256 "b7a64dc42167e44219228b71b7234ff6ed7d8ca9c7a3a52688f78c9b369a0f90" => :sierra
-    sha256 "3f181ad220a8c70237ba564d30b0da7475921d8644702fea31f88167ca71df81" => :el_capitan
-    sha256 "d48c2504956c24c88a64876946efa8a5a284829839fa7165a59b9e9e2ef03550" => :yosemite
-    sha256 "257b06000d6ac02a509acd7161567d753d8ad31abba99bd0a0af4cdcac39486a" => :mavericks
+    sha256 "e161f06d7042c52b042d01784adbde135ba88ac13ed5c4307d0cd485624869d1" => :high_sierra
+    sha256 "2df83f523a4167e7b86beff4c8337e34bb7a8a0e0f85bcc41691326b181d8faa" => :sierra
+    sha256 "a7e2825dcbec2bba87fad5893fd7a6c3dfa50a21ca626c1dbc52c06ee162e4bb" => :el_capitan
   end
 
   option "without-sphinx-doc", "Don't build documentation"
 
+  depends_on "swig" => :build
   depends_on "gpgme"
   depends_on "libmagic"
   depends_on "notmuch"
+  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "sphinx-doc" => [:build, :recommended]
 
-  resource "six" do
-    url "https://pypi.python.org/packages/source/s/six/six-1.10.0.tar.gz"
-    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
+  resource "Automat" do
+    url "https://files.pythonhosted.org/packages/de/05/b8e453085cf8a7f27bb1226596f4ccf5cc9e758377d60284f990bbdc592c/Automat-0.6.0.tar.gz"
+    sha256 "3c1fd04ecf08ac87b4dd3feae409542e9bf7827257097b2b6ed5692f69d6f6a8"
+  end
+
+  resource "attrs" do
+    url "https://files.pythonhosted.org/packages/be/41/e909cb6d901e9689da947419505cc7fb7d242a08a62ee221fce6a009a523/attrs-17.2.0.tar.gz"
+    sha256 "5d4d1b99f94d69338f485984127e4473b3ab9e20f43821b0e546cc3b2302fd11"
   end
 
   resource "configobj" do
-    url "https://pypi.python.org/packages/source/c/configobj/configobj-5.0.6.tar.gz"
+    url "https://files.pythonhosted.org/packages/64/61/079eb60459c44929e684fa7d9e2fdca403f67d64dd9dbac27296be2e0fab/configobj-5.0.6.tar.gz"
     sha256 "a2f5650770e1c87fb335af19a9b7eb73fc05ccf22144eb68db7d00cd2bcb0902"
   end
 
-  resource "zope.interface" do
-    url "https://pypi.python.org/packages/ea/a3/38bdc8e8bd068ea5b4d21a2d80eca1547cd8509318e8d7c875f7247abe43/zope.interface-4.2.0.tar.gz"
-    sha256 "36762743940a075283e1fb22a2ec9e8231871dace2aa00599511ddc4edf0f8f9"
+  resource "constantly" do
+    url "https://files.pythonhosted.org/packages/95/f1/207a0a478c4bb34b1b49d5915e2db574cadc415c9ac3a7ef17e29b2e8951/constantly-15.1.0.tar.gz"
+    sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
   end
 
-  resource "twisted" do
-    url "https://pypi.python.org/packages/18/85/eb7af503356e933061bf1220033c3a85bad0dbc5035dfd9a97f1e900dfcb/Twisted-16.2.0.tar.bz2"
-    sha256 "a090e8dc675e97fb20c3bb5f8114ae94169f4e29fd3b3cbede35705fd3cdbd79"
+  resource "gpg" do
+    url "https://files.pythonhosted.org/packages/ef/86/c5a34243a932346c59cb25eb49a4d1dec227974209eb9b618d0ed57ea5be/gpg-1.10.0.tar.gz"
+    sha256 "349214a866c84aa548bc35ed14eccd2ec9085b3958d5753a63a19a71a1f523ca"
   end
 
-  resource "urwid" do
-    url "https://pypi.python.org/packages/source/u/urwid/urwid-1.3.1.tar.gz"
-    sha256 "cfcec03e36de25a1073e2e35c2c7b0cc6969b85745715c3a025a31d9786896a1"
+  resource "hyperlink" do
+    url "https://files.pythonhosted.org/packages/83/df/3bdaf38f21f93429de02f04c6a967d2154955fc5b9a6a1a0b20a682edc13/hyperlink-17.3.1.tar.gz"
+    sha256 "bc4ffdbde9bdad204d507bd8f554f16bba82dd356f6130cb16f41422909c33bc"
   end
 
-  resource "urwidtrees" do
-    url "https://github.com/pazz/urwidtrees/archive/1.0.2.tar.gz"
-    sha256 "703f4b161b930a26a461a3e3e695f94237ac75e2a52b87613e49093d9aa76034"
-  end
-
-  resource "pygpgme" do
-    url "https://pypi.python.org/packages/source/p/pygpgme/pygpgme-0.3.tar.gz"
-    sha256 "5fd887c407015296a8fd3f4b867fe0fcca3179de97ccde90449853a3dfb802e1"
+  resource "incremental" do
+    url "https://files.pythonhosted.org/packages/8f/26/02c4016aa95f45479eea37c90c34f8fab6775732ae62587a874b619ca097/incremental-17.5.0.tar.gz"
+    sha256 "7b751696aaf36eebfab537e458929e194460051ccad279c72b755a167eebd4b3"
   end
 
   resource "python-magic" do
-    url "https://pypi.python.org/packages/source/p/python-magic/python-magic-0.4.11.tar.gz"
-    sha256 "89021e288d6efd22cde2842349d79939b9664efdbf99f5790c9862a67759ea94"
+    url "https://files.pythonhosted.org/packages/84/30/80932401906eaf787f2e9bd86dc458f1d2e75b064b4c187341f29516945c/python-magic-0.4.15.tar.gz"
+    sha256 "f3765c0f582d2dfc72c15f3b5a82aecfae9498bd29ca840d72f37d7bd38bfcd5"
+  end
+
+  resource "six" do
+    url "https://files.pythonhosted.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-1.10.0.tar.gz"
+    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
+  end
+
+  resource "Twisted" do
+    url "https://files.pythonhosted.org/packages/a2/37/298f9547606c45d75aa9792369302cc63aa4bbcf7b5f607560180dd099d2/Twisted-17.9.0.tar.bz2"
+    sha256 "0da1a7e35d5fcae37bc9c7978970b5feb3bc82822155b8654ec63925c05af75c"
+  end
+
+  resource "urwid" do
+    url "https://files.pythonhosted.org/packages/c7/90/415728875c230fafd13d118512bde3184d810d7bf798a631abc05fac09d0/urwid-2.0.1.tar.gz"
+    sha256 "644d3e3900867161a2fc9287a9762753d66bd194754679adb26aede559bcccbc"
+  end
+
+  resource "urwidtrees" do
+    url "https://files.pythonhosted.org/packages/88/9d/981617fa083a75cf0b5ebb0ae47c3af6fb69183be1c74cc3ac6d9a0c5964/urwidtrees-1.0.1.1.tar.gz"
+    sha256 "08a66d0e76e94bc32bc590e35ed283e8a6b0c93adeb431dc576ec0a345f09bfd"
+  end
+
+  resource "zope.interface" do
+    url "https://files.pythonhosted.org/packages/bd/d2/25349ed41f9dcff7b3baf87bd88a4c82396cf6e02f1f42bb68657a3132af/zope.interface-4.4.3.tar.gz"
+    sha256 "d6d26d5dfbfd60c65152938fcb82f949e8dada37c041f72916fef6621ba5c5ce"
   end
 
   def install
@@ -90,12 +116,12 @@ class Alot < Formula
         $stdin.reopen("/dev/null")
         exec "script", "-q", "/dev/null", bin/"alot", "--logfile", testpath/"out.log"
       end
-      sleep 2
+      sleep 10
     ensure
       Process.kill 9, pid
     end
 
-    assert (testpath/"out.log").exist?, "out.log file should exist"
+    assert_predicate testpath/"out.log", :exist?, "out.log file should exist"
     assert_match "setup gui", File.read(testpath/"out.log")
   end
 end

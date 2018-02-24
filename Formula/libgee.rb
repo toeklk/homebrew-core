@@ -1,14 +1,14 @@
 class Libgee < Formula
   desc "Collection library providing GObject-based interfaces"
   homepage "https://wiki.gnome.org/Projects/Libgee"
-  url "https://download.gnome.org/sources/libgee/0.18/libgee-0.18.1.tar.xz"
-  sha256 "99686bbe5a9c89ba9502c25f61314ee8efa0dd2a1159c9a639afc1458c2839a2"
+  url "https://download.gnome.org/sources/libgee/0.20/libgee-0.20.1.tar.xz"
+  sha256 "bb2802d29a518e8c6d2992884691f06ccfcc25792a5686178575c7111fea4630"
 
   bottle do
     cellar :any
-    sha256 "1ff99c3fcc93d1445540219b4327c9b05f1ae6c59f9c0b84f660c3c78ca07c74" => :sierra
-    sha256 "16f97389ce63e4b9bbd37c7d83caf273dfb723001895d7af17dfa5fed8713172" => :el_capitan
-    sha256 "f559db2d7dabd1d6b5fc63d6e86afec93346e74b14d7eb11f02128e3fc70f8ab" => :yosemite
+    sha256 "ccf7c9df7b20315d949fdf91addc28944f0460033938b36e975070461a5bbf67" => :high_sierra
+    sha256 "873c75b548cd0fca3d09019618dd90e402aa86671006d5852931d8906644ce23" => :sierra
+    sha256 "c03c87fb2bd8aafdd2e5f8fd1c3a655ced1730c0d525a4fd369b063e2a29821c" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -30,7 +30,7 @@ class Libgee < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gee.h>
 
       int main(int argc, char *argv[]) {

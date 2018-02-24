@@ -1,10 +1,11 @@
 class Xmp < Formula
   desc "Command-line player for module music formats (MOD, S3M, IT, etc)"
-  homepage "http://xmp.sourceforge.net"
+  homepage "https://xmp.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/xmp/xmp/4.1.0/xmp-4.1.0.tar.gz"
   sha256 "1dbd61074783545ac7bef5b5daa772fd2110764cb70f937af8c3fad30f73289e"
 
   bottle do
+    sha256 "f399d4668b512d45d1019264c4968af84060d138380d5743a0eb483dfdd53578" => :high_sierra
     sha256 "4eb53e6f831785a5bbe084be7be3c83c7942392c06a00608f8d4d29e0d0d735a" => :sierra
     sha256 "2412ab978ad3562876d8078a6e588f8617b5507df33aecee84ada484f1ec33b8" => :el_capitan
     sha256 "a0ee59b4a71a7cda6a59e7b06a9c0b54dc04e3bf77b97f0b4e2336c16afc8d57" => :yosemite
@@ -12,7 +13,7 @@ class Xmp < Formula
   end
 
   head do
-    url "git://git.code.sf.net/p/xmp/xmp-cli"
+    url "https://git.code.sf.net/p/xmp/xmp-cli.git"
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build

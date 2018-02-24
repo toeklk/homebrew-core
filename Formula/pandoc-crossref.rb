@@ -3,43 +3,37 @@ require "language/haskell"
 class PandocCrossref < Formula
   include Language::Haskell::Cabal
 
-  desc "Pandoc filter for numbering and cross-referencing."
+  desc "Pandoc filter for numbering and cross-referencing"
   homepage "https://github.com/lierdakil/pandoc-crossref"
-  url "https://hackage.haskell.org/package/pandoc-crossref-0.2.3.0/pandoc-crossref-0.2.3.0.tar.gz"
-  sha256 "b6b4200023da4835cf50a2c9a247a837282ccf16e1684336b5a15d17b9ad085e"
-  revision 1
+  url "https://hackage.haskell.org/package/pandoc-crossref-0.3.0.1/pandoc-crossref-0.3.0.1.tar.gz"
+  sha256 "d62bc57ecbf869cd5777dfc69f3d45722d3be3e691ed4e47841aa656df5c1252"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "67900e8d27ab55437f56788e7cbe2a063132e7ee3972aa6740cfb86959711ed6" => :sierra
-    sha256 "3c2df28ae93d800f88c49d058060d5bcb4b26cc7f20a4d11f73fc3968e207e73" => :el_capitan
-    sha256 "cdbfe9aeb3b9eb7826e4fe56b94d7e3ac14249562dcb1ac5d48fe5bbb8a0bba9" => :yosemite
+    sha256 "c2c0dbee94fc1e080e36fad1281672f91f0ff25b5c2269806479c5d2a93d13b6" => :high_sierra
+    sha256 "5a3b1158fe0621d5f5e03ee731c36239b85be63f9aae09af1c8cde204a72d33d" => :sierra
+    sha256 "a61456335f640fb85c260c02b651acca78775c12be196a379a696fb5732db41b" => :el_capitan
   end
 
-  depends_on "ghc" => :build
   depends_on "cabal-install" => :build
+  depends_on "ghc" => :build
   depends_on "pandoc" => :run
 
   def install
-    (buildpath/"cabal.config").write("allow-newer: pandoc,pandoc-types\n")
     args = []
     args << "--constraint=cryptonite -support_aesni" if MacOS.version <= :lion
     install_cabal_package *args
   end
 
   test do
-    (testpath/"hello.md").write <<-EOS.undent
+    (testpath/"hello.md").write <<~EOS
       Demo for pandoc-crossref.
       See equation @eq:eqn1 for cross-referencing.
       Display equations are labelled and numbered
 
-      $$ P_i(x) = \sum_i a_i x^i $$ {#eq:eqn1}
-    EOS
-    (testpath/"expected.txt").write <<-EOS.undent
-      <p>Demo for pandoc-crossref. See equation eq.M-BM- 1 for cross-referencing. Display equations are labelled and numbered</p>$
-      <p><br /><span class="math display"><em>P</em><sub><em>i</em></sub>(<em>x</em>)=<em>u</em><em>m</em><sub><em>i</em></sub><em>a</em><sub><em>i</em></sub><em>x</em><sup><em>i</em></sup>M-bM-^@M-^AM-bM-^@M-^A(1)</span><br /></p>$
+      $$ P_i(x) = \\sum_i a_i x^i $$ {#eq:eqn1}
     EOS
     system Formula["pandoc"].bin/"pandoc", "-F", bin/"pandoc-crossref", "-o", "out.html", "hello.md"
-    assert_equal File.read("expected.txt"), pipe_output("/bin/cat -et", File.read("out.html"))
+    assert_match "∑", (testpath/"out.html").read
   end
 end

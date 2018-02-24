@@ -1,15 +1,14 @@
 class Inspircd < Formula
   desc "Modular C++ Internet Relay Chat daemon"
-  homepage "http://www.inspircd.org"
-  url "https://github.com/inspircd/inspircd/archive/v2.0.23.tar.gz"
-  sha256 "522b31fc80e8fd90b66837bf50f8a941233709d5b1fc9c0b3c47a413fb69f162"
+  homepage "https://www.inspircd.org/"
+  url "https://github.com/inspircd/inspircd/archive/v2.0.25.tar.gz"
+  sha256 "c2488fafd04fcabbd8ddc8b9cdc6e0b57e942802b451c9cbccaf5d8483ebd251"
   head "https://github.com/inspircd/inspircd.git", :branch => "insp20"
 
   bottle do
-    sha256 "82cc4e1ac89c8e5187732eec5173dcfc22472cc8db02ee4e4f2e38d7af1c510e" => :sierra
-    sha256 "399ef38bf73da815b8474922013136e85045f1e8d060fb8e01ecf9eb2b84c9d4" => :el_capitan
-    sha256 "1fc8066a11d1fcf5abf24f591e85ef154309aa745b02c58555b2d73d1f4c6b66" => :yosemite
-    sha256 "2b20e89558b7bfb41ce8a0c559ed5de1e54ce3259736c36bfd18c1a03f0e12cb" => :mavericks
+    sha256 "fa0c21347636bbcf3cdb50606bc993607a705d6fc740d7af61c3d637af21aa42" => :high_sierra
+    sha256 "cb4476a4883acb2a5d6aac17d7f8879fe1938ce34e8d37d97e5761e74ac4ce50" => :sierra
+    sha256 "b73cab6e0683569ce510aff2f6817174e1986d2fa468bf344c812222cfc0b7f7" => :el_capitan
   end
 
   skip_clean "data"
@@ -20,7 +19,7 @@ class Inspircd < Formula
   depends_on "pkg-config" => :build
   depends_on "geoip" => :optional
   depends_on "gnutls" => :optional
-  depends_on :mysql => :optional
+  depends_on "mysql" => :optional
   depends_on "openssl" => :optional
   depends_on "pcre" => :optional
   depends_on "postgresql" => :optional

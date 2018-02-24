@@ -1,18 +1,17 @@
 class Pick < Formula
   desc "Utility to choose one option from a set of choices"
   homepage "https://github.com/calleerlandsson/pick"
-  url "https://github.com/calleerlandsson/pick/releases/download/v1.5.2/pick-1.5.2.tar.gz"
-  sha256 "183b278981233c70ac7f4d9af0728bf99d9d237e3f88d979f93fcc5968c2f789"
+  url "https://github.com/calleerlandsson/pick/releases/download/v2.0.1/pick-2.0.1.tar.gz"
+  sha256 "4a596b8f40a316bc4e2c0d8e8842810d7a7b69d464a410e4ee2a6574e01629e3"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "1506894b189eab7af6986b79615df5389b42d117150e65670e95019ce88d13ac" => :sierra
-    sha256 "5769c0848be846f86d21bf96dfcd028f500cc65ae32aee15e7a8a15a21db9648" => :el_capitan
-    sha256 "834a181d5579e308ecbc09aadf9104ca631ee66c82177cb42b383ce75e375f94" => :yosemite
+    sha256 "b929f5739b2bd0ab8df7ea5d941899fec265bc576fcc1660b3e16a3dc95a1f3a" => :high_sierra
+    sha256 "1633f9112356cfa6a70f6aca24e38f20e371a109234a7381993bb44b1a9caa9f" => :sierra
+    sha256 "29fe7c34922662f10555594fb3f817863d872aea289d51ddc2f98ba8921e2674" => :el_capitan
   end
 
   def install
-    ENV["TERM"] = "xterm"
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
                           "--prefix=#{prefix}"

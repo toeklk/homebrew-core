@@ -1,20 +1,20 @@
 class Libvisio < Formula
   desc "Interpret and import Visio diagrams"
   homepage "https://wiki.documentfoundation.org/DLP/Libraries/libvisio"
-  url "http://dev-www.libreoffice.org/src/libvisio/libvisio-0.1.5.tar.xz"
-  sha256 "430a067903660bb1b97daf4b045e408a1bb75ca45e615cf05fb1a4da65fc5a8c"
-  revision 1
+  url "https://dev-www.libreoffice.org/src/libvisio/libvisio-0.1.6.tar.xz"
+  sha256 "fe1002d3671d53c09bc65e47ec948ec7b67e6fb112ed1cd10966e211a8bb50f9"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "6758550321b373a6f5018327056dc7cbd1a95449dfc197ad395cfcd8d2be2d2f" => :sierra
-    sha256 "d4e7de0a1de6eba7f69f12ad13713e8454290c225d94d66f29f560ee3a249baa" => :el_capitan
-    sha256 "345c4c4cd79ca0d4aa98bd9af2f21e5e445e1c1e9e6a95e9f0b9b4f941623f5a" => :yosemite
+    sha256 "2c8ecf672a3009498481d40e06177078f2d6d9fe5b74c0492a9667db949c3ece" => :high_sierra
+    sha256 "cb6705f65c6e60d0ec5a3efa8094eb0a4443640fd6035ef82689e4742b5b383b" => :sierra
+    sha256 "dd1b44f55ecde024b01bde516f46fbb82e301c957c6f11c71d168ec6a42267ae" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
-  depends_on "boost" => :build
   depends_on "cppunit" => :build
+  depends_on "boost"
   depends_on "librevenge"
   depends_on "icu4c"
 
@@ -29,7 +29,7 @@ class Libvisio < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <librevenge-stream/librevenge-stream.h>
       #include <libvisio/VisioDocument.h>
       int main() {

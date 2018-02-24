@@ -1,16 +1,14 @@
 class Serd < Formula
   desc "C library for RDF syntax"
   homepage "https://drobilla.net/software/serd/"
-  url "https://download.drobilla.net/serd-0.22.0.tar.bz2"
-  sha256 "7b030287b4b75f35e6212b145648bec0be6580cc5434caa6d2fe64a38562afd2"
+  url "https://download.drobilla.net/serd-0.28.0.tar.bz2"
+  sha256 "1df21a8874d256a9f3d51a18b8c6e2539e8092b62cc2674b110307e93f898aec"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "f39608121da91e4a080a3bf73ef7a1de4f79cb4a17037bd4d2c85c78b52d366f" => :sierra
-    sha256 "a07fe04b1663bcf2f0519de97c32e2143645a6cda602ee0481d2483350cdc72e" => :el_capitan
-    sha256 "0a46e8571744e0e4ba1c5e0c931c55202086d7b247defecade3a7464ecf61d2d" => :yosemite
-    sha256 "2691f8f9e47736d734b551917c792f8984cebfc310b983a5b99a7b66916f092f" => :mavericks
+    sha256 "0c55076d7655da6d7d5154e24cd3d720fd9afcd610f5e7e9ee5af23859ab85f7" => :high_sierra
+    sha256 "7c7c1f9317f0fd595bfcdb8214e510c10648f99cdf9be1464b272abd4fa223ea" => :sierra
+    sha256 "8c0c40af6e4aaa222c37cd154d2ef80c6b13a50744d97e94139250a5e1a778a0" => :el_capitan
   end
 
   depends_on "pkg-config" => :build

@@ -1,26 +1,27 @@
 class Sip < Formula
   desc "Tool to create Python bindings for C and C++ libraries"
   homepage "https://www.riverbankcomputing.com/software/sip/intro"
-  url "https://downloads.sourceforge.net/project/pyqt/sip/sip-4.18.1/sip-4.18.1.tar.gz"
-  sha256 "9bce7a2dbf7f105bf68ad1bab58eebc0ce33087ec40396da756463f086ffa290"
+  url "https://downloads.sourceforge.net/project/pyqt/sip/sip-4.19.7/sip-4.19.7.tar.gz"
+  sha256 "25b50d29dd4b72965e7980c41e3320e460eff481a177beeddebf8c3be84b8cde"
+  revision 1
   head "https://www.riverbankcomputing.com/hg/sip", :using => :hg
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "e52a56ca826040a61e0dd7b80c9fdbf26de291a0c112f604fd8d4a739bb04313" => :sierra
-    sha256 "56e2cabd2647da8eeb721fd9bc2497cdc7bc4aca90d99586b41d054d81a42576" => :el_capitan
-    sha256 "da4b678d431920aa75cccc52a7ca26cafed9ac47fe6dfe88089f08302bbd2e72" => :yosemite
-    sha256 "5d2674fe2cf968d94214198a5bc4381c3a7b5ca699a388efdcf7e72c3bfb176c" => :mavericks
+    sha256 "0bc10cf64ea6b83f66709db93cf4a6e51b50a7d33e600ac4cb8beca20735f172" => :high_sierra
+    sha256 "ab3d22e71dffb65f4b4fc65a819794d6191ff1bfe09c1c922b7ff46f1caa723e" => :sierra
+    sha256 "de2e5a39e7cb776f2152f017a6d9fc32d6b859c50abbcaa57572b9b4f927bb70" => :el_capitan
   end
 
-  option "without-python", "Build without python2 support"
-  depends_on :python => :recommended if MacOS.version <= :snow_leopard
-  depends_on :python3 => :optional
+  depends_on "python" => :recommended
+  depends_on "python3" => :recommended
 
   def install
     if build.without?("python3") && build.without?("python")
       odie "sip: --with-python3 must be specified when using --without-python"
     end
+
+    ENV.prepend_path "PATH", Formula["python"].opt_libexec/"bin"
 
     if build.head?
       # Link the Mercurial repository into the download directory so
@@ -31,7 +32,7 @@ class Sip < Formula
     end
 
     Language::Python.each_python(build) do |python, version|
-      # Note the binary `sip` is the same for python 2.x and 3.x
+      ENV.delete("SDKROOT") # Avoid picking up /Application/Xcode.app paths
       system python, "configure.py",
                      "--deployment-target=#{MacOS.version}",
                      "--destdir=#{lib}/python#{version}/site-packages",
@@ -48,13 +49,13 @@ class Sip < Formula
     (HOMEBREW_PREFIX/"share/sip").mkpath
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     The sip-dir for Python is #{HOMEBREW_PREFIX}/share/sip.
   EOS
   end
 
   test do
-    (testpath/"test.h").write <<-EOS.undent
+    (testpath/"test.h").write <<~EOS
       #pragma once
       class Test {
       public:
@@ -62,7 +63,7 @@ class Sip < Formula
         void test();
       };
     EOS
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include "test.h"
       #include <iostream>
       Test::Test() {}
@@ -71,7 +72,7 @@ class Sip < Formula
         std::cout << "Hello World!" << std::endl;
       }
     EOS
-    (testpath/"test.sip").write <<-EOS.undent
+    (testpath/"test.sip").write <<~EOS
       %Module test
       class Test {
       %TypeHeaderCode
@@ -82,14 +83,14 @@ class Sip < Formula
         void test();
       };
     EOS
-    (testpath/"generate.py").write <<-EOS.undent
+    (testpath/"generate.py").write <<~EOS
       from sipconfig import SIPModuleMakefile, Configuration
       m = SIPModuleMakefile(Configuration(), "test.build")
       m.extra_libs = ["test"]
       m.extra_lib_dirs = ["."]
       m.generate()
     EOS
-    (testpath/"run.py").write <<-EOS.undent
+    (testpath/"run.py").write <<~EOS
       from test import Test
       t = Test()
       t.test()

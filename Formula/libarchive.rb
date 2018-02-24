@@ -1,18 +1,18 @@
 class Libarchive < Formula
   desc "Multi-format archive and compression library"
-  homepage "http://www.libarchive.org"
-  url "http://www.libarchive.org/downloads/libarchive-3.2.1.tar.gz"
-  sha256 "72ee1a4e3fd534525f13a0ba1aa7b05b203d186e0c6072a8a4738649d0b3cfd2"
+  homepage "https://www.libarchive.org"
+  url "https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz"
+  sha256 "ed2dbd6954792b2c054ccf8ec4b330a54b85904a80cef477a1c74643ddafa0ce"
 
   bottle do
     cellar :any
-    sha256 "1196858d90db42d9171175d616ed3c58ec2d4e4895d684f1c163a7ae9eb19a19" => :sierra
-    sha256 "6ef9838a7fda2a6ffacf250a29a1ce5fb9a71072f6c02b134c464096d6514491" => :el_capitan
-    sha256 "f79d996c549f190b3225dbef988824afdec92cdcd76e39faae3ac2e67731d34f" => :yosemite
-    sha256 "a702d412a72902bfec4c7093673d9df7e7a6df819a73aa1ccec5f074685d30eb" => :mavericks
+    sha256 "ee8c56199da11b8e6ac30e577792288d729233dda36100dbd16192af656bff5d" => :high_sierra
+    sha256 "3afbbb3c4c12dcac7f55d7a038249e4553c4b13bb5c6a5251db1099277446490" => :sierra
+    sha256 "0805b457512f14129a12148c7ad4fc5880c7594515781bc2a11e3a5431c220ec" => :el_capitan
+    sha256 "8ef52679c4f98f7aa7ce0ecdb854d3fea70b46192011e447fabdde8aec5cd940" => :yosemite
   end
 
-  keg_only :provided_by_osx
+  keg_only :provided_by_macos
 
   depends_on "xz" => :recommended
   depends_on "lz4" => :optional

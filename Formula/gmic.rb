@@ -1,27 +1,29 @@
 class Gmic < Formula
   desc "Full-Featured Open-Source Framework for Image Processing"
   homepage "https://gmic.eu/"
-  url "https://gmic.eu/files/source/gmic_1.7.8.tar.gz"
-  sha256 "3a2f32d79714239cfa56ecb10799b7d73362b4e2a852444bc24866272cd041a4"
+  url "https://gmic.eu/files/source/gmic_2.1.5.tar.gz"
+  sha256 "2f3de90a09bba6d24c89258be016fd6992886bda13dbbcaf03de58c765774845"
+  revision 1
   head "https://github.com/dtschump/gmic.git"
 
   bottle do
     cellar :any
-    sha256 "ba328c321a3512d50e3c629cd90f07708d2c7f419864256b11f45c0598e88eb6" => :sierra
-    sha256 "8fbc070d68220caff4f6163ba5047041cf468ca1cb56cd994e160cec2541e6d8" => :el_capitan
-    sha256 "59505d916d46bb661986fa3291ecc781c06f94aa3fb1ce84fd3f2a3f07084929" => :yosemite
+    sha256 "13ccaf356dc8be85d6d60078c5c10ad3ae6fd515169c396b6cb1c28b2a348c15" => :high_sierra
+    sha256 "7ed192f9ad04036d236cbe9b854ea54325bb366ec392d4cb977e227167ce1ebf" => :sierra
+    sha256 "db45390cb89c9a1d1280f05543555917d161be399223e79d99f6fcacae6532bf" => :el_capitan
   end
 
   depends_on "cmake" => :build
   depends_on "jpeg" => :recommended
   depends_on "libpng" => :recommended
   depends_on "fftw" => :recommended
-  depends_on "homebrew/science/opencv" => :optional
+  depends_on "opencv@2" => :optional
   depends_on "ffmpeg" => :optional
   depends_on "libtiff" => :optional
   depends_on "openexr" => :optional
 
   def install
+    cp "resources/CMakeLists.txt", buildpath
     args = std_cmake_args
     args << "-DENABLE_X=OFF"
     args << "-DENABLE_JPEG=OFF" if build.without? "jpeg"
@@ -33,9 +35,6 @@ class Gmic < Formula
     args << "-DENABLE_OPENEXR=OFF" if build.without? "openexr"
     system "cmake", *args
     system "make", "install"
-
-    # https://github.com/dtschump/gmic/issues/11
-    man1.install "man/gmic.1.gz"
   end
 
   test do

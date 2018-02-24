@@ -1,50 +1,35 @@
 class Libepoxy < Formula
   desc "Library for handling OpenGL function pointer management"
   homepage "https://github.com/anholt/libepoxy"
-  url "https://github.com/anholt/libepoxy/archive/v1.3.1.tar.gz"
-  sha256 "6700ddedffb827b42c72cce1e0be6fba67b678b19bf256e1b5efd3ea38cc2bb4"
+  url "https://download.gnome.org/sources/libepoxy/1.4/libepoxy-1.4.3.tar.xz"
+  sha256 "0b808a06c9685a62fca34b680abb8bc7fb2fda074478e329b063c1f872b826f6"
 
   bottle do
     cellar :any
-    sha256 "1b3a83b5741d9e442e79f5b9a6ed93db92733c3d85409700f1424bc7f2cec99d" => :sierra
-    sha256 "3551c12b29c78c909f6b4cd9b09cc75dded48332be5122679a3662963d8721c0" => :el_capitan
-    sha256 "4c4c34f77832f75974a9ce48020391a03830b5649a6759253ce208a6eca63074" => :yosemite
-    sha256 "edc04249dcc083ed487de29eb8401d788fbcfed58988ebe6a75e1cae5613831f" => :mavericks
-    sha256 "495b9da3d417b836eaf1cdd1aba41782d975d0b3d007e1f9c91fab7e57c2a197" => :mountain_lion
+    sha256 "4a09f9f85ad5a2f0afafc33a22c6f51b4a30a6d885334a2b6c52158482ea7585" => :high_sierra
+    sha256 "a96a0e088b6f292422108da73868700ef1a332ebd170695a77e90be7a12a4f86" => :sierra
+    sha256 "0ce6f61e0062f6869e47b95363b373502c62cf343ef26bedcf0c4a9819851c79" => :el_capitan
+    sha256 "55b56dd68e17a27fa211426ea199084dbdca228a4fc63ddd0d1b3f79ea3c9a1a" => :yosemite
   end
 
-  option :universal
-
+  depends_on "meson" => :build
+  depends_on "ninja" => :build
   depends_on "pkg-config" => :build
-  depends_on "automake" => :build
-  depends_on "autoconf" => :build
-  depends_on "libtool" => :build
-  depends_on :python => :build if MacOS.version <= :snow_leopard
-
-  resource "xorg-macros" do
-    url "https://xorg.freedesktop.org/releases/individual/util/util-macros-1.19.0.tar.bz2"
-    sha256 "2835b11829ee634e19fa56517b4cfc52ef39acea0cd82e15f68096e27cbed0ba"
-  end
+  depends_on "python" => :build if MacOS.version <= :snow_leopard
 
   def install
-    ENV.universal_binary if build.universal?
-
-    resource("xorg-macros").stage do
-      system "./configure", "--prefix=#{buildpath}/xorg-macros"
-      system "make", "install"
+    # see https://github.com/anholt/libepoxy/pull/128
+    inreplace "src/meson.build", "version=1", "version 1"
+    mkdir "build" do
+      system "meson", "--prefix=#{prefix}", ".."
+      system "ninja"
+      system "ninja", "test"
+      system "ninja", "install"
     end
-
-    ENV.append_path "PKG_CONFIG_PATH", "#{buildpath}/xorg-macros/share/pkgconfig"
-    ENV.append_path "ACLOCAL_PATH", "#{buildpath}/xorg-macros/share/aclocal"
-
-    system "./autogen.sh", "--disable-dependency-tracking",
-                           "--prefix=#{prefix}"
-    system "make"
-    system "make", "install"
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
 
       #include <epoxy/gl.h>
       #include <OpenGL/CGLContext.h>
@@ -65,7 +50,7 @@ class Libepoxy < Formula
           return 0;
       }
     EOS
-    system ENV.cc, "test.c", "-lepoxy", "-framework", "OpenGL", "-o", "test"
+    system ENV.cc, "test.c", "-L#{lib}", "-lepoxy", "-framework", "OpenGL", "-o", "test"
     system "ls", "-lh", "test"
     system "file", "test"
     system "./test"

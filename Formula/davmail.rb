@@ -1,19 +1,20 @@
 class Davmail < Formula
   desc "POP/IMAP/SMTP/Caldav/Carddav/LDAP exchange gateway"
-  homepage "http://davmail.sourceforge.net/"
-  url "https://downloads.sourceforge.net/project/davmail/davmail/4.7.2/davmail-4.7.2-2427.zip"
-  sha256 "1c08bb97e08e1d29bee9bab0a58c70ef975c2f98bb91354c4ab3da283462823c"
+  homepage "https://davmail.sourceforge.io/"
+  url "https://downloads.sourceforge.net/project/davmail/davmail/4.8.3/davmail-4.8.3-2554.zip"
+  version "4.8.3"
+  sha256 "de1e3328180fbb8b06fed8d1e724dc117355b8d7b58c7c365b7d78458de14d62"
 
   bottle :unneeded
 
   def install
     libexec.install Dir["*"]
-    bin.write_jar_script libexec/"davmail.jar", "davmail"
+    bin.write_jar_script libexec/"davmail.jar", "davmail", "-Djava.awt.headless=true"
   end
 
   plist_options :manual => "davmail"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

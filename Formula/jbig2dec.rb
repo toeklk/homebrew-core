@@ -1,31 +1,17 @@
 class Jbig2dec < Formula
   desc "JBIG2 decoder and library (for monochrome documents)"
-  homepage "http://ghostscript.com/jbig2dec.html"
-  url "http://downloads.ghostscript.com/public/jbig2dec/jbig2dec-0.12.tar.gz"
-  sha256 "bcc5f2cc75ee46e9a2c3c68d4a1b740280c772062579a5d0ceda24bee2e5ebf0"
+  homepage "https://ghostscript.com/jbig2dec.html"
+  url "http://downloads.ghostscript.com/public/jbig2dec/jbig2dec-0.14.tar.gz"
+  sha256 "21b498c3ba566f283d02946f7e78e12abbad89f12fe4958974e50882c185014c"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "a46edad05083874510463f4638100765a4f2fb451fad2cfad4b5276cdcb632f7" => :sierra
-    sha256 "38ad008992a9c273162238783b31bbcc4be8558d82c0a87b947ef0be699c437c" => :el_capitan
-    sha256 "d1de5bcbceaca8669c847ec754e7d44b844ad08abdef377efdd704e768d13c86" => :yosemite
-    sha256 "e42e117812549edeae1f60e1900b0692994c75ebae186f611e16528fe0521c89" => :mavericks
-    sha256 "42039ee0b62ad6b4a153c5a5e93609ac1b668626b044a23a450a58d4d71338a5" => :mountain_lion
+    sha256 "197656bee979449ea283d855f0332afa414a31f7114123f477f3f9f2cc192763" => :high_sierra
+    sha256 "a98bac77f5b916d67c1c7742ee3462af053c2ff0726dacaf5b0bcb2e9aef7e74" => :sierra
+    sha256 "beb6ea36ce8edffa4ff8569231413fab5f3de7338379b35b49d208e16243577d" => :el_capitan
   end
 
-  depends_on "automake" => :build
-  depends_on "autoconf" => :build
-  depends_on "libtool" => :build
   depends_on "libpng" => :optional
-
-  # http://bugs.ghostscript.com/show_bug.cgi?id=695890
-  # Remove on next release.
-  patch do
-    # Original URL: http://git.ghostscript.com/?p=jbig2dec.git;a=commitdiff_plain;h=70c7f1967f43a94f9f0d6808d6ab5700a120d2fc
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/7dc28b82/jbig2dec/bug-695890.patch"
-    sha256 "5239e4eb991f198d2ba30d08011c2887599b5cead9db8b1d3eacec4b8912c2d0"
-  end
 
   def install
     args = %W[
@@ -33,16 +19,14 @@ class Jbig2dec < Formula
       --prefix=#{prefix}
       --disable-silent-rules
     ]
-
     args << "--without-libpng" if build.without? "libpng"
 
-    system "autoreconf", "-fvi" # error: cannot find install-sh
     system "./configure", *args
     system "make", "install"
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <stdint.h>
       #include <stdlib.h>
       #include <jbig2.h>

@@ -1,30 +1,39 @@
 class Sslscan < Formula
-  desc "Test SSL/TLS enabled services to discover supported cipher suites."
+  desc "Test SSL/TLS enabled services to discover supported cipher suites"
   homepage "https://github.com/rbsec/sslscan"
-  url "https://github.com/rbsec/sslscan/archive/1.11.8-rbsec.tar.gz"
-  version "1.11.8"
-  sha256 "1449f8bb45d323b322cb070a74d8dcc57b43ca2dba0560e7a16151efc8b3d911"
+  url "https://github.com/rbsec/sslscan/archive/1.11.11-rbsec.tar.gz"
+  version "1.11.11"
+  sha256 "93fbe1570073dfb2898a546759836ea4df5054e3a8f6d2e3da468eddac8b1764"
   head "https://github.com/rbsec/sslscan.git"
 
   bottle do
-    cellar :any
-    sha256 "04e602109f1066a74f01bb71ba9fcfd354b3508a0dafbc1c4951f30d276aade1" => :sierra
-    sha256 "30a096d3b1458298d1015a61baac9ddc7aab548a0855b47becbf3add224b256a" => :el_capitan
-    sha256 "b69483d7db7813ad144004b0f8c4f6848e6f8f59d305c2d8fd4499ec355247de" => :yosemite
+    cellar :any_skip_relocation
+    sha256 "b45535639610fd506cad8ff708810d2ef033fb2eb23a887705191a34c8505bc9" => :high_sierra
+    sha256 "7b608acf33d2cbb2e5dd66f99a5c2ca731304ad01f3f5e55e0daadcf2efe69f9" => :sierra
+    sha256 "25b58dc0d59e2da5c85fefc128965e882a10b659e63a1f719d89eca5f6fdb25c" => :el_capitan
   end
 
-  depends_on "openssl"
+  resource "insecure-openssl" do
+    url "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2f.tar.gz"
+    sha256 "4c9492adcb800ec855f11121bd64ddff390160714d93f95f279a9bd7241c23a6"
+  end
 
   def install
-    system "make"
-    # This regression was fixed upstream, but not in this release.
-    # https://github.com/rbsec/sslscan/commit/6e89c0597ebc779ac82
-    # Remove the below line on next stable release.
-    mkdir_p [bin, man1]
+    (buildpath/"openssl").install resource("insecure-openssl")
+
+    # prevent sslscan from fetching the tip of the openssl fork
+    # at https://github.com/PeterMosmans/openssl
+    inreplace "Makefile", "openssl/Makefile: .openssl.is.fresh",
+                          "openssl/Makefile:"
+
+    ENV.deparallelize do
+      system "make", "static"
+    end
     system "make", "install", "PREFIX=#{prefix}"
   end
 
   test do
+    assert_match "static", shell_output("#{bin}/sslscan --version")
     system "#{bin}/sslscan", "google.com"
   end
 end

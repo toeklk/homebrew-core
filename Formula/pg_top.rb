@@ -1,18 +1,19 @@
 class PgTop < Formula
   desc "Monitor PostgreSQL processes"
   homepage "http://ptop.projects.postgresql.org/"
-  url "http://pgfoundry.org/frs/download.php/3504/pg_top-3.7.0.tar.bz2"
+  url "https://www.mirrorservice.org/sites/ftp.postgresql.org/projects/pgFoundry/ptop/pg_top/3.7.0/pg_top-3.7.0.tar.bz2"
+  mirror "http://pgfoundry.org/frs/download.php/3504/pg_top-3.7.0.tar.bz2"
   sha256 "c48d726e8cd778712e712373a428086d95e2b29932e545ff2a948d043de5a6a2"
-  revision 1
+  revision 3
 
   bottle do
     cellar :any
-    sha256 "530371a7cbfe45c075cc7211630aa35d1e3aad3ba6c5e6f8611349baaf805dfc" => :sierra
-    sha256 "55384b673ebc22e89c093b70809b5ea796fdcc72c492d89a68468a51b1a2943a" => :el_capitan
-    sha256 "3c2dbc3fe9610a43cc4171c7d9d0d65a02c57d24d37f67208b12ead8654ae95f" => :yosemite
+    sha256 "32637c635d8da78d4910df2dabd474f4115c31cba57890ad053b3a43cb38a758" => :high_sierra
+    sha256 "5f06ae8b8ef1c979143e19c0527c31c8d649d23e1e9612c63bc6c5ff05bf8276" => :sierra
+    sha256 "6d0104d461d7187ad02e1085098f2dad4fa00c4f2db93b1b910a6a072517ca54" => :el_capitan
   end
 
-  depends_on :postgresql
+  depends_on "postgresql"
 
   def install
     system "./configure", "--disable-debug", "--disable-dependency-tracking",

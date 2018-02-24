@@ -1,36 +1,46 @@
 class GtkDoc < Formula
   desc "GTK+ documentation tool"
-  homepage "http://www.gtk.org/gtk-doc/"
-  url "https://download.gnome.org/sources/gtk-doc/1.25/gtk-doc-1.25.tar.xz"
-  sha256 "1ea46ed400e6501f975acaafea31479cea8f32f911dca4dff036f59e6464fd42"
+  homepage "https://www.gtk.org/gtk-doc/"
+  url "https://download.gnome.org/sources/gtk-doc/1.27/gtk-doc-1.27.tar.xz"
+  sha256 "e26bd3f7080c749b1cb66c46c6bf8239e2f320a949964fb9c6d56e1b0c6d9a6f"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "1d62a665def5ac3b9ff47c769b1bf4787c6776da35cf59f2161d7d969e87a032" => :sierra
-    sha256 "a9d525c60fdaf4339391d9c22aa4e2bfedc29f3c4eb5c2af7600c1e029961c90" => :el_capitan
-    sha256 "2a8c0cfe362660629d19ac91e7150d9460a4a7448fd088000bbea23b93e1498c" => :yosemite
-    sha256 "3602498d17e7382bbe3f7a643853b3d80ff009faddcf28e1ea666262f2e4a345" => :mavericks
+    sha256 "cbb69696f84bfbe6a6b51a6cd06f63db193f7069753e0473752a49edc424ec2b" => :high_sierra
+    sha256 "cbb69696f84bfbe6a6b51a6cd06f63db193f7069753e0473752a49edc424ec2b" => :sierra
+    sha256 "cbb69696f84bfbe6a6b51a6cd06f63db193f7069753e0473752a49edc424ec2b" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
-  depends_on "gnome-doc-utils" => :build
   depends_on "itstool" => :build
   depends_on "gettext"
-  depends_on "glib"
   depends_on "docbook"
   depends_on "docbook-xsl"
-  depends_on "libxml2" => "with-python"
-  depends_on :perl => "5.18" if MacOS.version <= :mavericks
+  depends_on "libxml2"
+  depends_on "source-highlight"
+
+  resource "six" do
+    url "https://files.pythonhosted.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-1.10.0.tar.gz"
+    sha256 "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a"
+  end
 
   def install
     ENV.append_path "PYTHONPATH", "#{Formula["libxml2"].opt_lib}/python2.7/site-packages"
 
+    ENV.prepend_create_path "PYTHONPATH", libexec/"vendor/lib/python2.7/site-packages"
+    resource("six").stage do
+      system "python", *Language::Python.setup_install_args(libexec/"vendor")
+    end
+
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
+                          "--with-highlight=source-highlight",
                           "--with-xml-catalog=#{etc}/xml/catalog"
     system "make"
     system "make", "install"
+
+    bin.env_script_all_files(libexec/"bin", :PYTHONPATH => ENV["PYTHONPATH"])
   end
 
   test do

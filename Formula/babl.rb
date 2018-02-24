@@ -1,14 +1,13 @@
 class Babl < Formula
   desc "Dynamic, any-to-any, pixel format translation library"
   homepage "http://www.gegl.org/babl/"
-  url "https://download.gimp.org/pub/babl/0.1/babl-0.1.20.tar.bz2"
-  mirror "https://mirrors.kernel.org/debian/pool/main/b/babl/babl_0.1.20.orig.tar.bz2"
-  sha256 "0010909979d4f025d734944722c76eb49e61e412608dbbe4f00857bc8cf59314"
+  url "https://download.gimp.org/pub/babl/0.1/babl-0.1.44.tar.bz2"
+  sha256 "f463fda0dec534c442234d1c374ea5d19abe0da942e11c9c5092dcc6b30cde7d"
 
   bottle do
-    sha256 "7a51aaeb117914278e3b6774040b3d2a8f00a84ab2b715ace6a98291e1239aa7" => :sierra
-    sha256 "92734ee3bbac21f60fd8973ee0e3efe674c4a2ae7bf91d63a51ddfb9ff0498ab" => :el_capitan
-    sha256 "22fd24a706ddc5764c77462541895f01850d1db18424b190a24e477e81066570" => :yosemite
+    sha256 "73c468fb9fd53012a6f611f154197a7c4a1818ee018975e80e93c32d0021711c" => :high_sierra
+    sha256 "7d6ec0effa8a598cd74f9626847f81b428c9da28a1b08b3f0a5f5793626b15d6" => :sierra
+    sha256 "739f3f0cb627c1d91dcadf1fda141afa5721aeaa410311246cdd358a0d6849e5" => :el_capitan
   end
 
   head do
@@ -20,20 +19,9 @@ class Babl < Formula
     depends_on "libtool" => :build
   end
 
-  option :universal
-
   depends_on "pkg-config" => :build
 
-  if build.universal?
-    fails_with :gcc_4_0
-    fails_with :gcc
-    ("4.3".."5.1").each do |n|
-      fails_with :gcc => n
-    end
-  end
-
   def install
-    ENV.universal_binary if build.universal?
     system "./autogen.sh" if build.head?
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}"
@@ -41,7 +29,7 @@ class Babl < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <babl/babl.h>
       int main() {
         babl_init();

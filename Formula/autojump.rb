@@ -1,15 +1,16 @@
 class Autojump < Formula
   desc "Shell extension to jump to frequently used directories"
   homepage "https://github.com/wting/autojump"
-  url "https://github.com/wting/autojump/archive/release-v22.5.0.tar.gz"
-  sha256 "8da11ff82dabfc9d0ea10f453ed90d601fbf1a212f9e8ad42965a87986045101"
+  url "https://github.com/wting/autojump/archive/release-v22.5.1.tar.gz"
+  sha256 "765fabda130eb4df70d1c1e5bc172e1d18f8ec22c6b89ff98f1674335292e99f"
   head "https://github.com/wting/autojump.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "3cafdacb41c2e300682dfbc74ee28fe069d09a380a8e4bd7a6458cd6373200c5" => :sierra
-    sha256 "3cafdacb41c2e300682dfbc74ee28fe069d09a380a8e4bd7a6458cd6373200c5" => :el_capitan
-    sha256 "3cafdacb41c2e300682dfbc74ee28fe069d09a380a8e4bd7a6458cd6373200c5" => :yosemite
+    sha256 "8e302e0a90b898349749c4b83b3c758f4af76ad415f6ac5e245cc0df9c2c90e6" => :high_sierra
+    sha256 "29d37b9fc31a978d0767c4925e88fa9fe3cebf4a9f9278fa82a96baf5caa0db4" => :sierra
+    sha256 "29d37b9fc31a978d0767c4925e88fa9fe3cebf4a9f9278fa82a96baf5caa0db4" => :el_capitan
+    sha256 "29d37b9fc31a978d0767c4925e88fa9fe3cebf4a9f9278fa82a96baf5caa0db4" => :yosemite
   end
 
   def install
@@ -23,10 +24,10 @@ class Autojump < Formula
     bin.write_exec_script libexec/"bin/autojump"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Add the following line to your ~/.bash_profile or ~/.zshrc file (and remember
     to source the file to update your current session):
-      [[ -s $(brew --prefix)/etc/profile.d/autojump.sh ]] && . $(brew --prefix)/etc/profile.d/autojump.sh
+      [ -f #{etc}/profile.d/autojump.sh ] && . #{etc}/profile.d/autojump.sh
 
     If you use the Fish shell then add the following line to your ~/.config/fish/config.fish:
       [ -f #{HOMEBREW_PREFIX}/share/autojump/autojump.fish ]; and source #{HOMEBREW_PREFIX}/share/autojump/autojump.fish
@@ -36,12 +37,12 @@ class Autojump < Formula
   test do
     path = testpath/"foo/bar"
     path.mkpath
-    output = %x(
-      source #{HOMEBREW_PREFIX}/etc/profile.d/autojump.sh
+    output = `
+      source #{etc}/profile.d/autojump.sh
       j -a "#{path.relative_path_from(testpath)}"
       j foo >/dev/null
       pwd
-    ).strip
+    `.strip
     assert_equal path.realpath.to_s, output
   end
 end

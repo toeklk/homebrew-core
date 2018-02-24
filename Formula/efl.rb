@@ -1,13 +1,13 @@
 class Efl < Formula
   desc "Enlightenment Foundation Libraries"
   homepage "https://www.enlightenment.org"
-  url "https://download.enlightenment.org/rel/libs/efl/efl-1.18.2.tar.xz"
-  sha256 "292faf76557fe56a6bc15b48b5ea3eb1f0790e2ed7f2ade4ae79ef7973d67bed"
+  url "https://download.enlightenment.org/rel/libs/efl/efl-1.20.6.tar.xz"
+  sha256 "56c67ea77435753a4f324a0a13488ba58f4ed7eb35a97c1a354fdc79c39a32c1"
 
   bottle do
-    sha256 "f6c6a2e5a796b37154230863b1208b2f5df22d49bbdac6b3218a5afaed991653" => :sierra
-    sha256 "5387e7e7741a61d4e9b6248bec4583e703cee6e7a8741d9cead1973119d784af" => :el_capitan
-    sha256 "3bbc5fa995e4c3edf6aa984857639fad408f2d25bb92f91fd35b88f467b923b8" => :yosemite
+    sha256 "c5d578f34a149d622f8252331e37c27d202f9b309d38140e44b1996d828f40cd" => :high_sierra
+    sha256 "38a698665712b7b7dc1677365fc345be860430c7a5deb632ccd055ac9054cc4a" => :sierra
+    sha256 "36d805eb820b46d7458c4ed3293d1e1bbf62d64b561cca7598fcdf828f643b38" => :el_capitan
   end
 
   option "with-docs", "Install development libraries/headers and HTML docs"
@@ -34,6 +34,7 @@ class Efl < Formula
   depends_on "libraw"
   depends_on "librsvg"
   depends_on "poppler"
+  depends_on "shared-mime-info"
   depends_on "webp" => :optional
   depends_on "glib" => :optional
 
@@ -43,7 +44,6 @@ class Efl < Formula
     ENV.cxx11
 
     args = %W[
-      --disable-cxx-bindings
       --disable-dependency-tracking
       --prefix=#{prefix}
     ]
@@ -53,9 +53,12 @@ class Efl < Formula
     system "make", "install-doc" if build.with? "docs"
   end
 
+  def post_install
+    system Formula["shared-mime-info"].opt_bin/"update-mime-database", "#{HOMEBREW_PREFIX}/share/mime"
+  end
+
   test do
     system bin/"edje_cc", "-V"
-    system bin/"eolian_gen", "-h"
     system bin/"eet", "-V"
   end
 end

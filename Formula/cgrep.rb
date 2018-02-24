@@ -5,15 +5,15 @@ class Cgrep < Formula
 
   desc "Context-aware grep for source code"
   homepage "https://github.com/awgn/cgrep"
-  url "https://hackage.haskell.org/package/cgrep-6.6.16/cgrep-6.6.16.tar.gz"
-  sha256 "7161e331f409ee95abfab14f720ad300ce4c9bd37a9fae74de6643c0f30b134b"
+  url "https://github.com/awgn/cgrep/archive/v6.6.24.tar.gz"
+  sha256 "0958549a6d1989abad493845b788dd67bf65a50162393deedf8738dbc7f3a7cd"
   head "https://github.com/awgn/cgrep.git"
 
   bottle do
-    sha256 "b28db131ec36e853e5bbfba8a49eb9bc4244d359467c9d01234204f7d8aa2bc4" => :sierra
-    sha256 "98d4ba0d26067ecec668a5e473f647cab473f64ebd4e2bf4c4188825258aae74" => :el_capitan
-    sha256 "e9798fce89cacdbd455abce2671577cbc1499fb5dc27910b3f446dfe96c8b6cb" => :yosemite
-    sha256 "b31b3a173ef35d52dc04228605d3f457f68cdb964926110afcd3b163da7292e6" => :mavericks
+    cellar :any
+    sha256 "f3468796fdaf43c65bb77d2fc3eb376b434743225b555e235aea01ffd24f2ed6" => :high_sierra
+    sha256 "01a5cca60e69cdbc82bcb8e7923eb7ea9a18ee7f95eee94523d44171ba79da64" => :sierra
+    sha256 "07e0201c1c2ef9b0c820d518987f8c56552eb5748002e9c2f57afd2322396d2a" => :el_capitan
   end
 
   depends_on "ghc" => :build
@@ -25,17 +25,14 @@ class Cgrep < Formula
   end
 
   test do
-    path = testpath/"test.rb"
-    path.write <<-EOS.undent
+    (testpath/"t.rb").write <<~EOS
       # puts test comment.
       puts "test literal."
     EOS
 
-    assert_match ":1",
-      shell_output("script -q /dev/null #{bin}/cgrep --count --comment test #{path}")
-    assert_match ":1",
-      shell_output("script -q /dev/null #{bin}/cgrep --count --literal test #{path}")
-    assert_match ":1",
-      shell_output("script -q /dev/null #{bin}/cgrep --count --code puts #{path}")
+    assert_match ":1", shell_output("#{bin}/cgrep --count --comment test t.rb")
+    assert_match ":1", shell_output("#{bin}/cgrep --count --literal test t.rb")
+    assert_match ":1", shell_output("#{bin}/cgrep --count --code puts t.rb")
+    assert_match ":2", shell_output("#{bin}/cgrep --count puts t.rb")
   end
 end

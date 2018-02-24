@@ -1,36 +1,36 @@
 class P11Kit < Formula
   desc "Library to load and enumerate PKCS#11 modules"
   homepage "https://p11-glue.freedesktop.org"
-  url "https://p11-glue.freedesktop.org/releases/p11-kit-0.23.2.tar.gz"
-  sha256 "ba726ea8303c97467a33fca50ee79b7b35212964be808ecf9b145e9042fdfaf0"
-  revision 1
+  url "https://github.com/p11-glue/p11-kit/releases/download/0.23.9/p11-kit-0.23.9.tar.gz"
+  sha256 "e1c1649c335107a8d33cf3762eb7f57b2d0681f0c7d8353627293a58d6b4db63"
 
   bottle do
-    sha256 "019c020bf72aee03d4ca861443045693ec97d189c08b3ae4f876f2491f1f9739" => :sierra
-    sha256 "92286d6cfd85219abeca164062639b731dbfde4c96670f1a5e14571d04b2ca31" => :el_capitan
-    sha256 "d7129f3799210816aa68fe35bd8a89766d164dfdfc608cc895595bbee4a76b84" => :yosemite
+    sha256 "e227e652e1455542a34cda89546012ae123f2a09cec18d300ad3333ebc132a26" => :high_sierra
+    sha256 "8e43e5d4017d0d3e1f7e33338de3698075bc8df5f5f16de3c259540862a53159" => :sierra
+    sha256 "ba09777a464fdf97ff163a59baa2cde816ff98ac1f5c63eeaf716ef192833849" => :el_capitan
   end
 
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
-  depends_on "libtool" => :build
-  depends_on "pkg-config" => :build
+  head do
+    url "https://github.com/p11-glue/p11-kit.git"
+
+    depends_on "autoconf" => :build
+    depends_on "automake" => :build
+    depends_on "gettext" => :build
+    depends_on "libtool" => :build
+  end
+
   depends_on "libffi"
-
-  # Remove for > 0.23.2
-  # Upstream commit from 3 Oct 2016 "Fix link of p11-kit-proxy.dylib on Mac OS X"
-  # https://bugs.freedesktop.org/show_bug.cgi?id=98022
-  # https://cgit.freedesktop.org/p11-glue/p11-kit/commit/?id=6923e8fb56692b20d24398d4746d2399490acdc1
-  patch do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/5271336/p11-kit/p11-kit-proxy-so-link.patch"
-    sha256 "a05a10c22a3053c5370678997aed0c200b866f4aea8c69c82665fc47d61466f9"
-  end
+  depends_on "pkg-config" => :build
 
   def install
     # https://bugs.freedesktop.org/show_bug.cgi?id=91602#c1
     ENV["FAKED_MODE"] = "1"
 
-    system "autoreconf", "-fiv"
+    if build.head?
+      ENV["NOCONFIGURE"] = "1"
+      system "./autogen.sh"
+    end
+
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
                           "--disable-trust-module",

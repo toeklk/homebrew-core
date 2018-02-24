@@ -1,8 +1,8 @@
 class Q < Formula
   desc "Treat text as a database"
   homepage "https://github.com/harelba/q"
-  url "https://github.com/harelba/q/archive/1.5.0.tar.gz"
-  sha256 "69bde3fb75aa1d42ba306576b135b8a72121a995e6d865cc8c18db289c602c4b"
+  url "https://github.com/harelba/q/archive/1.7.1.tar.gz"
+  sha256 "cf0f2ca3ecb88fedf6232d5ce5931afc90eae1db8fdef78b17933d46e9f9f678"
   head "https://github.com/harelba/q.git"
 
   bottle :unneeded

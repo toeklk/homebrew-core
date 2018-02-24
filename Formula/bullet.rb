@@ -1,69 +1,72 @@
 class Bullet < Formula
   desc "Physics SDK"
   homepage "http://bulletphysics.org/wordpress/"
-  url "https://github.com/bulletphysics/bullet3/archive/2.83.7.tar.gz"
-  sha256 "00d1d8f206ee85ffd171643ac8e72f9f4e0bf6dbf3d4ac55f4495cb168b51243"
+  url "https://github.com/bulletphysics/bullet3/archive/2.87.tar.gz"
+  sha256 "438c151c48840fe3f902ec260d9496f8beb26dba4b17769a4a53212903935f95"
   head "https://github.com/bulletphysics/bullet3.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "c40652f885e1a4c46007591a2499dc54fee0b8c720795f7d73d7dc3d880d1ac7" => :sierra
-    sha256 "76ccbd35bad9d8314034ff565faaa0554780ccb824a8e2f8e0f2c8e6d943c36f" => :el_capitan
-    sha256 "f1820f7ee747911117fc28eef8fee1d9e4cb4d776aa5f26c575edc5545a3d995" => :yosemite
-    sha256 "affa568baabe79d993fe27eaa89466d1e837002754dd407f595a9c992eef58c4" => :mavericks
+    cellar :any
+    sha256 "26f10d89d53f5c384d473bf21d06e8db1104ca8d300285a89b68b657a0ff4753" => :high_sierra
+    sha256 "3a3fd3a1ead5ef2aefc65f752533bb96596fdd552d72fab5de86bba492f63104" => :sierra
+    sha256 "460cea95c022dc7116e09277715f9da51d3e7afa7901c4561af68b4ba5372795" => :el_capitan
   end
 
-  deprecated_option "framework" => "with-framework"
-  deprecated_option "shared" => "with-shared"
-  deprecated_option "build-demo" => "with-demo"
-  deprecated_option "double-precision" => "with-double-precision"
-
-  option :universal
   option "with-framework", "Build frameworks"
-  option "with-shared", "Build shared libraries"
   option "with-demo", "Build demo applications"
   option "with-double-precision", "Use double precision"
+
+  deprecated_option "framework" => "with-framework"
+  deprecated_option "build-demo" => "with-demo"
+  deprecated_option "double-precision" => "with-double-precision"
 
   depends_on "cmake" => :build
 
   def install
-    args = ["-DINSTALL_EXTRA_LIBS=ON"]
-
-    if build.with? "framework"
-      args << "-DBUILD_SHARED_LIBS=ON" << "-DFRAMEWORK=ON"
-      args << "-DCMAKE_INSTALL_PREFIX=#{frameworks}"
-      args << "-DCMAKE_INSTALL_NAME_DIR=#{frameworks}"
-    else
-      args << "-DBUILD_SHARED_LIBS=ON" if build.with? "shared"
-      args << "-DCMAKE_INSTALL_PREFIX=#{prefix}"
-    end
-
-    if build.universal?
-      ENV.universal_binary
-      args << "-DCMAKE_OSX_ARCHITECTURES=#{Hardware::CPU.universal_archs.as_cmake_arch_flags}"
-    end
-
+    args = std_cmake_args + %w[
+      -DINSTALL_EXTRA_LIBS=ON -DBUILD_UNIT_TESTS=OFF -DBUILD_PYBULLET=OFF
+    ]
     args << "-DUSE_DOUBLE_PRECISION=ON" if build.with? "double-precision"
 
-    # Related to the following warnings when building --with-shared --with-demo
-    # https://gist.github.com/scpeters/6afc44f0cf916b11a226
-    if build.with?("demo") && (build.with?("shared") || build.with?("framework"))
-      raise "Demos cannot be installed with shared libraries or framework."
+    args_shared = args.dup + %w[
+      -DBUILD_BULLET2_DEMOS=OFF -DBUILD_SHARED_LIBS=ON
+    ]
+
+    args_framework = %W[
+      -DFRAMEWORK=ON
+      -DCMAKE_INSTALL_PREFIX=#{frameworks}
+      -DCMAKE_INSTALL_NAME_DIR=#{frameworks}
+    ]
+
+    args_shared += args_framework if build.with? "framework"
+
+    args_static = args.dup << "-DBUILD_SHARED_LIBS=OFF"
+    if build.without? "demo"
+      args_static << "-DBUILD_BULLET2_DEMOS=OFF"
+    else
+      args_static << "-DBUILD_BULLET2_DEMOS=ON"
     end
 
-    args << "-DBUILD_BULLET2_DEMOS=OFF" if build.without? "demo"
+    mkdir "build" do
+      system "cmake", "..", *args_shared
+      system "make", "install"
 
-    system "cmake", *args
-    system "make"
-    system "make", "install"
+      system "make", "clean"
 
-    prefix.install "examples" if build.with? "demo"
-    prefix.install "Extras" if build.with? "extra"
+      system "cmake", "..", *args_static
+      system "make", "install"
+
+      if build.with? "demo"
+        rm_rf Dir["examples/**/Makefile", "examples/**/*.cmake", "examples/**/CMakeFiles"]
+        pkgshare.install "examples"
+        (pkgshare/"examples").install "../data"
+      end
+    end
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
-      #include "bullet/LinearMath/btPolarDecomposition.h"
+    (testpath/"test.cpp").write <<~EOS
+      #include "LinearMath/btPolarDecomposition.h"
       int main() {
         btMatrix3x3 I = btMatrix3x3::getIdentity();
         btMatrix3x3 u, h;
@@ -71,7 +74,16 @@ class Bullet < Formula
         return 0;
       }
     EOS
-    system ENV.cc, "test.cpp", "-L#{lib}", "-lLinearMath", "-lc++", "-o", "test"
+
+    if build.with? "framework"
+      system ENV.cc, "test.cpp", "-F#{frameworks}", "-framework", "LinearMath",
+                     "-I#{frameworks}/LinearMath.framework/Headers", "-lc++",
+                     "-o", "f_test"
+      system "./f_test"
+    end
+
+    system ENV.cc, "test.cpp", "-I#{include}/bullet", "-L#{lib}",
+                   "-lLinearMath", "-lc++", "-o", "test"
     system "./test"
   end
 end

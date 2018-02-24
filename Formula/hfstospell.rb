@@ -1,25 +1,27 @@
 class Hfstospell < Formula
   desc "Helsinki Finite-State Technology ospell"
-  homepage "http://www.ling.helsinki.fi/kieliteknologia/tutkimus/hfst/"
-  url "https://downloads.sourceforge.net/project/hfst/hfst/archive/hfstospell-0.3.0.tar.gz"
-  sha256 "07b5b368882cac2399edb1bb6e2dd91450b56f732c25413a19fcfe194342d70c"
+  homepage "https://hfst.github.io/"
+  url "https://github.com/hfst/hfst-ospell/releases/download/v0.4.5/hfstospell-0.4.5.tar.gz"
+  sha256 "cf10817d1d82f0a7268992ab6ccf475fae2d838e6b9fc59eb6db38e9c21a311e"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "70fe81e5ba05136921bf47c9e29053d1ab0c23ad729bc47daafc8b9fb0a311ab" => :sierra
-    sha256 "9417cec27aed563db269d83402af875161724b10297ab78c4e69e4811c60866a" => :el_capitan
-    sha256 "4dcc41f94c027f765b2d8e9e3859a72797d1d2f2e0e59b8f33ef47831dbcefea" => :yosemite
-    sha256 "87cfbe776c920c653c7baf52d8492e6f2fc19a3c440026d09f0a8c05e3c26a87" => :mavericks
+    sha256 "bec1f8ca18b8a020b58301ce2a5d94066d2dcf658c821a88a573f8182d420f04" => :high_sierra
+    sha256 "efe7a12501e504209e44ac1a866c168ab98ca3d8979e49871c92d2e362966cc2" => :sierra
+    sha256 "71e32cd4dc6e95ab4b09c1a5642233eb2f94fe1d97bc36ddfb7e13654e5dd307" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
+  depends_on "icu4c"
   depends_on "libarchive"
+  depends_on "libxml++"
+
   needs :cxx11
 
   def install
     ENV.cxx11
-    system "./configure", "--disable-debug",
-                          "--disable-dependency-tracking",
+    system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
                           "--prefix=#{prefix}"
     system "make", "install"

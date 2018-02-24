@@ -1,37 +1,24 @@
-require "language/go"
-
 class Devd < Formula
   desc "Local webserver for developers"
   homepage "https://github.com/cortesi/devd"
-  url "https://github.com/cortesi/devd/archive/v0.6.tar.gz"
-  sha256 "fdf8fbc73e1d09c968c483c0e84d58cb88f9f934a72bca3f63b7f505de69e01b"
+  url "https://github.com/cortesi/devd/archive/v0.8.tar.gz"
+  sha256 "a73bd347f0d0f452be183e365492fb8bb86954b3cd837c9dfe256926bf7feb5b"
   head "https://github.com/cortesi/devd.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "8eb67a434e1a225b6f8268c10f03c35b6a5f9406e9d1ef56a2573a76e4400603" => :sierra
-    sha256 "69f6ea29f405429b3e74591e5ab37e68d4a27ba3c787e1361b826905c7187587" => :el_capitan
-    sha256 "b2793d5f0a51ca6a1308b55f536a72fb9c505da90b6b955b86c220fc5ef7bc97" => :yosemite
+    sha256 "9878d5e45b60321b29c33fd638465341ef05fcd4debec02c3fafe8c1d7d7c3f7" => :high_sierra
+    sha256 "d2f4d38612065cc367a539aa19d8630c5e4650631eed767740313819d0556dbc" => :sierra
+    sha256 "d6ff3c9d3cc56571cba4ba8a6131ce124877d73275f9e0f41514fec1bfa8bed0" => :el_capitan
   end
 
   depends_on "go" => :build
-
-  go_resource "github.com/cortesi/moddwatch" do
-    url "https://github.com/cortesi/moddwatch.git",
-        :revision => "a149019f9ed6f16033de28f66d8c1247593a0104"
-  end
-
-  go_resource "github.com/cortesi/termlog" do
-    url "https://github.com/cortesi/termlog.git",
-        :revision => "2ed14eb6ce62ec5bcc3fd25885a1d13d53f34fd1"
-  end
 
   def install
     ENV["GOOS"] = "darwin"
     ENV["GOARCH"] = MacOS.prefer_64_bit? ? "amd64" : "386"
     ENV["GOPATH"] = buildpath
     (buildpath/"src/github.com/cortesi/devd").install buildpath.children
-    Language::Go.stage_deps resources, buildpath/"src"
     cd "src/github.com/cortesi/devd" do
       system "go", "build", "-o", bin/"devd", ".../cmd/devd"
       prefix.install_metafiles

@@ -3,15 +3,15 @@ require "language/go"
 class Qpm < Formula
   desc "Package manager for Qt applications"
   homepage "https://www.qpm.io"
-  url "https://github.com/Cutehacks/qpm.git",
-      :tag => "v0.10.0",
-      :revision => "b0dfc0f26e009ff778cc25ebb8b166fa460ea998"
+  url "https://github.com/Cutehacks/qpm/archive/v0.10.0.tar.gz"
+  sha256 "2c56aa81e46fb144ff25b14a26476862462510e38cf1265b24c38e3ac4636ee5"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "ded01411fdc45dedb527513269fc85dfc3ee396c38dde33654c1231e310c9a01" => :el_capitan
-    sha256 "b3c8a74ccddfc85e61157745adce3d4e6c3d2ff321818730da14b7bdf47bedaf" => :yosemite
-    sha256 "d4ad41120560b6c006af29f79a7b6f1c82656cb46fc4fcb8746f23f5037e719d" => :mavericks
+    rebuild 2
+    sha256 "e10b8209ffb5e0d36025c9aea3c53379628d4631d6bdaa46d0566625f8dede6d" => :high_sierra
+    sha256 "6dab4a36e19b1cd7a6a898d516b0fc59289798213b97a2c06130b63f69243eaa" => :sierra
+    sha256 "f2a77569109ea443de6fc94788906b1862ee183f3ecd6c065f7b05351f777eb6" => :el_capitan
   end
 
   depends_on "go" => :build
@@ -50,6 +50,6 @@ class Qpm < Formula
 
   test do
     system bin/"qpm", "install", "io.qpm.example"
-    assert File.exist?(testpath/"qpm.json")
+    assert_predicate testpath/"qpm.json", :exist?
   end
 end

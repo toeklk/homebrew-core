@@ -37,7 +37,7 @@ class Ddclient < Formula
     (var+"run/ddclient").mkpath
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     For ddclient to work, you will need to create a configuration file
     in #{etc}/ddclient, a sample configuration can be found in
     #{opt_share}/doc/ddclient.
@@ -55,7 +55,7 @@ class Ddclient < Formula
 
   plist_options :startup => true
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -93,6 +93,6 @@ class Ddclient < Formula
       Process.kill "TERM", pid
       Process.wait
     end
-    $?.success?
+    $CHILD_STATUS.success?
   end
 end

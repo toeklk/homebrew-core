@@ -1,25 +1,15 @@
 class Io < Formula
   desc "Small prototype-based programming language"
   homepage "http://iolanguage.com/"
-
+  url "https://github.com/stevedekorte/io/archive/2017.09.06.tar.gz"
+  sha256 "9ac5cd94bbca65c989cd254be58a3a716f4e4f16480f0dc81070457aa353c217"
   head "https://github.com/stevedekorte/io.git"
 
-  stable do
-    url "https://github.com/stevedekorte/io/archive/2015.11.11.tar.gz"
-    sha256 "00d7be0b69ad04891dd5f6c77604049229b08164d0c3f5877bfab130475403d3"
-
-    # Fix build on Sierra. Already merged upstream.
-    patch do
-      url "https://github.com/stevedekorte/io/commit/db4d9c2.patch"
-      sha256 "25245bcfcde145ee5c0d142bee5be3017622173b98a04b26c2169ff738b5914d"
-    end
-  end
-
   bottle do
-    rebuild 1
-    sha256 "be4e0bdd2b8a71e4a1162c23a01deceea1fc48d3bbf8b018e454ec436f598ef5" => :sierra
-    sha256 "846d10b607665d5d64cf1ab74f68962da808a684de194e043061f4c25be7a2f7" => :el_capitan
-    sha256 "8274549062848cdc162462a5f4f9568a14c6b136157f97a903ca9bf419ec114a" => :yosemite
+    sha256 "686d5d23790b53c27765d49da0a74ec96ee949353b31646a0a92ee931270a23d" => :high_sierra
+    sha256 "2d0e05344917ad3a1d322f2860030013315ceb7e8ae962cf6070d1ee8cc395d4" => :sierra
+    sha256 "3a5a0e9a1ec0ce7f4bc6bcfc5fb8c782f0b1ba0451251aaab51a796452b59e67" => :el_capitan
+    sha256 "16d31a7062e2c7ebab815bcd48b03aab9597a6c40071cb407e2bc6dec91fef0b" => :yosemite
   end
 
   option "without-addons", "Build without addons"
@@ -43,11 +33,11 @@ class Io < Formula
     depends_on "pcre"
     depends_on "yajl"
     depends_on "xz"
-    depends_on :python => :optional
+    depends_on "python3" => :optional
   end
 
   def install
-    ENV.j1
+    ENV.deparallelize
 
     # FSF GCC needs this to build the ObjC bridge
     ENV.append_to_cflags "-fobjc-exceptions"
@@ -58,7 +48,7 @@ class Io < Formula
                                   "#add_subdirectory(addons)"
     else
       inreplace "addons/CMakeLists.txt" do |s|
-        if build.without? "python"
+        if build.without? "python3"
           s.gsub! "add_subdirectory(Python)", "#add_subdirectory(Python)"
         end
 
@@ -72,10 +62,12 @@ class Io < Formula
     end
 
     mkdir "buildroot" do
-      system "cmake", "..", *std_cmake_args
+      system "cmake", "..", "-DCMAKE_DISABLE_FIND_PACKAGE_ODE=ON",
+                            "-DCMAKE_DISABLE_FIND_PACKAGE_Theora=ON",
+                            *std_cmake_args
       system "make"
       output = `./_build/binaries/io ../libs/iovm/tests/correctness/run.io`
-      if $?.exitstatus.nonzero?
+      if $CHILD_STATUS.exitstatus.nonzero?
         opoo "Test suite not 100% successful:\n#{output}"
       else
         ohai "Test suite ran successfully:\n#{output}"
@@ -85,7 +77,7 @@ class Io < Formula
   end
 
   test do
-    (testpath/"test.io").write <<-EOS.undent
+    (testpath/"test.io").write <<~EOS
       "it works!" println
     EOS
 

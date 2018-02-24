@@ -8,6 +8,7 @@ class Dcadec < Formula
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "7f938bcd68b9078df3dc6e67d82e08beb55b10228a808d91543a6ed2d15a2002" => :high_sierra
     sha256 "7a51fb1bfa07f08c45176df419087429e9ffce945cbcd28d71e403c456762c74" => :sierra
     sha256 "89ddc5e9a5cfd72e604bdff54ee1f09f9ad4ec281fc79c93201971bbd380ccdd" => :el_capitan
     sha256 "640914a5ce466bbb91b551bdb35a385e4a8b08c25f78509a16c016c654963805" => :yosemite
@@ -26,8 +27,8 @@ class Dcadec < Formula
   end
 
   test do
-    resource("sample").stage do |r|
-      system "#{bin}/dcadec", r.cached_download
+    resource("sample").stage do
+      system "#{bin}/dcadec", resource("sample").cached_download
     end
   end
 end

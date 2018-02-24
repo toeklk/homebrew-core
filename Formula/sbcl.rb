@@ -1,30 +1,23 @@
 class Sbcl < Formula
   desc "Steel Bank Common Lisp system"
   homepage "http://www.sbcl.org/"
-  url "https://downloads.sourceforge.net/project/sbcl/sbcl/1.3.11/sbcl-1.3.11-source.tar.bz2"
-  sha256 "077a2d98f94c62076bcb4dea715a11975b92d85d8de20f5a0d1c36d280397642"
-
-  head "git://sbcl.git.sourceforge.net/gitroot/sbcl/sbcl.git"
+  url "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.4/sbcl-1.4.4-source.tar.bz2"
+  sha256 "ca1168b91b2260fbe021b2dc726fe9572d281cbca66b85e0ee7e9f8dd12adbcc"
+  head "https://git.code.sf.net/p/sbcl/sbcl.git"
 
   bottle do
-    sha256 "59ac56b851555e905676c60c02116a8d7087bedbc695265d70b211b6bd0e495e" => :sierra
-    sha256 "7aa45aa615f0670f41b6cda7f41572e655ac91777f518f26faacb45e0dfde684" => :el_capitan
-    sha256 "b610cac387bad671de731ceb6fae0c9ee45e1185c5dea11aaa6d4ff0338ab932" => :yosemite
+    sha256 "d5b0d43fa03325cc0d0576bd8055d85c283e705561e68a405ddbf308a566a18d" => :high_sierra
+    sha256 "d88aeccc824b0260db5d83b25d7c5f96c0e7d995826c2467943cad165ac4a1a5" => :sierra
+    sha256 "dd33b909dd3c6d4f007e27e92d8ae230b19776c2975524710657076cdb401bc0" => :el_capitan
   end
 
-  fails_with :llvm do
-    build 2334
-    cause "Compilation fails with LLVM."
-  end
-
-  option "32-bit"
   option "with-internal-xref", "Include XREF information for SBCL internals (increases core size by 5-6MB)"
-  option "with-ldb", "Include low-level debugger in the build"
+  option "without-ldb", "Don't include low-level debugger"
   option "without-sources", "Don't install SBCL sources"
   option "without-core-compression", "Build SBCL without support for compressed cores and without a dependency on zlib"
   option "without-threads", "Build SBCL without support for native threads"
 
-  # Current binary versions are listed at http://sbcl.sourceforge.net/platform-table.html
+  # Current binary versions are listed at https://sbcl.sourceforge.io/platform-table.html
   resource "bootstrap64" do
     url "https://downloads.sourceforge.net/project/sbcl/sbcl/1.2.11/sbcl-1.2.11-x86-64-darwin-binary.tar.bz2"
     sha256 "057d3a1c033fb53deee994c0135110636a04f92d2f88919679864214f77d0452"
@@ -36,44 +29,11 @@ class Sbcl < Formula
   end
 
   patch :p0 do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/c5ffdb11/sbcl/patch-base-target-features.diff"
-    sha256 "e101d7dc015ea71c15a58a5c54777283c89070bf7801a13cd3b3a1969a6d8b75"
-  end
-
-  patch :p0 do
     url "https://raw.githubusercontent.com/Homebrew/formula-patches/c5ffdb11/sbcl/patch-make-doc.diff"
     sha256 "7c21c89fd6ec022d4f17670c3253bd33a4ac2784744e4c899c32fbe27203d87e"
   end
 
-  patch :p0 do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/c5ffdb11/sbcl/patch-posix-tests.diff"
-    sha256 "06908aaa94ba82447d64cf15eb8e011ac4c2ae4c3050b19b36316f64992ee21d"
-  end
-
-  patch :p0 do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/c5ffdb11/sbcl/patch-use-mach-exception-handler.diff"
-    sha256 "089b8fdc576a9a32da0b2cdf2b7b2d8bfebf3d542ac567f1cb06f19c03eaf57d"
-  end
-
-  def write_features
-    features = []
-    features << ":sb-thread" if build.with? "threads"
-    features << ":sb-core-compression" if build.with? "core-compression"
-    features << ":sb-ldb" if build.with? "ldb"
-    features << ":sb-xref-for-internals" if build.with? "internal-xref"
-
-    File.open("customize-target-features.lisp", "w") do |file|
-      file.puts "(lambda (list)"
-      features.each do |f|
-        file.puts "  (pushnew #{f} list)"
-      end
-      file.puts "  list)"
-    end
-  end
-
   def install
-    write_features
-
     # Remove non-ASCII values from environment as they cause build failures
     # More information: https://bugs.gentoo.org/show_bug.cgi?id=174702
     ENV.delete_if do |_, value|
@@ -82,19 +42,26 @@ class Sbcl < Formula
       ascii_val =~ /[\x80-\xff]/n
     end
 
-    bootstrap = (build.build_32_bit? || !MacOS.prefer_64_bit?) ? "bootstrap32" : "bootstrap64"
-    resource(bootstrap).stage do
-      # We only need the binaries for bootstrapping, so don't install anything:
-      command = "#{Dir.pwd}/src/runtime/sbcl"
-      core = "#{Dir.pwd}/output/sbcl.core"
-      xc_cmdline = "#{command} --core #{core} --disable-debugger --no-userinit --no-sysinit"
+    (buildpath/"version.lisp-expr").write('"1.0.99.999"') if build.head?
 
-      cd buildpath do
-        ENV["SBCL_ARCH"] = "x86" if build.build_32_bit?
-        Pathname.new("version.lisp-expr").write('"1.0.99.999"') if build.head?
-        system "./make.sh", "--prefix=#{prefix}", "--xc-host=#{xc_cmdline}"
-      end
-    end
+    bootstrap = MacOS.prefer_64_bit? ? "bootstrap64" : "bootstrap32"
+    tmpdir = Pathname.new(Dir.mktmpdir)
+    tmpdir.install resource(bootstrap)
+
+    command = "#{tmpdir}/src/runtime/sbcl"
+    core = "#{tmpdir}/output/sbcl.core"
+    xc_cmdline = "#{command} --core #{core} --disable-debugger --no-userinit --no-sysinit"
+
+    args = [
+      "--prefix=#{prefix}",
+      "--xc-host=#{xc_cmdline}",
+    ]
+    args << "--with-sb-core-compression" if build.with? "core-compression"
+    args << "--with-sb-ldb" if build.with? "ldb"
+    args << "--with-sb-thread" if build.with? "threads"
+    args << "--with-sb-xref-internal" if build.with? "internal-xref"
+
+    system "./make.sh", *args
 
     ENV["INSTALL_ROOT"] = prefix
     system "sh", "install.sh"
@@ -103,15 +70,16 @@ class Sbcl < Formula
       bin.env_script_all_files(libexec/"bin", :SBCL_SOURCE_ROOT => pkgshare/"src")
       pkgshare.install %w[contrib src]
 
-      (lib/"sbcl/sbclrc").write <<-EOS.undent
+      (lib/"sbcl/sbclrc").write <<~EOS
         (setf (logical-pathname-translations "SYS")
-          '(("SYS:SRC;**;*.*.*" #p"#{pkgshare}/src/**/*.*")))
+          '(("SYS:SRC;**;*.*.*" #p"#{pkgshare}/src/**/*.*")
+            ("SYS:CONTRIB;**;*.*.*" #p"#{pkgshare}/contrib/**/*.*")))
         EOS
     end
   end
 
   test do
-    (testpath/"simple.sbcl").write <<-EOS.undent
+    (testpath/"simple.sbcl").write <<~EOS
       (write-line (write-to-string (+ 2 2)))
     EOS
     output = shell_output("#{bin}/sbcl --script #{testpath}/simple.sbcl")

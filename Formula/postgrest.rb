@@ -6,19 +6,19 @@ class Postgrest < Formula
 
   desc "Serves a fully RESTful API from any existing PostgreSQL database"
   homepage "https://github.com/begriffs/postgrest"
-  url "https://github.com/begriffs/postgrest/archive/v0.3.2.0.tar.gz"
-  sha256 "1cedceb22f051d4d80a75e4ac7a875164e3ee15bd6f6edc68dfca7c9265a2481"
+  url "https://github.com/begriffs/postgrest/archive/v0.4.4.0.tar.gz"
+  sha256 "063eb700dc5c85a7916fc51d52c36ca2ae1d2dc326e1bc3211ec143bdaf66bf5"
   head "https://github.com/begriffs/postgrest.git"
-  revision 1
 
   bottle do
-    sha256 "e46e739256e3f753abe8540db32cff90ed8e4adfbed1e658cb229dc8ded0ce00" => :sierra
-    sha256 "287da0080c05d3e3903d8c8fcaa18f55811b857d297096664511bfdbc7868caa" => :el_capitan
-    sha256 "57351277753e13fd3667c12b1514290f7aaac42abd90e03309ac7a6d04a931b4" => :yosemite
+    cellar :any
+    sha256 "2960819fa37338ac4f610865b0365e2226dd7f4d0956cfcca738770932105ed3" => :high_sierra
+    sha256 "c332f0905eaa2357110e2f144577dd348cbbf18c8e2ca3f8e47cd3bcbb786ffb" => :sierra
+    sha256 "557472bb552b83c7c3e13b3df9e9e6f7473dcc91560d53751495f8304d2b59ac" => :el_capitan
   end
 
-  depends_on "ghc" => :build
   depends_on "cabal-install" => :build
+  depends_on "ghc" => :build
   depends_on "postgresql"
 
   def install
@@ -39,14 +39,19 @@ class Postgrest < Formula
 
     begin
       system "#{pg_bin}/createdb", "-w", "-p", pg_port, "-U", pg_user, test_db
+      (testpath/"postgrest.config").write <<~EOS
+        db-uri = "postgres://#{pg_user}@localhost:#{pg_port}/#{test_db}"
+        db-schema = "public"
+        db-anon-role = "#{pg_user}"
+        server-port = 55560
+      EOS
       pid = fork do
-        exec "postgrest", "postgres://#{pg_user}@localhost:#{pg_port}/#{test_db}",
-          "-a", pg_user, "-p", "55560"
+        exec "#{bin}/postgrest", "postgrest.config"
       end
       Process.detach(pid)
       sleep(5) # Wait for the server to start
       response = Net::HTTP.get(URI("http://localhost:55560"))
-      assert_equal "[]", response
+      assert_match /responses.*200.*OK/, response
     ensure
       begin
         Process.kill("TERM", pid) if pid

@@ -1,20 +1,19 @@
 class Goffice < Formula
   desc "Gnumeric spreadsheet program"
   homepage "https://developer.gnome.org/goffice/"
-  url "https://download.gnome.org/sources/goffice/0.10/goffice-0.10.32.tar.xz"
-  sha256 "02b37da9f54fb92725b973875d1d2da49b54f6486eb03648fd1ea58e4a297ac3"
+  url "https://download.gnome.org/sources/goffice/0.10/goffice-0.10.38.tar.xz"
+  sha256 "443199d7a9833fddaadfc4f9065c289e639eed480de316f37da816e396bb9764"
 
   bottle do
-    sha256 "acd49965f619800bc5c031d49d7b6440290e5ae0f598c98d400b1999a7f734b3" => :sierra
-    sha256 "649167affbea28f77cbe9b70282a4baa62a061e6ca151b8f4f197d0abc6c7c73" => :el_capitan
-    sha256 "c615b8e6a95797970fde4b80f76f8c55df4317e1b28004827fd437a1e88a5d6c" => :yosemite
+    sha256 "64dabacabd1d8cf505326e11cc930072e79363a4e2beb049110c621c636f2ed2" => :high_sierra
+    sha256 "c927adb85abc488f910c54dc7aff5ad046d393de40016a4eaddf1d55fdf01ed4" => :sierra
+    sha256 "194261c81023963a732121de2e40d52798405af2dfcec8e57a8ddbca57a457da" => :el_capitan
   end
 
   head do
     url "https://github.com/GNOME/goffice.git"
-    depends_on "automake" => :build
     depends_on "autoconf" => :build
-    depends_on "gnome-common" => :build
+    depends_on "automake" => :build
     depends_on "gtk-doc" => :build
     depends_on "libtool" => :build
   end
@@ -23,8 +22,8 @@ class Goffice < Formula
   depends_on "pkg-config" => :build
   depends_on "atk"
   depends_on "cairo"
-  depends_on "gettext"
   depends_on "gdk-pixbuf"
+  depends_on "gettext"
   depends_on "gtk+3"
   depends_on "libgsf"
   depends_on "librsvg"
@@ -42,7 +41,7 @@ class Goffice < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <goffice/goffice.h>
       int main()
       {

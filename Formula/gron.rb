@@ -3,42 +3,32 @@ require "language/go"
 class Gron < Formula
   desc "Make JSON greppable"
   homepage "https://github.com/tomnomnom/gron"
-  url "https://github.com/tomnomnom/gron/archive/v0.3.7.tar.gz"
-  sha256 "742a78338fe14657b4f0ef5cc4e76d948fcb7fa4005156e98f81f0fee7474717"
+  url "https://github.com/tomnomnom/gron/archive/v0.5.1.tar.gz"
+  sha256 "062462b8b6e884cd5731b0bc870e9a45f450e056f4367acccddb926079686560"
   head "https://github.com/tomnomnom/gron.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "2d4b6c5d7212beb402e2ca4dc9065865ebc7bd25cf864c33c9343ff39788ff8b" => :sierra
-    sha256 "4d82d9c6a9f8fba7c73db1e5f7212a11f58128235676c5d6e84c0db26f2a1fba" => :el_capitan
-    sha256 "4aa183c4f319472865defffa9006d96fd713f6ce14dd39a35bca6551736965df" => :yosemite
+    sha256 "69513942bdaf37db13e7c380bc5241ef7a1a7e778b186c4197e8fa8e177bd6fb" => :high_sierra
+    sha256 "04dfab480e6fa4f718491d8b1c13929769260fb5330c62d5944a9b23c224005e" => :sierra
+    sha256 "8b719a5634fc88a4fa10bea59524ba58209e0da61fcbcba99ce09830a0c2358a" => :el_capitan
   end
 
   depends_on "go" => :build
 
   go_resource "github.com/fatih/color" do
     url "https://github.com/fatih/color.git",
-        :revision => "87d4004f2ab62d0d255e0a38f1680aa534549fe3"
-  end
-
-  go_resource "github.com/mattn/go-colorable" do
-    url "https://github.com/mattn/go-colorable.git",
-        :revision => "ed8eb9e318d7a84ce5915b495b7d35e0cfe7b5a8"
-  end
-
-  go_resource "github.com/mattn/go-isatty" do
-    url "https://github.com/mattn/go-isatty.git",
-        :revision => "3a115632dcd687f9c8cd01679c83a06a0e21c1f3"
+        :revision => "5df930a27be2502f99b292b7cc09ebad4d0891f4"
   end
 
   go_resource "github.com/nwidger/jsoncolor" do
     url "https://github.com/nwidger/jsoncolor.git",
-        :revision => "f344a1ffbe51794516e9cf2c4d58b203863d3070"
+        :revision => "75a6de4340e59be95f0884b9cebdda246e0fdf40"
   end
 
   go_resource "github.com/pkg/errors" do
     url "https://github.com/pkg/errors.git",
-        :revision => "17b591df37844cde689f4d5813e5cea0927d8dd2"
+        :revision => "e881fd58d78e04cf6d0de1217f8707c8cc2249bc"
   end
 
   def install
@@ -50,7 +40,7 @@ class Gron < Formula
   end
 
   test do
-    assert_equal <<-EOS.undent, pipe_output("#{bin}/gron", "{\"foo\":1, \"bar\":2}")
+    assert_equal <<~EOS, pipe_output("#{bin}/gron", "{\"foo\":1, \"bar\":2}")
       json = {};
       json.bar = 2;
       json.foo = 1;

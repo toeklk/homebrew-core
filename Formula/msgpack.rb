@@ -1,22 +1,18 @@
 class Msgpack < Formula
   desc "Library for a binary-based efficient data interchange format"
   homepage "https://msgpack.org/"
-  url "https://github.com/msgpack/msgpack-c/releases/download/cpp-2.0.0/msgpack-2.0.0.tar.gz"
-  sha256 "41de0989a3385061ab7307a1005655e780def6fc9c89af0ec942616aa787e136"
+  url "https://github.com/msgpack/msgpack-c/releases/download/cpp-2.1.5/msgpack-2.1.5.tar.gz"
+  sha256 "6126375af9b204611b9d9f154929f4f747e4599e6ae8443b337915dcf2899d2b"
   head "https://github.com/msgpack/msgpack-c.git"
 
   bottle do
-    sha256 "ea7602eaad716977168403c6c250e4121d4c28f78c6d96f2d80769976b981bfe" => :sierra
-    sha256 "21fefa9786fae112931ea32d84d05e5f2dde5f06883df1cd9c7d1a365290e206" => :el_capitan
-    sha256 "59dc7ecd1e3ee33c3bdf221098b3011cb1dfd8c8eb329e25105c1ce3f8e89b46" => :yosemite
-    sha256 "68f9cadf64e4a3100a034f0b750c9b4ca9cb461b6b0dec84004e984f71ab0126" => :mavericks
+    sha256 "85933b57f67eaa2f08bdd634bf4615603586775d7c4558d2309f3894bf53a51c" => :high_sierra
+    sha256 "4666095a79d52aafd4f430d107621ce7478bd6a1fc605aa565c5c0fab25f82e3" => :sierra
+    sha256 "bd0d61248dbbf8fc6859d22a3ccc3b4a62289f6f5745c4415f129431614ae173" => :el_capitan
+    sha256 "f29ea6e3fa33c5ad7b3a6172ad1e993e7ebfd30bc745769da4f093f3283031a3" => :yosemite
   end
 
   depends_on "cmake" => :build
-
-  fails_with :llvm do
-    build 2334
-  end
 
   def install
     system "cmake", ".", *std_cmake_args
@@ -24,8 +20,8 @@ class Msgpack < Formula
   end
 
   test do
-    # Reference: http://wiki.msgpack.org/display/MSGPACK/QuickStart+for+C+Language
-    (testpath/"test.c").write <<-EOS.undent
+    # Reference: https://github.com/msgpack/msgpack-c/blob/master/QUICKSTART-C.md
+    (testpath/"test.c").write <<~EOS
       #include <msgpack.h>
       #include <stdio.h>
 
@@ -57,7 +53,7 @@ class Msgpack < Formula
       }
     EOS
 
-    system ENV.cc, "-o", "test", "test.c", "-lmsgpackc"
+    system ENV.cc, "-o", "test", "test.c", "-L#{lib}", "-lmsgpackc"
     assert_equal "1\n2\n3\n", `./test`
   end
 end

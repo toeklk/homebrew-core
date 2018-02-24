@@ -1,14 +1,14 @@
 class Jsonnet < Formula
-  desc "Domain specific configuration language for defining JSON data."
+  desc "Domain specific configuration language for defining JSON data"
   homepage "https://google.github.io/jsonnet/doc/"
-  url "https://github.com/google/jsonnet/archive/v0.9.0.tar.gz"
-  sha256 "8e1473cc5225b99d626cba44b85177e34bf458112df164d8a6ecc9475608795d"
+  url "https://github.com/google/jsonnet/archive/v0.9.5.tar.gz"
+  sha256 "f504b6079882a18f0e8304f9e230f04eff70c2f0fb94a18fc26cbf989c7d838b"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "eeaa92759a002755344fab71c4f89cb908c35fd3f1255e1df1a192bdd65ff36b" => :sierra
-    sha256 "17c8a6e47a691ae5d0a725c130109c465c6a71d9e0ae0fc9dc2f064862f8982e" => :el_capitan
-    sha256 "54263961fd65d09db63aa6f35e194619d1dd1c308794af1b3ca6da287812f052" => :yosemite
+    sha256 "f1e7b24a01601304ee1a54402019d27e9a61ba40d4d8cc7ffff506784f4bbec5" => :high_sierra
+    sha256 "44fff61b8492dc57f385eac3808a3adbfa302caa12c81aae096fe339a5a06257" => :sierra
+    sha256 "5b9d9bb335bc85c73f0ec88add5fb9678aa65593c586b3a9ec6f7e4cd82168fb" => :el_capitan
   end
 
   needs :cxx11
@@ -22,9 +22,7 @@ class Jsonnet < Formula
   end
 
   test do
-    require "utils/json"
-
-    (testpath/"example.jsonnet").write <<-EOS
+    (testpath/"example.jsonnet").write <<~EOS
       {
         person1: {
           name: "Alice",
@@ -46,6 +44,6 @@ class Jsonnet < Formula
     }
 
     output = shell_output("#{bin}/jsonnet #{testpath}/example.jsonnet")
-    assert_equal expected_output, Utils::JSON.load(output)
+    assert_equal expected_output, JSON.parse(output)
   end
 end

@@ -1,9 +1,9 @@
 class Sbtenv < Formula
   desc "Command-line tool for managing sbt environments"
-  homepage "https://github.com/mazgi/sbtenv"
-  url "https://github.com/mazgi/sbtenv/archive/version/0.0.9.tar.gz"
-  sha256 "0c5809eda41a0041d073bb22e92e8de00a8f17b91af2b78c32f0cf5ebea2cd54"
-  head "https://github.com/mazgi/sbtenv.git"
+  homepage "https://github.com/sbtenv/sbtenv"
+  url "https://github.com/sbtenv/sbtenv/archive/version/0.0.13.tar.gz"
+  sha256 "ee34909428a0811de79946a2707d1bbef5196e3854c3d3eb05d81112c115f0c6"
+  head "https://github.com/sbtenv/sbtenv.git"
 
   bottle :unneeded
 
@@ -26,15 +26,6 @@ class Sbtenv < Formula
     end
 
     (var_lib/"plugins").install_symlink "#{prefix}/default-plugins/sbt-install"
-  end
-
-  def caveats; <<-EOS.undent
-    To use Homebrew's directories rather than ~/.sbtenv add to your profile:
-      export SBTENV_ROOT=#{var}/sbtenv
-
-    To enable shims and autocompletion add to your profile:
-      eval "$(sbtenv init -)"
-    EOS
   end
 
   test do

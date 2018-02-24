@@ -7,13 +7,14 @@ class Stormssh < Formula
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "3be664afd826e9782f18ba555bdfc680c7cb8b2fa2b5fe27fddadfd433f4b8e2" => :high_sierra
     sha256 "d095bd03b0c4f6b3d0bd5392452e2c5a411582c204b710319fff9ea3e203f45d" => :sierra
     sha256 "f2a8c7b99647b5b7e0e578329c126842670610ca667c28609afbd40bec032409" => :el_capitan
     sha256 "1f15fa5349824fb2de682b577d7b1a8208008d64050c1c6189ef8abac108cc97" => :yosemite
     sha256 "902cb6751c1af1c04a23419f3bff6ad2f34a36690c44059526142f886a93b6dd" => :mavericks
   end
 
-  depends_on :python if MacOS.version <= :snow_leopard
+  depends_on "python" if MacOS.version <= :snow_leopard
 
   conflicts_with "storm", :because => "both install 'storm' binary"
 
@@ -86,7 +87,7 @@ class Stormssh < Formula
 
     system bin/"storm", "add", "--config", "sshconfig", "aliastest", "user@example.com:22"
 
-    expected_output = <<-EOS.undent
+    expected_output = <<~EOS
       Host aliastest
           hostname example.com
           user user

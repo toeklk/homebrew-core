@@ -1,29 +1,26 @@
 class OpenSceneGraph < Formula
   desc "3D graphics toolkit"
   homepage "https://github.com/openscenegraph/OpenSceneGraph"
-  url "https://github.com/openscenegraph/OpenSceneGraph/archive/OpenSceneGraph-3.5.5.tar.gz"
-  sha256 "f44c96ade3a1d3c547f36504d75633bedbb9b8f6f42dac4fff75166db7d3aadf"
-
-  head "https://github.com/openscenegraph/OpenSceneGraph"
+  url "https://github.com/openscenegraph/OpenSceneGraph/archive/OpenSceneGraph-3.5.9.tar.gz"
+  sha256 "e18bd54d7046ea73525941244ef4f77b38b2a90bdf21d81468ac3874c41e9448"
+  head "https://github.com/openscenegraph/OpenSceneGraph.git"
 
   bottle do
-    sha256 "d970ff77049a0c4d02e149696e28d5c4bb833cb4f9cba14b3fd0315ea00966d0" => :sierra
-    sha256 "3d9c592b7442c985cbcf40e4d6d0f7610b8745a8896b70a2477505d16e7f7323" => :el_capitan
-    sha256 "92a14a032c8713149feecba845f2dcd99b37b1c4dc3e91d78563f8aa686f865f" => :yosemite
+    sha256 "e29e28e5812042f63f2225549191b00306ca1f428538d2150453bd69789c97aa" => :high_sierra
+    sha256 "90b2999887964f4392d2467fab2ee178e372d9b85ee969d3da428a5a116375bd" => :sierra
+    sha256 "51ae8250fb6131a510c052969e6e4834bb5b69ec40b85b184b575595453be2cd" => :el_capitan
   end
 
-  option :cxx11
   option "with-docs", "Build the documentation with Doxygen and Graphviz"
 
   deprecated_option "docs" => "with-docs"
-  deprecated_option "with-qt" => "with-qt5"
 
   depends_on "cmake" => :build
   depends_on "pkg-config" => :build
   depends_on "jpeg"
-  depends_on "wget"
   depends_on "gtkglext"
   depends_on "freetype"
+  depends_on "sdl"
   depends_on "gdal" => :optional
   depends_on "jasper" => :optional
   depends_on "openexr" => :optional
@@ -32,7 +29,6 @@ class OpenSceneGraph < Formula
   depends_on "collada-dom" => :optional
   depends_on "gnuplot" => :optional
   depends_on "ffmpeg" => :optional
-  depends_on "qt5" => :optional
 
   # patch necessary to ensure support for gtkglext-quartz
   # filed as an issue to the developers https://github.com/openscenegraph/osg/issues/34
@@ -44,15 +40,25 @@ class OpenSceneGraph < Formula
   end
 
   def install
-    ENV.cxx11 if build.cxx11?
-
-    # Turning off FFMPEG takes this change or a dozen "-DFFMPEG_" variables
-    if build.without? "ffmpeg"
-      inreplace "CMakeLists.txt", "FIND_PACKAGE(FFmpeg)", "#FIND_PACKAGE(FFmpeg)"
+    # Fix "fatal error: 'os/availability.h' file not found" on 10.11 and
+    # "error: expected function body after function declarator" on 10.12
+    if MacOS.version == :sierra || MacOS.version == :el_capitan
+      ENV["SDKROOT"] = MacOS.sdk_path
     end
 
     args = std_cmake_args
-    args << "-DBUILD_DOCUMENTATION=" + ((build.with? "docs") ? "ON" : "OFF")
+    # Disable opportunistic linkage
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_GDAL=ON" if build.without? "gdal"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_Jasper=ON" if build.without? "jasper"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_OpenEXR=ON" if build.without? "openexr"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_DCMTK=ON" if build.without? "dcmtk"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_RSVG=ON" if build.without? "librsvg"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_COLLADA=ON" if build.without? "collada-dom"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_FFmpeg=ON" if build.without? "ffmpeg"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_cairo=ON"
+    args << "-DCMAKE_DISABLE_FIND_PACKAGE_TIFF=ON"
+
+    args << "-DBUILD_DOCUMENTATION=" + (build.with?("docs") ? "ON" : "OFF")
     args << "-DCMAKE_CXX_FLAGS=-Wno-error=narrowing" # or: -Wno-c++11-narrowing
 
     if MacOS.prefer_64_bit?
@@ -64,11 +70,7 @@ class OpenSceneGraph < Formula
     end
 
     if build.with? "collada-dom"
-      args << "-DCOLLADA_INCLUDE_DIR=#{Formula["collada-dom"].opt_include}/collada-dom"
-    end
-
-    if build.with? "qt5"
-      args << "-DCMAKE_PREFIX_PATH=#{Formula["qt5"].opt_prefix}"
+      args << "-DCOLLADA_INCLUDE_DIR=#{Formula["collada-dom"].opt_include}/collada-dom2.4"
     end
 
     mkdir "build" do
@@ -81,7 +83,7 @@ class OpenSceneGraph < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<-EOS.undent
+    (testpath/"test.cpp").write <<~EOS
       #include <iostream>
       #include <osg/Version>
       using namespace std;

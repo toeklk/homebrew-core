@@ -1,15 +1,14 @@
 class Libmtp < Formula
   desc "Implementation of Microsoft's Media Transfer Protocol (MTP)"
-  homepage "http://libmtp.sourceforge.net/"
-  url "https://downloads.sourceforge.net/project/libmtp/libmtp/1.1.12/libmtp-1.1.12.tar.gz"
-  sha256 "cdf59e816c6cda3e908a876c7fb42943f40b85669aea0029a1ca431c89afa1a0"
+  homepage "https://libmtp.sourceforge.io/"
+  url "https://downloads.sourceforge.net/project/libmtp/libmtp/1.1.14/libmtp-1.1.14.tar.gz"
+  sha256 "3817d3e296be8f1bc527385585780e70984e8e0d6a0d00349240d67e3df412e8"
 
   bottle do
     cellar :any
-    sha256 "636ae6764697e9b4e9c7139aeddbf703e4af538397e40abccfcf986758f16e06" => :sierra
-    sha256 "d85bd08a48d040faf70211a58d66c7403e72ea0d5e5d9062a75c01f00c579f21" => :el_capitan
-    sha256 "9de77ac16de49e3806fc97e92321dcf730e72cd5b8846098ffc1ffefdcb8593c" => :yosemite
-    sha256 "c72299056365814ddd66dd8bd9041a24d98926b583626faeff8216470deb3fee" => :mavericks
+    sha256 "ea1c31e565d1a64901bb1fd11ad57ed76e3572d2fae6db9d77a348ca628dee2f" => :high_sierra
+    sha256 "6f4b2c6338e83015c19e23d15380fed863cb9e56f11933c2239ec05c25582847" => :sierra
+    sha256 "3b2aca5b7b96638ce196396686b9ba4fe89199759f4ba88e780da5cde726c0cf" => :el_capitan
   end
 
   depends_on "pkg-config" => :build

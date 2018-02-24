@@ -1,13 +1,14 @@
 class GstPluginsBase < Formula
   desc "GStreamer plugins (well-supported, basic set)"
   homepage "https://gstreamer.freedesktop.org/"
-  url "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.10.0.tar.xz"
-  sha256 "bfcdef97dfc69a0bbdb4403c47aae4e53def176bf0b781c5d818550536cfe94a"
+  url "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.12.4.tar.xz"
+  sha256 "4c306b03df0212f1b8903784e29bb3493319ba19ebebf13b0c56a17870292282"
+  revision 1
 
   bottle do
-    sha256 "695d260f6d4ab6d552bd0d91ef2ad076ba85dfb4c5a5c60402ce5ed74920f25d" => :sierra
-    sha256 "0cb075c7f1feba9ef8cc8c94f394ba700e9b1ceb1a8bf4516291646fcd3a0031" => :el_capitan
-    sha256 "c117522b4abac2cacfa11ded9ad2d448c23c8e048739e01f65b3708b94aa4e72" => :yosemite
+    sha256 "5f595223e492a2b66ea22915de47eb95479e3ee9d2428fff3117a49f0d5199ed" => :high_sierra
+    sha256 "c310d86d1776dc4e06581fa4c79b7bc74744220a232f772dc2946da970466790" => :sierra
+    sha256 "b354e7294fe96a2f0f4a55ff8b5a20c39b5a3263e1719860b56b3ffce21bb14f" => :el_capitan
   end
 
   head do
@@ -29,7 +30,7 @@ class GstPluginsBase < Formula
   depends_on "orc" => :recommended
   depends_on "libogg" => :optional
   depends_on "opus" => :optional
-  depends_on "pango" => :optional
+  depends_on "pango" => :recommended
   depends_on "theora" => :optional
   depends_on "libvorbis" => :optional
 

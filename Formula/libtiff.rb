@@ -1,47 +1,35 @@
 class Libtiff < Formula
   desc "TIFF library and utilities"
-  homepage "http://www.remotesensing.org/libtiff/"
-  url "http://download.osgeo.org/libtiff/tiff-4.0.6.tar.gz"
-  mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/t/tiff/tiff_4.0.6.orig.tar.gz"
-  sha256 "4d57a50907b510e3049a4bba0d7888930fdfc16ce49f1bf693e5b6247370d68c"
-  revision 3
+  homepage "http://libtiff.maptools.org/"
+  url "https://download.osgeo.org/libtiff/tiff-4.0.9.tar.gz"
+  mirror "https://fossies.org/linux/misc/tiff-4.0.9.tar.gz"
+  sha256 "6e7bdeec2c310734e734d19aae3a71ebe37a4d842e0e23dbb1b8921c0026cfcd"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "f27a388fbbca11c403777f24581583650626b663b3cf48543653e7a1c6b26191" => :sierra
-    sha256 "89e050067246aaefde34c1ae38698345b1e37755e75dd2d630e05f2a2bed479b" => :el_capitan
-    sha256 "33bfa57b94c4ada76ebd904f9e22edb36808754f6200d5aa03782de466bc492f" => :yosemite
+    sha256 "b25a0893acdffc8fcbb1f9d0a2f1ef04c62f15168689fc64842cd7a36884d179" => :high_sierra
+    sha256 "4fbaa643a091abe7e6744ff8b04dcd94d35b559874dcdc9d733b10c41666c78a" => :sierra
+    sha256 "fdfeb67c92d2cb64628ba15c3ded9d840b90b5627e06e0864536fd66ea9d15f3" => :el_capitan
   end
 
-  option :universal
-  option :cxx11
   option "with-xz", "Include support for LZMA compression"
 
   depends_on "jpeg"
   depends_on "xz" => :optional
 
-  # Backports of various security/potential security fixes from Debian.
-  # Already applied upstream in CVS but no new release yet.
+  # All of these have been reported upstream & should
+  # be fixed in the next release, but please check.
   patch do
-    url "https://mirrors.ocf.berkeley.edu/debian/pool/main/t/tiff/tiff_4.0.6-3.debian.tar.xz"
-    mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/t/tiff/tiff_4.0.6-3.debian.tar.xz"
-    sha256 "cc650116c1dafed9c3721302f91e5e79b670f46712ebf2b86dea989c102e5c94"
-    apply "patches/01-CVE-2015-8665_and_CVE-2015-8683.patch",
-          "patches/02-fix_potential_out-of-bound_writes_in_decode_functions.patch",
-          "patches/03-fix_potential_out-of-bound_write_in_NeXTDecode.patch",
-          "patches/04-CVE-2016-5314_CVE-2016-5316_CVE-2016-5320_CVE-2016-5875.patch",
-          "patches/05-CVE-2016-6223.patch",
-          "patches/06-CVE-2016-5321.patch",
-          "patches/07-CVE-2016-5323.patch",
-          "patches/08-CVE-2016-3623_CVE-2016-3624.patch",
-          "patches/09-CVE-2016-5652.patch",
-          "patches/10-CVE-2016-3658.patch"
+    url "https://mirrors.ocf.berkeley.edu/debian/pool/main/t/tiff/tiff_4.0.9-4.debian.tar.xz"
+    mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/t/tiff/tiff_4.0.9-4.debian.tar.xz"
+    sha256 "f078da1da538109c1e5403dc1f44d23c91f5a5d6ddc5ffc41ff60de006cb2b2e"
+    apply "patches/CVE-2017-9935.patch",
+          "patches/CVE-2017-18013.patch",
+          "patches/CVE-2018-5784.patch"
   end
 
   def install
-    ENV.universal_binary if build.universal?
-    ENV.cxx11 if build.cxx11?
-
     args = %W[
       --disable-dependency-tracking
       --prefix=#{prefix}
@@ -60,7 +48,7 @@ class Libtiff < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <tiffio.h>
 
       int main(int argc, char* argv[])

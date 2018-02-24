@@ -1,17 +1,19 @@
 class Plantuml < Formula
   desc "Draw UML diagrams"
-  homepage "http://plantuml.sourceforge.net/"
-  url "https://downloads.sourceforge.net/project/plantuml/plantuml.8048.jar"
-  sha256 "e500ea94600ecade4af7262b32ea20a1c884de0013f4a3f07aeae02d594424ab"
+  homepage "https://plantuml.com/"
+  url "https://downloads.sourceforge.net/project/plantuml/1.2018.1/plantuml.1.2018.1.jar"
+  sha256 "10a859bcf2f21c677d3c32d1cb70627529a0065fb7d766243a0a8a45cd320b27"
+  version_scheme 1
 
   bottle :unneeded
 
   depends_on "graphviz"
+  depends_on :java
 
   def install
     jar = "plantuml.jar"
     libexec.install "plantuml.#{version}.jar" => jar
-    (bin/"plantuml").write <<-EOS.undent
+    (bin/"plantuml").write <<~EOS
       #!/bin/bash
       GRAPHVIZ_DOT="#{Formula["graphviz"].opt_bin}/dot" exec java -jar #{libexec}/#{jar} "$@"
     EOS

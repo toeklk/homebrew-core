@@ -1,19 +1,19 @@
 class Mapnik < Formula
   desc "Toolkit for developing mapping applications"
   homepage "http://www.mapnik.org/"
-  url "https://github.com/mapnik/mapnik/releases/download/v3.0.12/mapnik-v3.0.12.tar.bz2"
-  sha256 "66a3d620c3ce543c91ea5b42a25079aca9a2a90f6079a2ce2a8714398fa57d6d"
+  url "https://github.com/mapnik/mapnik/releases/download/v3.0.18/mapnik-v3.0.18.tar.bz2"
+  sha256 "18b9ceef70e5922dd7b392cff841d473c121c907b04cb7d4f8af0aa96664d919"
   head "https://github.com/mapnik/mapnik.git"
-  revision 2
 
   bottle do
     cellar :any
-    sha256 "6b2beb34e54495637783248a1e7f6d7d02783ef82a2605ce13032f5a68b062ea" => :sierra
-    sha256 "3e7775d632e2754babb407a3af5d23623f887c1fc25e66cc63153687ac4f5974" => :el_capitan
-    sha256 "0a0187f29c95e5ad835d731edfdc10c6e8199937ce5238b992a909950c4e33f3" => :yosemite
+    sha256 "2f238e434d299c654e91d5bba9b4c04c5612e6584cd787163009cb4f68b7c7ca" => :high_sierra
+    sha256 "af3599138b065ee1d97d8f6a97814c811521c4fa61de9a3fc1fe63f2f4027470" => :sierra
+    sha256 "4b459d4220f8156af6870b715d5e79e716de01a9da52baae7cdea6461864c75a" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
+  depends_on "boost"
   depends_on "freetype"
   depends_on "harfbuzz"
   depends_on "libpng"
@@ -26,16 +26,15 @@ class Mapnik < Formula
   depends_on "postgresql" => :optional
   depends_on "cairo" => :optional
 
-  if MacOS.version < :mavericks
-    depends_on "boost" => "c++11"
-  else
-    depends_on "boost"
-  end
-
   needs :cxx11
 
   def install
     ENV.cxx11
+
+    # Work around "error: no member named 'signbit' in the global namespace"
+    # encountered when trying to detect boost regex in configure
+    ENV.delete("SDKROOT") if DevelopmentTools.clang_build_version >= 900
+
     icu = Formula["icu4c"].opt_prefix
     boost = Formula["boost"].opt_prefix
     proj = Formula["proj"].opt_prefix

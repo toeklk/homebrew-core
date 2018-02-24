@@ -1,33 +1,46 @@
 class Libswiften < Formula
   desc "C++ library for implementing XMPP applications"
   homepage "https://swift.im/swiften"
-  url "https://swift.im/downloads/releases/swift-3.0/swift-3.0.tar.gz"
-  sha256 "8aa490431190294e62a9fc18b69ccc63dd0f561858d7d0b05c9c65f4d6ba5397"
-  revision 1
+  revision 2
+  head "https://swift.im/git/swift"
 
-  # Patch to fix build error of dynamic library with Apple's Secure Transport API
-  # Fixed upstream: https://swift.im/git/swift/commit/?id=1d545a4a7fb877f021508094b88c1f17b30d8b4e
-  patch :DATA
+  stable do
+    url "https://swift.im/downloads/releases/swift-3.0/swift-3.0.tar.gz"
+    sha256 "8aa490431190294e62a9fc18b69ccc63dd0f561858d7d0b05c9c65f4d6ba5397"
+
+    # Patch to fix build error of dynamic library with Apple's Secure Transport API
+    # Fixed upstream: https://swift.im/git/swift/commit/?id=1d545a4a7fb877f021508094b88c1f17b30d8b4e
+    patch :DATA
+  end
 
   bottle do
-    sha256 "d7a96ec5a0f396486acf810c88efec48beff0778e770084a980d09773029ffd7" => :sierra
-    sha256 "e9bf41171f626c71350d0db7f13857b56c57f63248a229fe0ac4ed09c42dcfcf" => :el_capitan
-    sha256 "162f1c07d37888abd2c2f616f3bc512209ed5575444f5f17b555b974e0461939" => :yosemite
-    sha256 "0cd2296d234b0c59bcd9dc5e0ebf78f7439ac7c91e415efad693976d01666338" => :mavericks
+    sha256 "7fad4a62d37b43fade07734f26864bc3b71f32a4e6809fc91ac079483bd1a3ec" => :high_sierra
+    sha256 "0bec243071c491fc01ba04f7d2f5c01897ac004f18ffb3d67e77c87a56a364c3" => :sierra
+    sha256 "3fd70667904b41f02676b117380dff2903ee9f5418d487fa0ed26fdc268b2be2" => :el_capitan
   end
 
   depends_on "scons" => :build
   depends_on "boost"
   depends_on "libidn"
-  depends_on "lua" => :recommended
+  depends_on "lua@5.1" => :recommended
+
+  deprecated_option "without-lua" => "without-lua@5.1"
 
   def install
+    inreplace "Sluift/main.cpp", "#include <string>",
+                                 "#include <iostream>\n#include <string>"
+
+    inreplace "BuildTools/SCons/SConstruct",
+              /(\["BOOST_SIGNALS_NO_DEPRECATION_WARNING")\]/,
+              "\\1, \"__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0\"]"
+
     boost = Formula["boost"]
     libidn = Formula["libidn"]
 
     args = %W[
       -j #{ENV.make_jobs}
       V=1
+      linkflags=-headerpad_max_install_names
       optimize=1 debug=0
       allow_warnings=1
       swiften_dll=1
@@ -39,17 +52,17 @@ class Libswiften < Formula
       openssl=no
     ]
 
-    if build.with? "lua"
-      lua = Formula["lua"]
+    if build.with? "lua@5.1"
+      lua = Formula["lua@5.1"]
       args << "SLUIFT_INSTALLDIR=#{prefix}"
-      args << "lua_includedir=#{lua.include}"
+      args << "lua_includedir=#{lua.include}/lua-5.1"
       args << "lua_libdir=#{lua.lib}"
+      args << "lua_libname=lua.5.1"
     end
 
     args << prefix
 
     scons *args
-    man1.install "Swift/Packaging/Debian/debian/swiften-config.1" unless build.stable?
   end
 
   test do

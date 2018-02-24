@@ -1,18 +1,18 @@
 class Lensfun < Formula
   desc "Remove defects from digital images"
-  homepage "http://lensfun.sourceforge.net/"
+  homepage "https://lensfun.sourceforge.io/"
   url "https://downloads.sourceforge.net/project/lensfun/0.3.2/lensfun-0.3.2.tar.gz"
   sha256 "ae8bcad46614ca47f5bda65b00af4a257a9564a61725df9c74cb260da544d331"
-  head "http://git.code.sf.net/p/lensfun/code.git"
+  revision 2
+  head "https://git.code.sf.net/p/lensfun/code.git"
 
   bottle do
-    sha256 "0a843c2663d8f6bca2f524fc6b8e3933587126481b4549667ae2cd9f3e96da00" => :sierra
-    sha256 "4f75d6f3a79a1af741caf67401edf7436b7c1ad0d100ac1978043f9fadd14b96" => :el_capitan
-    sha256 "2f86f02f6ffa890f23da494f4ea84fad99809793b472260e968846b3f1599ef1" => :yosemite
-    sha256 "16bafe93312a00428a38e2488c825363152d7b11706596031649164780a41017" => :mavericks
+    sha256 "bf1ac72d74be58ba4d9b82cfca93cd5710e971a6c9dda783548583304b942efc" => :high_sierra
+    sha256 "a67b367f01011cb03419b59577688290ab213c4cf35dcd4bafe353c62188edac" => :sierra
+    sha256 "9056fb41bfed7c149fc65d795aa65eb0e67fb8e6ff3d542bcd6a7770c276c911" => :el_capitan
   end
 
-  depends_on :python3
+  depends_on "python3"
   depends_on "pkg-config" => :build
   depends_on "cmake" => :build
   depends_on "glib"

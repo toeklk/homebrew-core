@@ -1,20 +1,14 @@
 class Tor < Formula
   desc "Anonymizing overlay network for TCP"
   homepage "https://www.torproject.org/"
-  url "https://dist.torproject.org/tor-0.2.8.9.tar.gz"
-  mirror "https://tor.eff.org/dist/tor-0.2.8.9.tar.gz"
-  sha256 "3f5c273bb887be4aff11f4d99b9e2e52d293b81ff4f6302b730161ff16dc5316"
+  url "https://www.torproject.org/dist/tor-0.3.2.9.tar.gz"
+  mirror "https://tor.eff.org/dist/tor-0.3.2.9.tar.gz"
+  sha256 "435a7b91aa98d8b1a0ac1f60ca30c0ff3665b18a02e570bab5fe27935829160f"
 
   bottle do
-    sha256 "416c7aae92cdfa1eeca94cd9bdd7ddcdd369035df1719812a15bab364fba9573" => :sierra
-    sha256 "a01b47d919213a3d6a26a08b61003c12468bf4c44b3cad06811964667d28a908" => :el_capitan
-    sha256 "fa8590ea32441029f8b8e6c043154b9f60710af2bd505b891708c6a3cb75c5e2" => :yosemite
-  end
-
-  devel do
-    url "https://dist.torproject.org/tor-0.2.9.5-alpha.tar.gz"
-    mirror "https://tor.eff.org/dist/tor-0.2.9.5-alpha.tar.gz"
-    sha256 "d0c898ad5e8f1a136864aa105407c7b89f3e70d9462a7bb307a55a3afa5b62bd"
+    sha256 "5f19be9003f78463fdb3cae14a48cdd325b28ddb0c3218a804803b4f626129ad" => :high_sierra
+    sha256 "1efbbe91ca229227e4d00ad084d35a673106b1945a15fbfa2227a8c1a1bee43f" => :sierra
+    sha256 "74cf7362c7ff8bae6983d84500f07f031c2169aadc7dd959f6f15e6953d20bbb" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -38,18 +32,9 @@ class Tor < Formula
     system "make", "install"
   end
 
-  def caveats; <<-EOS.undent
-    You will find a sample `torrc` file in #{etc}/tor.
-    It is advisable to edit the sample `torrc` to suit
-    your own security needs:
-      https://www.torproject.org/docs/faq#torrc
-    After editing the `torrc` you need to restart tor.
-    EOS
-  end
-
   plist_options :manual => "tor"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -77,8 +62,8 @@ class Tor < Formula
 
   test do
     pipe_output("script -q /dev/null #{bin}/tor-gencert --create-identity-key", "passwd\npasswd\n")
-    assert (testpath/"authority_certificate").exist?
-    assert (testpath/"authority_signing_key").exist?
-    assert (testpath/"authority_identity_key").exist?
+    assert_predicate testpath/"authority_certificate", :exist?
+    assert_predicate testpath/"authority_signing_key", :exist?
+    assert_predicate testpath/"authority_identity_key", :exist?
   end
 end

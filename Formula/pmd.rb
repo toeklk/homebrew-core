@@ -1,21 +1,18 @@
 class Pmd < Formula
   desc "Source code analyzer for Java, JavaScript, and more"
   homepage "https://pmd.github.io"
-  url "https://github.com/pmd/pmd/releases/download/pmd_releases/5.5.2/pmd-src-5.5.2.zip"
-  sha256 "229576b3e41a1a6679f25a383a57126159fdf909681f2e0963357a8846b8b350"
+  url "https://github.com/pmd/pmd/releases/download/pmd_releases/6.0.1/pmd-src-6.0.1.zip"
+  sha256 "39f45da832ca3db010c13b78db80016f3f76674e6d99981e874e3298cd77ae12"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "0bafd8752342578764dcd0fb260bcb53f61acaa5317287a7534fee26c896e2ea" => :sierra
-    sha256 "36e4055c52361364f257aa9f946fbcb223d1c63bb3449f4d0c988fedae805cd9" => :el_capitan
-    sha256 "04298cf75b60f49b52a6a0fd63b5dcf176988a0ecb3eb475fad0af76e6046813" => :yosemite
+    sha256 "1acf1d3b9cda8f41c7baa166bf2ff0121d15da2b94facf2ed8b3af87001c30b6" => :high_sierra
+    sha256 "797b80c5f9f682868f6b9b85fc08630c4f204b271608832c5be5ec1c7bad4683" => :sierra
+    sha256 "88130d906c84e55c188881258e93af4a1f1ca4a57f943cba86fdbb5db1084644" => :el_capitan
   end
 
   depends_on :java => "1.8+"
   depends_on "maven" => :build
-
-  # Fix doclint errors; see https://sourceforge.net/p/pmd/bugs/1516/
-  patch :DATA
 
   def install
     java_user_home = buildpath/"java_user_home"
@@ -24,7 +21,7 @@ class Pmd < Formula
     java_cache_repo.mkpath
     (java_user_home/".m2").install_symlink java_cache_repo
 
-    (java_user_home/".m2/toolchains.xml").write <<-EOS.undent
+    (java_user_home/".m2/toolchains.xml").write <<~EOS
       <?xml version="1.0" encoding="UTF8"?>
       <toolchains>
         <toolchain>
@@ -60,13 +57,13 @@ class Pmd < Formula
     inreplace "#{libexec}/bin/run.sh", "${script_dir}/../lib", "#{libexec}/lib"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Run with `pmd` (instead of `run.sh` as described in the documentation).
     EOS
   end
 
   test do
-    (testpath/"java/testClass.java").write <<-EOS.undent
+    (testpath/"java/testClass.java").write <<~EOS
       public class BrewTestClass {
         // dummy constant
         public String SOME_CONST = "foo";
@@ -81,17 +78,3 @@ class Pmd < Formula
       "rulesets/java/basic.xml", "-f", "textcolor", "-l", "java"
   end
 end
-
-__END__
-diff --git a/pom.xml b/pom.xml
-index 66bd239..8fb40c5 100644
---- a/pom.xml
-+++ b/pom.xml
-@@ -277,6 +277,7 @@
-         <pmd.dogfood.ruleset>${config.basedir}/src/main/resources/rulesets/internal/dogfood.xml</pmd.dogfood.ruleset>
-         <checkstyle.configLocation>${config.basedir}/etc/checkstyle-config.xml</checkstyle.configLocation>
-         <checkstyle.suppressionsFile>${config.basedir}/etc/checkstyle-suppressions.xml</checkstyle.suppressionsFile>
-+        <additionalparam>-Xdoclint:none</additionalparam>
-     </properties>
-
-     <build>

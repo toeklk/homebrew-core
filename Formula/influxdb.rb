@@ -2,15 +2,14 @@ class Influxdb < Formula
   desc "Time series, events, and metrics database"
   homepage "https://influxdata.com/time-series-platform/influxdb/"
   url "https://github.com/influxdata/influxdb.git",
-      :tag => "v1.1.0",
-      :revision => "800da5732b91c816b0a097acf8887fa2af1efa1a"
+      :tag => "v1.4.3",
+      :revision => "60d27e6995558f38a39e90b35a92cbac080310a3"
   head "https://github.com/influxdata/influxdb.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "cb34bfea2822c1741b9ef39f6c8d7f50f947d7bf033ee032dbf889be8e265e6c" => :sierra
-    sha256 "86cb195c310fd497fe2bc1fb09988c5ac1a75a88ffc7194ac8e1fa5c7a389014" => :el_capitan
-    sha256 "3ad9255394767ced3bee4ffc9c39f1e3c130ebb2b28b41f099ffe715081ffe40" => :yosemite
+    sha256 "1b188d586479bed82b8d19480dc0c7035eb49e2a5d81c3f48c59d2895c454178" => :high_sierra
+    sha256 "1589944237250658e7dc04b6c3e33d5cbc238dfa3349d49f5da1a12a73f7bcae" => :sierra
+    sha256 "8be7a9019b1ab932a9829278586045e145210fe7f3b25e21d6af3b9f24dcf7df" => :el_capitan
   end
 
   depends_on "gdm" => :build
@@ -40,6 +39,7 @@ class Influxdb < Formula
     bin.install "bin/influx"
     bin.install "bin/influx_tsm"
     bin.install "bin/influx_stress"
+    bin.install "bin/influx_inspect"
     etc.install influxdb_path/"etc/config.sample.toml" => "influxdb.conf"
 
     (var/"influxdb/data").mkpath
@@ -49,7 +49,7 @@ class Influxdb < Formula
 
   plist_options :manual => "influxd -config #{HOMEBREW_PREFIX}/etc/influxdb.conf"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

@@ -1,15 +1,15 @@
 class Yaz < Formula
   desc "Toolkit for Z39.50/SRW/SRU clients/servers"
   homepage "https://www.indexdata.com/yaz"
-  url "http://ftp.indexdata.dk/pub/yaz/yaz-5.18.0.tar.gz"
-  sha256 "b37ebbfc5b88ddb4fc5d8aefca345b48acac196211d35b11f292aafe636f660c"
-  revision 1
+  url "http://ftp.indexdata.dk/pub/yaz/yaz-5.23.1.tar.gz"
+  sha256 "4fb3b1ffcec4b9a56b892c47a0a645142e45418ce5ef6a835aeebc723f7d147e"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "9ed7e7e74b24e38ffba2464b9935f2fb7772cf4a50694bb9eee75535b11e02ab" => :sierra
-    sha256 "e16fbc0e2585244e43bb40112fa318e99fac70e752487f66a3426bb1ba35bc98" => :el_capitan
-    sha256 "814fab512115331cefd238357df19a1e3eec9f879c6aa4d4e90b0fd2fbb8bfd8" => :yosemite
+    sha256 "f0c08571d5eb5ec506e76b675f96b36f355f5bf2e7f91bcccfa463573449ba79" => :high_sierra
+    sha256 "0578e44aff8a426b3936633ca29e8693860941f4d693c37e8e9491fe9d9cf2fa" => :sierra
+    sha256 "a0c3051306314ba99073719706fd57c40c432a9c83dcbef9b6aaee52bc49f3ef" => :el_capitan
   end
 
   head do
@@ -19,14 +19,10 @@ class Yaz < Formula
     depends_on "libtool" => :build
   end
 
-  option :universal
-
   depends_on "pkg-config" => :build
   depends_on "icu4c" => :recommended
 
   def install
-    ENV.universal_binary if build.universal?
-
     system "./buildconf.sh" if build.head?
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
@@ -53,7 +49,7 @@ class Yaz < Formula
       # * xy transformed to z
       # * lowercase
       configurationfile = testpath/"icu-chain.xml"
-      configurationfile.write <<-EOS.undent
+      configurationfile.write <<~EOS
         <?xml version="1.0" encoding="UTF-8"?>
         <icu_chain locale="en">
           <transform rule="[:Control:] Any-Remove"/>
@@ -68,7 +64,7 @@ class Yaz < Formula
       inputfile = testpath/"icu-test.txt"
       inputfile.write "yaz-ICU	xy!"
 
-      expectedresult = <<-EOS.undent
+      expectedresult = <<~EOS
         1 1 'yaz' 'yaz'
         2 1 '' ''
         3 1 'icuz' 'ICUz'

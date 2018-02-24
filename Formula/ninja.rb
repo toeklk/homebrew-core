@@ -1,16 +1,15 @@
 class Ninja < Formula
   desc "Small build system for use with gyp or CMake"
   homepage "https://ninja-build.org/"
-  url "https://github.com/ninja-build/ninja/archive/v1.7.1.tar.gz"
-  sha256 "51581de53cf4705b89eb6b14a85baa73288ad08bff256e7d30d529155813be19"
+  url "https://github.com/ninja-build/ninja/archive/v1.8.2.tar.gz"
+  sha256 "86b8700c3d0880c2b44c2ff67ce42774aaf8c28cbf57725cb881569288c1c6f4"
   head "https://github.com/ninja-build/ninja.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "633ea0f32cbd5e8a87e9884c309aa0c76d6407468013315520e64de136ab8c0e" => :sierra
-    sha256 "bb3550493e570f24379007bfd6012eef1aaf82c739662f02aef0c907031326dc" => :el_capitan
-    sha256 "6beefb141b4e39c64a9a42c59acef74c4010b31f67f0696d2e62fa454a959ae9" => :yosemite
-    sha256 "3d9341568fbf3d01b5b851d9697623f818d86c425bdbfa7b69db1474fd611d5c" => :mavericks
+    sha256 "eeba4fff08b3ed4b308250fb650f7d06630acd18465900ba0e27cecfe925a6cc" => :high_sierra
+    sha256 "90ecf90948f0fa65c82011d79338d7c5ca2a4d0cb7cb8dc3892243f749fbe2eb" => :sierra
+    sha256 "675165ce642fa811e1a0a363be0ba66a7b907d46056f89fd20938aa33e7d59f7" => :el_capitan
   end
 
   option "without-test", "Don't run build-time tests"
@@ -38,7 +37,7 @@ class Ninja < Formula
   end
 
   test do
-    (testpath/"build.ninja").write <<-EOS.undent
+    (testpath/"build.ninja").write <<~EOS
       cflags = -Wall
 
       rule cc

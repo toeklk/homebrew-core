@@ -1,55 +1,40 @@
 class Ruby < Formula
   desc "Powerful, clean, object-oriented scripting language"
   homepage "https://www.ruby-lang.org/"
-
-  stable do
-    url "https://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.2.tar.bz2"
-    sha256 "e6ce83d46819c4120c9295ff6b36b90393dd5f6bef3bb117a06d7399c11fc7c0"
-
-    # Reverts an upstream commit which incorrectly tries to install headers
-    # into SDKROOT, if defined
-    # See https://bugs.ruby-lang.org/issues/11881
-    # The issue has been fixed on HEAD as of 1 Jan 2016, but has not been
-    # backported to the 2.3 branch yet and patch is still required.
-    patch do
-      url "https://raw.githubusercontent.com/Homebrew/formula-patches/ba8cc6b88e6b7153ac37739e5a1a6bbbd8f43817/ruby/mkconfig.patch"
-      sha256 "929c618f74e89a5e42d899a962d7d2e4af75716523193af42626884eaba1d765"
-    end
-  end
+  url "https://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.0.tar.xz"
+  sha256 "1da0afed833a0dab94075221a615c14487b05d0c407f991c8080d576d985b49b"
+  revision 2
 
   bottle do
-    sha256 "c7be2e067c3f1e45f823b2195f8c7eebf0f08c08e0fe8db47f880305f65fc2dc" => :sierra
-    sha256 "d0b350a2a38ff05cd416ab39da6fab8b4f8632b227907e29a7451f3cfade0b85" => :el_capitan
-    sha256 "c77c02d634533dafbb12144a857e578f52c62cd599740170a158028227f80326" => :yosemite
-  end
-
-  devel do
-    url "https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.0-preview3.tar.xz"
-    version "2.4.0-beta3"
-    sha256 "b14be2b5c80bff0d6894ae2b37afdb17a968413e70236ec860f3e2d670b4c317"
+    sha256 "8b7172fc5e08f11a70946e7513d8f1676b7a175f3d365e1fdc19ad6e50b2be6e" => :high_sierra
+    sha256 "5291ebf740c494f2a06c310059bcebeb5c5d01f958b209ba301bd6d36296c48a" => :sierra
+    sha256 "8368496c8b9254d2fa4c701aaef70777fd4488890653a1c40b817e269f545800" => :el_capitan
   end
 
   head do
-    url "http://svn.ruby-lang.org/repos/ruby/trunk/"
+    url "https://svn.ruby-lang.org/repos/ruby/trunk/"
     depends_on "autoconf" => :build
   end
 
-  option :universal
-  option "with-suffix", "Suffix commands with '23'"
-  option "with-doc", "Install documentation"
-  option "with-tcltk", "Install with Tcl/Tk support"
-
   depends_on "pkg-config" => :build
-  depends_on "readline" => :recommended
-  depends_on "gdbm" => :optional
-  depends_on "gmp" => :optional
-  depends_on "libffi" => :optional
   depends_on "libyaml"
   depends_on "openssl"
-  depends_on :x11 if build.with? "tcltk"
+  depends_on "readline"
 
-  fails_with :llvm do
-    build 2326
+  # Should be updated only when Ruby is updated (if an update is available).
+  # The exception is Rubygem security fixes, which mandate updating this
+  # formula & the versioned equivalents and bumping the revisions.
+  resource "rubygems" do
+    url "https://rubygems.org/rubygems/rubygems-2.7.6.tgz"
+    sha256 "67f714a582a9ce471bbbcb417374ea9cf9c061271c865dbb0d093f3bc3371eeb"
+  end
+
+  def api_version
+    Utils.popen_read("#{bin}/ruby -e 'print Gem.ruby_api_version'")
+  end
+
+  def rubygems_bindir
+    HOMEBREW_PREFIX/"bin"
   end
 
   def install
@@ -58,38 +43,16 @@ class Ruby < Formula
 
     system "autoconf" if build.head?
 
+    paths = %w[libyaml openssl readline].map { |f| Formula[f].opt_prefix }
     args = %W[
       --prefix=#{prefix}
       --enable-shared
       --disable-silent-rules
       --with-sitedir=#{HOMEBREW_PREFIX}/lib/ruby/site_ruby
       --with-vendordir=#{HOMEBREW_PREFIX}/lib/ruby/vendor_ruby
+      --with-opt-dir=#{paths.join(":")}
     ]
-
-    if build.universal?
-      ENV.universal_binary
-      args << "--with-arch=#{Hardware::CPU.universal_archs.join(",")}"
-    end
-
-    args << "--program-suffix=#{program_suffix}" if build.with? "suffix"
-    args << "--with-out-ext=tk" if build.without? "tcltk"
-    args << "--disable-install-doc" if build.without? "doc"
     args << "--disable-dtrace" unless MacOS::CLT.installed?
-    args << "--without-gmp" if build.without? "gmp"
-
-    # Reported upstream: https://bugs.ruby-lang.org/issues/10272
-    args << "--with-setjmp-type=setjmp" if MacOS.version == :lion
-
-    paths = [
-      Formula["libyaml"].opt_prefix,
-      Formula["openssl"].opt_prefix,
-    ]
-
-    %w[readline gdbm gmp libffi].each do |dep|
-      paths << Formula[dep].opt_prefix if build.with? dep
-    end
-
-    args << "--with-opt-dir=#{paths.join(":")}"
 
     system "./configure", *args
 
@@ -111,35 +74,53 @@ class Ruby < Formula
 
     # A newer version of ruby-mode.el is shipped with Emacs
     elisp.install Dir["misc/*.el"].reject { |f| f == "misc/ruby-mode.el" }
-  end
 
-  def post_install
-    # Customize rubygems to look/install in the global gem directory
-    # instead of in the Cellar, making gems last across reinstalls
-    config_file = lib/"ruby/#{abi_version}/rubygems/defaults/operating_system.rb"
-    config_file.unlink if config_file.exist?
-    config_file.write rubygems_config
+    # This is easier than trying to keep both current & versioned Ruby
+    # formulae repeatedly updated with Rubygem patches.
+    resource("rubygems").stage do
+      ENV.prepend_path "PATH", bin
 
-    # Create the sitedir and vendordir that were skipped during install
-    ruby="#{bin}/ruby#{program_suffix}"
-    %w[sitearchdir vendorarchdir].each do |dir|
-      mkdir_p `#{ruby} -rrbconfig -e 'print RbConfig::CONFIG["#{dir}"]'`
+      system "#{bin}/ruby", "setup.rb", "--prefix=#{buildpath}/vendor_gem"
+      rg_in = lib/"ruby/#{api_version}"
+
+      # Remove bundled Rubygem version.
+      rm_rf rg_in/"rubygems"
+      rm_f rg_in/"rubygems.rb"
+      rm_f rg_in/"ubygems.rb"
+      rm_f bin/"gem"
+
+      # Drop in the new version.
+      rg_in.install Dir[buildpath/"vendor_gem/lib/*"]
+      bin.install buildpath/"vendor_gem/bin/gem" => "gem"
+      (libexec/"gembin").install buildpath/"vendor_gem/bin/bundle" => "bundle"
+      (libexec/"gembin").install_symlink "bundle" => "bundler"
     end
   end
 
-  def abi_version
-    "2.3.0"
+  def post_install
+    # Since Gem ships Bundle we want to provide that full/expected installation
+    # but to do so we need to handle the case where someone has previously
+    # installed bundle manually via `gem install`.
+    rm_f %W[
+      #{rubygems_bindir}/bundle
+      #{rubygems_bindir}/bundler
+    ]
+    rm_rf Dir[HOMEBREW_PREFIX/"lib/ruby/gems/#{api_version}/gems/bundler-*"]
+    rubygems_bindir.install_symlink Dir[libexec/"gembin/*"]
+
+    # Customize rubygems to look/install in the global gem directory
+    # instead of in the Cellar, making gems last across reinstalls
+    config_file = lib/"ruby/#{api_version}/rubygems/defaults/operating_system.rb"
+    config_file.unlink if config_file.exist?
+    config_file.write rubygems_config(api_version)
+
+    # Create the sitedir and vendordir that were skipped during install
+    %w[sitearchdir vendorarchdir].each do |dir|
+      mkdir_p `#{bin}/ruby -rrbconfig -e 'print RbConfig::CONFIG["#{dir}"]'`
+    end
   end
 
-  def program_suffix
-    build.with?("suffix") ? "23" : ""
-  end
-
-  def rubygems_bindir
-    "#{HOMEBREW_PREFIX}/bin"
-  end
-
-  def rubygems_config; <<-EOS.undent
+  def rubygems_config(api_version); <<~EOS
     module Gem
       class << self
         alias :old_default_dir :default_dir
@@ -154,7 +135,7 @@ class Ruby < Formula
           "lib",
           "ruby",
           "gems",
-          "#{abi_version}"
+          "#{api_version}"
         ]
 
         @default_dir ||= File.join(*path)
@@ -198,16 +179,23 @@ class Ruby < Formula
       end
 
       def self.ruby
-        "#{opt_bin}/ruby#{program_suffix}"
+        "#{opt_bin}/ruby"
       end
     end
     EOS
   end
 
   test do
-    hello_text = shell_output("#{bin}/ruby#{program_suffix} -e 'puts :hello'")
+    hello_text = shell_output("#{bin}/ruby -e 'puts :hello'")
     assert_equal "hello\n", hello_text
     ENV["GEM_HOME"] = testpath
-    system "#{bin}/gem#{program_suffix}", "install", "json"
+    system "#{bin}/gem", "install", "json"
+
+    (testpath/"Gemfile").write <<~EOS
+      source 'https://rubygems.org'
+      gem 'gemoji'
+    EOS
+    system rubygems_bindir/"bundle", "install", "--binstubs=#{testpath}/bin"
+    assert_predicate testpath/"bin/gemoji", :exist?, "gemoji is not installed in #{testpath}/bin"
   end
 end

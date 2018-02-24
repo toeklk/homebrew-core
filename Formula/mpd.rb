@@ -1,19 +1,17 @@
 class Mpd < Formula
   desc "Music Player Daemon"
   homepage "https://www.musicpd.org/"
-  url "https://www.musicpd.org/download/mpd/0.19/mpd-0.19.19.tar.xz"
-  sha256 "bc856cda4136403446d53d11576f86990b61d1fe4668f6008e9eae47450d4e1d"
-  revision 1
+  url "https://www.musicpd.org/download/mpd/0.20/mpd-0.20.17.tar.xz"
+  sha256 "2cb0e7f0e219df60a04b3c997d8ed7ad458ebfd89fd045e03fbe727277d5dac1"
 
   bottle do
-    cellar :any
-    sha256 "2e18e68b7c679d37f70b3457bf83a002dc21abb7fbd8307a8b9c2f321e4cd45c" => :sierra
-    sha256 "cbec08bdb8f351a5d7914f1a02531e9f410ade7ed116bac1d51bf1c734918845" => :el_capitan
-    sha256 "4966580d4fdc7473d2f67c743b1b2ee02fa1b277a7ca7eb1aa3218b2b2f632a2" => :yosemite
+    sha256 "7f7d211a79dd225b695e814e637de48746b1a0ab6963f8eaf08f706ca0c6cb86" => :high_sierra
+    sha256 "985a928f67dc414bffd6a3da798321de23efa8e08b2df00933b3f04404676698" => :sierra
+    sha256 "3649b0cb01eb0e630032c79ee9534ec23f4c4ec48981947e6d2433f2c90cdd7f" => :el_capitan
   end
 
   head do
-    url "git://git.musicpd.org/master/mpd.git"
+    url "https://github.com/MusicPlayerDaemon/MPD.git"
     depends_on "autoconf" => :build
     depends_on "automake" => :build
   end
@@ -27,6 +25,8 @@ class Mpd < Formula
   option "with-yajl", "Build with yajl support (for playing from soundcloud)"
   option "with-opus", "Build with opus support (for Opus encoding and decoding)"
   option "with-libmodplug", "Build with modplug support (for decoding modules supported by MODPlug)"
+  option "with-pulseaudio", "Build with PulseAudio support (for sending audio output to a PulseAudio sound server)"
+  option "with-upnp", "Build with upnp database plugin support"
 
   deprecated_option "with-vorbis" => "with-libvorbis"
 
@@ -60,6 +60,12 @@ class Mpd < Formula
   depends_on "libnfs" => :optional
   depends_on "mad" => :optional
   depends_on "libmodplug" => :optional  # MODPlug decoder
+  depends_on "pulseaudio" => :optional
+  depends_on "libao" => :optional       # Output to libao
+  if build.with? "upnp"
+    depends_on "expat"
+    depends_on "libupnp"
+  end
 
   def install
     # mpd specifies -std=gnu++0x, but clang appears to try to build
@@ -82,8 +88,6 @@ class Mpd < Formula
     ]
 
     args << "--disable-mad" if build.without? "mad"
-    args << "--disable-curl" if MacOS.version <= :leopard
-
     args << "--enable-zzip" if build.with? "libzzip"
     args << "--enable-lastfm" if build.with? "lastfm"
     args << "--disable-lame-encoder" if build.without? "lame"
@@ -91,10 +95,16 @@ class Mpd < Formula
     args << "--enable-vorbis-encoder" if build.with? "libvorbis"
     args << "--enable-nfs" if build.with? "libnfs"
     args << "--enable-modplug" if build.with? "libmodplug"
+    args << "--enable-pulse" if build.with? "pulseaudio"
+    args << "--enable-ao" if build.with? "libao"
+    if build.with? "upnp"
+      args << "--enable-upnp"
+      args << "--enable-expat"
+    end
 
     system "./configure", *args
     system "make"
-    ENV.j1 # Directories are created in parallel, so let's not do that
+    ENV.deparallelize # Directories are created in parallel, so let's not do that
     system "make", "install"
 
     (etc/"mpd").install "doc/mpdconf.example" => "mpd.conf"
@@ -102,7 +112,7 @@ class Mpd < Formula
 
   plist_options :manual => "mpd"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -120,6 +130,8 @@ class Mpd < Formula
         <true/>
         <key>KeepAlive</key>
         <true/>
+        <key>ProcessType</key>
+        <string>Interactive</string>
     </dict>
     </plist>
     EOS
@@ -133,7 +145,7 @@ class Mpd < Formula
 
     begin
       assert_match "OK MPD", shell_output("curl localhost:6600")
-      assert_match "ACK", shell_output("(sleep 1; echo playid foo) | nc localhost 6600")
+      assert_match "ACK", shell_output("(sleep 2; echo playid foo) | nc localhost 6600")
     ensure
       Process.kill "SIGINT", pid
       Process.wait pid

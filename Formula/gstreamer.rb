@@ -1,13 +1,13 @@
 class Gstreamer < Formula
   desc "Development framework for multimedia applications"
   homepage "https://gstreamer.freedesktop.org/"
-  url "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.10.0.tar.xz"
-  sha256 "1e7778fabe480185bfc4ce552f0860de1443f6618a68a86ccdd65854fed37207"
+  url "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.12.4.tar.xz"
+  sha256 "5a8704aa4c2eeb04da192c4a9942f94f860ac1a585de90d9f914bac26a970674"
 
   bottle do
-    sha256 "47f19d709cc9c63a8edaec7f3881f02a6c63da6e3d7c31396a1031fcd2a58270" => :sierra
-    sha256 "fe95a60a7cd00598c4e081892ff27a39af12aa407125f8fc0549f002efaaf32a" => :el_capitan
-    sha256 "12d52a486f1ef86d14fbce1510d067a611a651335f8c07411fc2312c3545f6f2" => :yosemite
+    sha256 "51ee28f25edecded4b4a258612e4bbb29f9c5b759ac327d24ceb6e1b811c4620" => :high_sierra
+    sha256 "dfaaa91622684fd5b9869f921b532bd4e76b290aad08bc79a87edc788116eaae" => :sierra
+    sha256 "fb4ae04313ffed04dc3cd4edba9efb742f62add838174e3734f7a4ca3f092491" => :el_capitan
   end
 
   head do
@@ -52,6 +52,14 @@ class Gstreamer < Formula
     system "./configure", *args
     system "make"
     system "make", "install"
+  end
+
+  def caveats; <<~EOS
+    Consider also installing gst-plugins-base and gst-plugins-good.
+
+    The gst-plugins-* packages contain gstreamer-video-1.0, gstreamer-audio-1.0,
+    and other components needed by most gstreamer applications.
+    EOS
   end
 
   test do

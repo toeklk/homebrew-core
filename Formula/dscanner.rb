@@ -1,24 +1,16 @@
 class Dscanner < Formula
-  desc "Analyses e.g. the style and syntax of D code."
-  homepage "https://github.com/Hackerpilot/Dscanner"
-  url "https://github.com/Hackerpilot/Dscanner.git",
-    :tag => "v0.3.0",
-    :revision => "ab08f0b28b2851063e273f5f8073b575a4d17083"
+  desc "Analyses e.g. the style and syntax of D code"
+  homepage "https://github.com/dlang-community/Dscanner"
+  url "https://github.com/dlang-community/Dscanner.git",
+      :tag => "v0.4.2",
+      :revision => "401ee0e7c27fa78a032d4962baf81ec57d8a7b8f"
 
-  head "https://github.com/Hackerpilot/Dscanner.git"
+  head "https://github.com/dlang-community/Dscanner.git"
 
   bottle do
-    sha256 "21462544cf3d662d79ad62fac0d27a6d6346404a4c7a58f1d0e3df86962a17b4" => :sierra
-    sha256 "e4109d118bfc3ea842bf3d2aa9588dec4e5be8350557f644727b752ec261cd32" => :el_capitan
-    sha256 "5f8b2e4fb9df04ba43eaba0c1f7fe53c3cee1bf71c4f23f0fcd7871c7269ba4a" => :yosemite
-    sha256 "93916657176868ebab187de76075da38ef1f62e7fcf126670c297d1413c172af" => :mavericks
-  end
-
-  devel do
-    url "https://github.com/Hackerpilot/Dscanner.git",
-      :tag => "v0.4.0-beta.3",
-      :revision => "bf3b942b9a102616c4c67611301738883845c906"
-    version "0.4.0-beta.3"
+    sha256 "04e5862c31ac11af72748a3e0cdb7ed8eea987827ad1f837934337063319b51f" => :high_sierra
+    sha256 "f7b0a22b635f52dcd29d8321ba475a5ef0e88e68d279f60aea45f4296f6d2c0a" => :sierra
+    sha256 "149d51495c147fab645186071409ef1ef860fd0661ce829c093aa8f320cc8299" => :el_capitan
   end
 
   depends_on "dmd" => :build
@@ -29,7 +21,7 @@ class Dscanner < Formula
   end
 
   test do
-    (testpath/"test.d").write <<-EOS.undent
+    (testpath/"test.d").write <<~EOS
       import std.stdio;
       void main(string[] args)
       {

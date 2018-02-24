@@ -1,29 +1,31 @@
 class Qemu < Formula
   desc "x86 and PowerPC Emulator"
-  homepage "http://wiki.qemu.org"
-  url "http://wiki.qemu-project.org/download/qemu-2.7.0.tar.bz2"
-  sha256 "326e739506ba690daf69fc17bd3913a6c313d9928d743bd8eddb82f403f81e53"
-
-  head "git://git.qemu-project.org/qemu.git"
+  homepage "https://www.qemu.org/"
+  url "https://download.qemu.org/qemu-2.11.1.tar.bz2"
+  sha256 "d9df2213ceed32e91dab7bc9dd19c1af83f91ba72c7aeef7605dfaaf81732ccb"
+  head "https://git.qemu.org/git/qemu.git"
 
   bottle do
-    sha256 "f60b1708d38f92902dd6c864b79f64e2f635daa87012861f1ae9714c201b1b65" => :sierra
-    sha256 "ee10bda4f0f8fd9e3fda7747e239b3a736bb409b683392b61936a6fd7484874d" => :el_capitan
-    sha256 "2cba8f0c87c9e18fe4dcf1f7cce3ab6b386e94fbe4c966081f5353689b667ccb" => :yosemite
-    sha256 "f58b50c5106fa15e8792410b14e0c7f675358cde30c2340fc2da86b64bb3e921" => :mavericks
+    sha256 "8239d88e31f56993977b0d6ba1d63e15c61436c76a6b04ffa46c0dd40f376c4c" => :high_sierra
+    sha256 "84a89e0db4091794605084ed08c5991f1bc60c68474ab44f5e78ac220c664335" => :sierra
+    sha256 "55c6b1cf7d0fdaf5e5f131c84bf62566954edb56557df0dd088c90a436bb25a3" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "libtool" => :build
   depends_on "jpeg"
-  depends_on "libpng" => :recommended
   depends_on "gnutls"
   depends_on "glib"
+  depends_on "ncurses"
   depends_on "pixman"
+  depends_on "libpng" => :recommended
   depends_on "vde" => :optional
-  depends_on "sdl" => :optional
+  depends_on "sdl2" => :optional
   depends_on "gtk+" => :optional
   depends_on "libssh2" => :optional
+  depends_on "libusb" => :optional
+
+  deprecated_option "with-sdl" => "with-sdl2"
 
   fails_with :gcc_4_0 do
     cause "qemu requires a compiler with support for the __thread specifier"
@@ -33,10 +35,10 @@ class Qemu < Formula
     cause "qemu requires a compiler with support for the __thread specifier"
   end
 
-  # 3.2MB working disc-image file hosted on upstream's servers for people to use to test qemu functionality.
-  resource "armtest" do
-    url "http://wiki.qemu.org/download/arm-test-0.2.tar.gz"
-    sha256 "4b4c2dce4c055f0a2adb93d571987a3d40c96c6cbfd9244d19b9708ce5aea454"
+  # 820KB floppy disk image file of FreeDOS 1.2, used to test QEMU
+  resource "test-image" do
+    url "https://dl.bintray.com/homebrew/mirror/FD12FLOPPY.zip"
+    sha256 "81237c7b42dc0ffc8b32a2f5734e3480a3f9a470c50c14a9c4576a2561a35807"
   end
 
   def install
@@ -48,17 +50,19 @@ class Qemu < Formula
       --host-cc=#{ENV.cc}
       --disable-bsd-user
       --disable-guest-agent
+      --enable-curses
+      --extra-cflags=-DNCURSES_WIDECHAR=1
     ]
 
-    # Cocoa and SDL/GTK+ UIs cannot both be enabled at once.
-    if build.with?("sdl") || build.with?("gtk+")
+    # Cocoa and SDL2/GTK+ UIs cannot both be enabled at once.
+    if build.with?("sdl2") || build.with?("gtk+")
       args << "--disable-cocoa"
     else
       args << "--enable-cocoa"
     end
 
     args << (build.with?("vde") ? "--enable-vde" : "--disable-vde")
-    args << (build.with?("sdl") ? "--enable-sdl" : "--disable-sdl")
+    args << (build.with?("sdl2") ? "--enable-sdl" : "--disable-sdl")
     args << (build.with?("gtk+") ? "--enable-gtk" : "--disable-gtk")
     args << (build.with?("libssh2") ? "--enable-libssh2" : "--disable-libssh2")
 
@@ -68,7 +72,7 @@ class Qemu < Formula
 
   test do
     assert_match version.to_s, shell_output("#{bin}/qemu-system-i386 --version")
-    resource("armtest").stage testpath
-    assert_match "file format: raw", shell_output("#{bin}/qemu-img info arm_root.img")
+    resource("test-image").stage testpath
+    assert_match "file format: raw", shell_output("#{bin}/qemu-img info FLOPPY.img")
   end
 end

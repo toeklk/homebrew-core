@@ -1,6 +1,6 @@
 class Tcc < Formula
   desc "Tiny C compiler"
-  homepage "http://bellard.org/tcc/"
+  homepage "https://bellard.org/tcc/"
   url "https://download.savannah.gnu.org/releases/tinycc/tcc-0.9.26.tar.bz2"
   mirror "https://dl.bintray.com/homebrew/mirror/tcc-0.9.26.tar.bz2"
   sha256 "521e701ae436c302545c3f973a9c9b7e2694769c71d9be10f70a2460705b6d71"
@@ -24,7 +24,7 @@ class Tcc < Formula
 
     args << "--enable-cross" if build.with? "cross"
 
-    ENV.j1
+    ENV.deparallelize
     system "./configure", *args
     system "make"
     system "make", "install"
@@ -32,7 +32,7 @@ class Tcc < Formula
   end
 
   test do
-    (testpath/"hello-c.c").write <<-EOS.undent
+    (testpath/"hello-c.c").write <<~EOS
       #include <stdio.h>
       int main()
       {

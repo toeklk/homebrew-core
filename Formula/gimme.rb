@@ -1,8 +1,8 @@
 class Gimme < Formula
   desc "Shell script to install any Go version"
   homepage "https://github.com/travis-ci/gimme"
-  url "https://github.com/travis-ci/gimme/archive/v1.0.0.tar.gz"
-  sha256 "0e9342433284b8b7cfdf5587e226fd2da5123e54bec37114fdde365db28b6911"
+  url "https://github.com/travis-ci/gimme/archive/v1.3.0.tar.gz"
+  sha256 "0facfa300107b66f0cd253d62f55e55e91f4249a4a9d82d4fdcf1b2216a57b65"
 
   bottle :unneeded
 

@@ -1,12 +1,13 @@
 class Docbook < Formula
   desc "Standard SGML representation system for technical documents"
-  homepage "http://docbook.sourceforge.net/"
+  homepage "https://docbook.sourceforge.io/"
   url "http://www.docbook.org/xml/5.0/docbook-5.0.zip"
   sha256 "3dcd65e1f5d9c0c891b3be204fa2bb418ce485d32310e1ca052e81d36623208e"
 
   bottle do
     cellar :any_skip_relocation
     rebuild 3
+    sha256 "0f99e9e2e42f4a21bdb9066f02e247c919c21f586cea0bcd787c9112659df030" => :high_sierra
     sha256 "40b2740609c1586d030d3b9a131761821425c211989bee297af29900981b3aba" => :sierra
     sha256 "3fb7e4070eaa9250fa947d38e3d7803d37c159d9765e3f71397702d5ad6bb578" => :el_capitan
     sha256 "dfdb315404c98dca2682f63260f2996de101cb6b41de69ac268dcded110e2a3f" => :yosemite
@@ -83,7 +84,7 @@ class Docbook < Formula
     end
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     To use the DocBook package in your XML toolchain,
     you need to add the following to your ~/.bashrc:
 

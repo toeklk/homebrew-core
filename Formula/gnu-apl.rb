@@ -1,19 +1,19 @@
 class GnuApl < Formula
   desc "GNU implementation of the programming language APL"
   homepage "https://www.gnu.org/software/apl/"
-  url "https://ftpmirror.gnu.org/apl/apl-1.6.tar.gz"
-  mirror "https://ftp.gnu.org/gnu/apl/apl-1.6.tar.gz"
-  sha256 "5e0da83048d81fd99330186f65309661f8070de2472851a8e639b3b7f7e7ff14"
-  revision 1
+  url "https://ftp.gnu.org/gnu/apl/apl-1.7.tar.gz"
+  mirror "https://ftpmirror.gnu.org/apl/apl-1.7.tar.gz"
+  sha256 "8ff6e28256d7a3cdfa9dc6025e3905312310b27a43645ef5d617fd4a5b43b81f"
 
   bottle do
-    sha256 "7c5aebad3061ad6713b08465b6db4534937eabe655f85af52d1d20066811ebdf" => :sierra
-    sha256 "25d163f1cf8adac585f914640b6281ef530876a60812864699bf0b349d3a58af" => :el_capitan
-    sha256 "6164637b1f3b76040e031c5cb53444d1e48d5a007f5ffcc0270d9ad7d75679be" => :yosemite
+    rebuild 1
+    sha256 "33e8f7db591cfbd0fda5b244acbf13f21e9507a6b534b9cd2735c2dc37f16424" => :high_sierra
+    sha256 "1b7b6f3d268ac7f32f1d23e64be979cbf382b728c92c6e852f75b09eb19fddfb" => :sierra
+    sha256 "797a920a7f564443b7a7b5c5ee065e6d6da25e2395c87dc6f1846adc3dedd109" => :el_capitan
   end
 
   head do
-    url "http://svn.savannah.gnu.org/svn/apl/trunk"
+    url "https://svn.savannah.gnu.org/svn/apl/trunk"
 
     depends_on "automake" => :build
     depends_on "autoconf" => :build
@@ -23,10 +23,12 @@ class GnuApl < Formula
   # GNU Readline is required; libedit won't work.
   depends_on "readline"
   depends_on :macos => :mavericks
+  depends_on "libpq" => :optional
 
   def install
-    # Fix "LApack.cc:21:10: fatal error: 'malloc.h' file not found"
-    inreplace "src/LApack.cc", "malloc.h", "malloc/malloc.h"
+    # Work around "error: no member named 'signbit' in the global namespace"
+    # encountered when trying to detect boost regex in configure
+    ENV.delete("SDKROOT") if DevelopmentTools.clang_build_version >= 900
 
     system "autoreconf", "-fiv" if build.head?
     system "./configure", "--disable-debug",
@@ -37,7 +39,7 @@ class GnuApl < Formula
   end
 
   test do
-    (testpath/"hello.apl").write <<-EOS.undent
+    (testpath/"hello.apl").write <<~EOS
       'Hello world'
       )OFF
     EOS

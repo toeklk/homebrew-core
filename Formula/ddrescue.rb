@@ -1,16 +1,15 @@
 class Ddrescue < Formula
   desc "GNU data recovery tool"
   homepage "https://www.gnu.org/software/ddrescue/ddrescue.html"
-  url "https://ftpmirror.gnu.org/ddrescue/ddrescue-1.21.tar.lz"
-  mirror "https://ftp.gnu.org/gnu/ddrescue/ddrescue-1.21.tar.lz"
-  sha256 "f09e4eb6a209cbd0fe8ee6db2d558238cdc969afa1d94150f263402ac882e1ac"
+  url "https://ftp.gnu.org/gnu/ddrescue/ddrescue-1.23.tar.lz"
+  mirror "https://ftpmirror.gnu.org/ddrescue/ddrescue-1.23.tar.lz"
+  sha256 "a9ae2dd44592bf386c9c156a5dacaeeb901573c9867ada3608f887d401338d8d"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "2408aa74d3d6da31f292c806b217572cae8e1f36baaaa62a32fab30337f49835" => :sierra
-    sha256 "aff05728f88adac5a71d75062b20fcdeafbf2713b85ee36fab5feb61b7bdb61e" => :el_capitan
-    sha256 "42107fcfff8293ad3fc0d0e2720a51ebb0d3a2f760de0b8726f4f8d950765486" => :yosemite
-    sha256 "d0ee3b88a28d423f6475d0046307bddfdeb210f56fb59878b6395b2a01144073" => :mavericks
+    sha256 "cea23ba7f2730135b634d896d835c9c55572900fbc8263993697e1273b67dfb0" => :high_sierra
+    sha256 "b0759371cbeedf705c56867910da5536f4aa8b6560d2ebdf8fd6c9f2ba71199e" => :sierra
+    sha256 "eab68f77a7570e59f007ea4b6fe47b9882c24ad2b626db375f9f42888476cf5c" => :el_capitan
   end
 
   def install

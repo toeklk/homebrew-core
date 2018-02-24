@@ -1,15 +1,13 @@
 class Pike < Formula
   desc "Dynamic programming language"
   homepage "https://pike.lysator.liu.se"
-  url "https://pike.lysator.liu.se/pub/pike/all/7.8.866/Pike-v7.8.866.tar.gz"
-  sha256 "0b12e1a99bd8bdd9c8a2daa46e623ac718bc0737290236a0c8474091359b594e"
-  revision 3
+  url "https://pike.lysator.liu.se/pub/pike/all/8.0.498/Pike-v8.0.498.tar.gz"
+  sha256 "b14ceccb26f37dbd9e078d87648a95f0501f290e89ae9b8197b2376d13eb1f2b"
 
   bottle do
-    sha256 "0f2a49f68021e5076182f457faaa042ce70214fb03157f60f807fb5307c13114" => :sierra
-    sha256 "f39667a578587d3274fce318e92430c37755f5b42c4f608c80332d96ff630803" => :el_capitan
-    sha256 "740fa259972600b23f8c7437d59c89f471f0c0a8fc0a2af2738be5f47fdb5069" => :yosemite
-    sha256 "3dab476ddc379606639b5b44cddc19ec1764ac5227924a1e6b591f0961ba33b5" => :mavericks
+    sha256 "9b3c1d8c9a1eceef90ce1bfe78137b0ccd726ec5dfc12f9746a471c5e855f92a" => :high_sierra
+    sha256 "c8abc1e8fcc26523b257cd2144c22a27ed6063c07e33193c70e3d0898c94fa86" => :sierra
+    sha256 "1ecfea274c44b5d087003b51acb934c4c3cc8494667cbaa4f6d57c1e919a2e20" => :el_capitan
   end
 
   option "with-gettext", "Include Gettext support"
@@ -22,7 +20,6 @@ class Pike < Formula
   option "with-pdf", "Include PDF support"
   option "with-gl", "Include GL support"
   option "with-all", "Include all features"
-  option "with-machine-code", "Enables machine code"
 
   depends_on "nettle"
   depends_on "gmp"
@@ -40,15 +37,10 @@ class Pike < Formula
   depends_on "pdflib-lite"   if build.with?("pdf")     || build.with?("all")
   depends_on "mesalib-glw"   if build.with?("gl")      || build.with?("all")
 
-  fails_with :llvm do
-    build 2335
-    cause "Fails to build multiset.c, results in a Abort trap being caught."
-  end
-
   def install
     args = ["--prefix=#{prefix}", "--without-bundles"]
 
-    if MacOS.prefer_64_bit? && !build.build_32_bit?
+    if MacOS.prefer_64_bit?
       ENV.append "CFLAGS", "-m64"
       args << "--with-abi=64"
     else
@@ -56,11 +48,7 @@ class Pike < Formula
       args << "--with-abi=32"
     end
 
-    if build.without? "machine-code"
-      args << "--without-machine-code"
-    end
-
-    ENV.j1
+    ENV.deparallelize
 
     system "make", "CONFIGUREARGS='" + args.join(" ") + "'"
 
@@ -107,7 +95,7 @@ class Pike < Formula
 
   test do
     path = testpath/"test.pike"
-    path.write <<-EOS.undent
+    path.write <<~EOS
       int main() {
         for (int i=0; i<10; i++) { write("%d", i); }
         return 0;

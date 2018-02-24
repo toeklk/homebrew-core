@@ -1,35 +1,31 @@
 class Openvdb < Formula
   desc "Sparse volume processing toolkit"
   homepage "http://www.openvdb.org/"
-  url "https://github.com/dreamworksanimation/openvdb/archive/v4.0.0.tar.gz"
-  sha256 "eaf37b8e723cfd011df350cb0ef93ffa22d927bf7cb1f72c38176fce523b3537"
+  url "https://github.com/dreamworksanimation/openvdb/archive/v5.0.0.tar.gz"
+  sha256 "1d39b711949360e0dba0895af9599d0606ca590f6de2d7c3a6251211fcc00348"
   head "https://github.com/dreamworksanimation/openvdb.git"
 
   bottle do
-    sha256 "07f23237480ba2dbc44174bc70c6b283aace47c38aa41f0687e8efc43b07d135" => :sierra
-    sha256 "cd96c279d070522e6a697aa80c6df6a1dedfba1cbc017d90df3256ea413ad202" => :el_capitan
-    sha256 "ab4d5550eeb804481176a61a3720bc131907c4506a1a006116cb8b12fce77156" => :yosemite
+    sha256 "5c9adc74ee6dbbde072733457805650f2aa5cd50c15662e631854a3ffab015ba" => :high_sierra
+    sha256 "e50d1dfbe7266f134ebc4a4b17c84a34c92d586c2a1887bd262eabde24c2d101" => :sierra
+    sha256 "6af2812f0331f7db33dcc847272fdcd5edb530624426402c620678e6f7b15ae6" => :el_capitan
   end
 
-  option "with-viewer", "Installs the command-line tool to view OpenVDB files"
+  option "with-glfw", "Installs the command-line tool to view OpenVDB files"
   option "with-test", "Installs the unit tests for the OpenVDB library"
   option "with-logging", "Requires log4cplus"
   option "with-docs", "Installs documentation"
 
   deprecated_option "with-tests" => "with-test"
+  deprecated_option "with-viewer" => "with-glfw"
 
-  depends_on "openexr"
+  depends_on "boost"
   depends_on "ilmbase"
+  depends_on "openexr"
   depends_on "tbb"
   depends_on "jemalloc" => :recommended
 
-  if MacOS.version < :mavericks
-    depends_on "boost" => "c++11"
-  else
-    depends_on "boost"
-  end
-
-  depends_on "homebrew/versions/glfw3" if build.with? "viewer"
+  depends_on "glfw" => :optional
   depends_on "cppunit" if build.with? "test"
   depends_on "doxygen" if build.with? "docs"
   depends_on "log4cplus" if build.with? "logging"
@@ -45,28 +41,28 @@ class Openvdb < Formula
     # Adjust hard coded paths in Makefile
     args = [
       "DESTDIR=#{prefix}",
-      "BOOST_INCL_DIR=#{Formula["boost"].opt_lib}/include",
+      "BOOST_INCL_DIR=#{Formula["boost"].opt_include}",
       "BOOST_LIB_DIR=#{Formula["boost"].opt_lib}",
       "BOOST_THREAD_LIB=-lboost_thread-mt",
-      "TBB_INCL_DIR=#{Formula["tbb"].opt_lib}/include",
-      "TBB_LIB_DIR=#{Formula["tbb"].opt_lib}/lib",
-      "EXR_INCL_DIR=#{Formula["openexr"].opt_lib}/include",
-      "EXR_LIB_DIR=#{Formula["openexr"].opt_lib}/lib",
+      "TBB_INCL_DIR=#{Formula["tbb"].opt_include}",
+      "TBB_LIB_DIR=#{Formula["tbb"].opt_lib}",
+      "EXR_INCL_DIR=#{Formula["openexr"].opt_include}/OpenEXR",
+      "EXR_LIB_DIR=#{Formula["openexr"].opt_lib}",
       "BLOSC_INCL_DIR=", # Blosc is not yet supported.
       "PYTHON_VERSION=",
       "NUMPY_INCL_DIR=",
     ]
 
     if build.with? "jemalloc"
-      args << "CONCURRENT_MALLOC_LIB_DIR=#{Formula["jemalloc"].opt_lib}/lib"
+      args << "CONCURRENT_MALLOC_LIB_DIR=#{Formula["jemalloc"].opt_lib}"
     else
       args << "CONCURRENT_MALLOC_LIB="
     end
 
-    if build.with? "viewer"
-      args << "GLFW_INCL_DIR=#{Formula["homebrew/versions/glfw3"].opt_lib}/include"
-      args << "GLFW_LIB_DIR=#{Formula["homebrew/versions/glfw3"].opt_lib}/lib"
-      args << "GLFW_LIB=-lglfw3"
+    if build.with? "glfw"
+      args << "GLFW_INCL_DIR=#{Formula["glfw"].opt_include}"
+      args << "GLFW_LIB_DIR=#{Formula["glfw"].opt_lib}"
+      args << "GLFW_LIB=-lglfw"
     else
       args << "GLFW_INCL_DIR="
       args << "GLFW_LIB_DIR="
@@ -80,15 +76,15 @@ class Openvdb < Formula
     end
 
     if build.with? "test"
-      args << "CPPUNIT_INCL_DIR=#{Formula["cppunit"].opt_lib}/include"
-      args << "CPPUNIT_LIB_DIR=#{Formula["cppunit"].opt_lib}/lib"
+      args << "CPPUNIT_INCL_DIR=#{Formula["cppunit"].opt_include}"
+      args << "CPPUNIT_LIB_DIR=#{Formula["cppunit"].opt_lib}"
     else
       args << "CPPUNIT_INCL_DIR=" << "CPPUNIT_LIB_DIR="
     end
 
     if build.with? "logging"
-      args << "LOG4CPLUS_INCL_DIR=#{Formula["log4cplus"].opt_lib}/include"
-      args << "LOG4CPLUS_LIB_DIR=#{Formula["log4cplus"].opt_lib}/lib"
+      args << "LOG4CPLUS_INCL_DIR=#{Formula["log4cplus"].opt_include}"
+      args << "LOG4CPLUS_LIB_DIR=#{Formula["log4cplus"].opt_lib}"
     else
       args << "LOG4CPLUS_INCL_DIR=" << "LOG4CPLUS_LIB_DIR="
     end

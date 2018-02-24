@@ -4,21 +4,21 @@
 class Openssl < Formula
   desc "SSL/TLS cryptography library"
   homepage "https://openssl.org/"
-  url "https://www.openssl.org/source/openssl-1.0.2j.tar.gz"
-  mirror "https://dl.bintray.com/homebrew/mirror/openssl-1.0.2j.tar.gz"
-  mirror "https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.0.2j.tar.gz"
-  sha256 "e7aff292be21c259c6af26469c7a9b3ba26e9abaaffd325e3dccc9785256c431"
+  url "https://www.openssl.org/source/openssl-1.0.2n.tar.gz"
+  mirror "https://dl.bintray.com/homebrew/mirror/openssl-1.0.2n.tar.gz"
+  mirror "https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.0.2n.tar.gz"
+  mirror "http://artfiles.org/openssl.org/source/openssl-1.0.2n.tar.gz"
+  sha256 "370babb75f278c39e0c50e8c4e7493bc0f18db6867478341a832a982fd15a8fe"
 
   bottle do
-    sha256 "109fe24d2ee82d89e1ee60587d91c953cdd3384db5374e8e83635c456fa15ed0" => :sierra
-    sha256 "7b331c548a5a82f7a111c6218be3e255a2a1a6c19888c2b7ceaf02f2021c1628" => :el_capitan
-    sha256 "a3083052e81d711dd6da2d5bda7418d321eba26570a63818e52f5f68247c63f2" => :yosemite
+    sha256 "6d3f21c1f60c5fd77df43eb470fbe753ab030b565c9360ebb7335377cb13e047" => :high_sierra
+    sha256 "a2446c29a356d0348380ce9f32120c6fe5e39d2a2dd01b076540e13279db32e7" => :sierra
+    sha256 "fa3baf756b1f1ee919675137284dde4ed45b5e5109f0c351f65ee811db6c7d43" => :el_capitan
   end
 
-  keg_only :provided_by_osx,
+  keg_only :provided_by_macos,
     "Apple has deprecated use of OpenSSL in favor of its own TLS and crypto libraries"
 
-  option :universal
   option "without-test", "Skip build-time tests (not recommended)"
 
   deprecated_option "without-check" => "without-test"
@@ -44,8 +44,10 @@ class Openssl < Formula
 
   def install
     # OpenSSL will prefer the PERL environment variable if set over $PATH
-    # which can cause some odd edge cases & isn't intended. Unset for safety.
+    # which can cause some odd edge cases & isn't intended. Unset for safety,
+    # along with perl modules in PERL5LIB.
     ENV.delete("PERL")
+    ENV.delete("PERL5LIB")
 
     # Load zlib from an explicit path instead of relying on dyld's fallback
     # path, which is empty in a SIP context. This patch will be unnecessary
@@ -55,70 +57,19 @@ class Openssl < Formula
               'zlib_dso = DSO_load(NULL, "z", NULL, 0);',
               'zlib_dso = DSO_load(NULL, "/usr/lib/libz.dylib", NULL, DSO_FLAG_NO_NAME_TRANSLATION);'
 
-    if build.universal?
-      ENV.permit_arch_flags
-      archs = Hardware::CPU.universal_archs
-    elsif MacOS.prefer_64_bit?
-      archs = [Hardware::CPU.arch_64_bit]
+    if MacOS.prefer_64_bit?
+      arch = Hardware::CPU.arch_64_bit
     else
-      archs = [Hardware::CPU.arch_32_bit]
+      arch = Hardware::CPU.arch_32_bit
     end
 
-    dirs = []
-
-    archs.each do |arch|
-      if build.universal?
-        dir = "build-#{arch}"
-        dirs << dir
-        mkdir dir
-        mkdir "#{dir}/engines"
-        system "make", "clean"
-      end
-
-      ENV.deparallelize
-      system "perl", "./Configure", *(configure_args + arch_args[arch])
-      system "make", "depend"
-      system "make"
-      system "make", "test" if build.with?("test")
-
-      next unless build.universal?
-      cp "include/openssl/opensslconf.h", dir
-      cp Dir["*.?.?.?.dylib", "*.a", "apps/openssl"], dir
-      cp Dir["engines/**/*.dylib"], "#{dir}/engines"
-    end
+    ENV.deparallelize
+    system "perl", "./Configure", *(configure_args + arch_args[arch])
+    system "make", "depend"
+    system "make"
+    system "make", "test" if build.with?("test")
 
     system "make", "install", "MANDIR=#{man}", "MANSUFFIX=ssl"
-
-    if build.universal?
-      %w[libcrypto libssl].each do |libname|
-        system "lipo", "-create", "#{dirs.first}/#{libname}.1.0.0.dylib",
-                                  "#{dirs.last}/#{libname}.1.0.0.dylib",
-                       "-output", "#{lib}/#{libname}.1.0.0.dylib"
-        system "lipo", "-create", "#{dirs.first}/#{libname}.a",
-                                  "#{dirs.last}/#{libname}.a",
-                       "-output", "#{lib}/#{libname}.a"
-      end
-
-      Dir.glob("#{dirs.first}/engines/*.dylib") do |engine|
-        libname = File.basename(engine)
-        system "lipo", "-create", "#{dirs.first}/engines/#{libname}",
-                                  "#{dirs.last}/engines/#{libname}",
-                       "-output", "#{lib}/engines/#{libname}"
-      end
-
-      system "lipo", "-create", "#{dirs.first}/openssl",
-                                "#{dirs.last}/openssl",
-                     "-output", "#{bin}/openssl"
-
-      confs = archs.map do |arch|
-        <<-EOS.undent
-          #ifdef __#{arch}__
-          #{(buildpath/"build-#{arch}/opensslconf.h").read}
-          #endif
-          EOS
-      end
-      (include/"openssl/opensslconf.h").atomic_write confs.join("\n")
-    end
   end
 
   def openssldir
@@ -132,7 +83,7 @@ class Openssl < Formula
 
     certs_list = `security find-certificate -a -p #{keychains.join(" ")}`
     certs = certs_list.scan(
-      /-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/m
+      /-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/m,
     )
 
     valid_certs = certs.select do |cert|
@@ -141,14 +92,14 @@ class Openssl < Formula
         openssl_io.close_write
       end
 
-      $?.success?
+      $CHILD_STATUS.success?
     end
 
     openssldir.mkpath
     (openssldir/"cert.pem").atomic_write(valid_certs.join("\n"))
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     A CA file has been bootstrapped using certificates from the SystemRoots
     keychain. To add additional certificates (e.g. the certificates added in
     the System keychain), place .pem files in
@@ -161,7 +112,7 @@ class Openssl < Formula
 
   test do
     # Make sure the necessary .cnf file exists, otherwise OpenSSL gets moody.
-    assert (HOMEBREW_PREFIX/"etc/openssl/openssl.cnf").exist?,
+    assert_predicate HOMEBREW_PREFIX/"etc/openssl/openssl.cnf", :exist?,
             "OpenSSL requires the .cnf file for some functionality"
 
     # Check OpenSSL itself functions as expected.

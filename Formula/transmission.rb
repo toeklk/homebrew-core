@@ -1,20 +1,18 @@
 class Transmission < Formula
   desc "Lightweight BitTorrent client"
   homepage "https://www.transmissionbt.com/"
-  url "https://github.com/transmission/transmission-releases/raw/094777d/transmission-2.92.tar.xz"
-  sha256 "3a8d045c306ad9acb7bf81126939b9594553a388482efa0ec1bfb67b22acd35f"
+  url "https://github.com/transmission/transmission-releases/raw/bce6e29/transmission-2.93.tar.xz"
+  sha256 "8815920e0a4499bcdadbbe89a4115092dab42ce5199f71ff9a926cfd12b9b90b"
 
   bottle do
-    sha256 "0886b0d5825c557540222b50bd7ce30feb2bd48f6d14db5ec7b15ac2451088d6" => :sierra
-    sha256 "68af47554f408d92d04cbf86239a3d973cf7b4e9f0d254e127f5ead36074987a" => :el_capitan
-    sha256 "2071f4bb87d9d5e7cf6885caa8cf8605d81b108a097259113ba295a3c1f90bb7" => :yosemite
-    sha256 "9fb74d440426bbdf82d06dcd01e53db625cabfce0c4c85b15aec298007df6fd3" => :mavericks
+    sha256 "753d56b0ecb6e70ed2841b1abc23247c1b02666e2b95c5a6ac32e9815a0c6131" => :high_sierra
+    sha256 "5e190bda32de9a3ab3dbd7909a23cf79b1fbd891c10f9a537469a29a7d85d6dd" => :sierra
+    sha256 "ba5967f2f272d2376f14b1c0043853f0d103877cb865546fe919b8ae74316982" => :el_capitan
   end
 
   option "with-nls", "Build with native language support"
 
   depends_on "pkg-config" => :build
-  depends_on "curl" if MacOS.version <= :leopard
   depends_on "libevent"
 
   if build.with? "nls"
@@ -39,7 +37,7 @@ class Transmission < Formula
     (var/"transmission").mkpath
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     This formula only installs the command line utilities.
 
     Transmission.app can be downloaded directly from the website:
@@ -52,7 +50,7 @@ class Transmission < Formula
 
   plist_options :manual => "transmission-daemon --foreground"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

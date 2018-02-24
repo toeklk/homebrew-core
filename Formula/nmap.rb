@@ -1,14 +1,15 @@
 class Nmap < Formula
   desc "Port scanning utility for large networks"
   homepage "https://nmap.org/"
-  url "https://nmap.org/dist/nmap-7.31.tar.bz2"
-  sha256 "cb9f4e03c0771c709cd47dc8fc6ac3421eadbdd313f0aae52276829290583842"
-  head "https://guest:@svn.nmap.org/nmap/", :using => :svn
+  url "https://nmap.org/dist/nmap-7.60.tar.bz2"
+  sha256 "a8796ecc4fa6c38aad6139d9515dc8113023a82e9d787e5a5fb5fa1b05516f21"
+  head "https://svn.nmap.org/nmap/"
 
   bottle do
-    sha256 "575123f2d2010f2cd05988dbf3534c005efe3607d0f0fca1e083369f508348f1" => :sierra
-    sha256 "69ccdc8010781ad9e827571259ed18cc605f8271d48ed9a2910f5a48ef212fdc" => :el_capitan
-    sha256 "613e3457aabdbd74919b8d16e29fe730141c265b1050233ee778dac76aaa8973" => :yosemite
+    sha256 "0a41a035f709d509ba3f83ebaa1daa3f98742e89ef10e3d584e4403fdfaef202" => :high_sierra
+    sha256 "46496cbfdeaedd22ca3afba6bd2b7dafe3bd79a89b8511bc6c246a6e2cd97cc9" => :sierra
+    sha256 "92863122b5f00404f3c19ff0ce1ee2c787d3f9c022adff8f772c30c3f0601f2c" => :el_capitan
+    sha256 "4b27984c8b92207b1d3e283a1a423a27d63401a809de5e43083722f62be75e35" => :yosemite
   end
 
   option "with-pygtk", "Build Zenmap GUI"
@@ -17,10 +18,6 @@ class Nmap < Formula
   depends_on "pygtk" => :optional
 
   conflicts_with "ndiff", :because => "both install `ndiff` binaries"
-
-  fails_with :llvm do
-    build 2334
-  end
 
   def install
     ENV.deparallelize

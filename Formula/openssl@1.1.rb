@@ -1,38 +1,32 @@
 class OpensslAT11 < Formula
   desc "Cryptography and SSL/TLS Toolkit"
   homepage "https://openssl.org/"
-  url "https://www.openssl.org/source/openssl-1.1.0c.tar.gz"
-  mirror "https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.1.0c.tar.gz"
-  sha256 "fc436441a2e05752d31b4e46115eb89709a28aef96d4fe786abe92409b2fd6f5"
+  url "https://www.openssl.org/source/openssl-1.1.0g.tar.gz"
+  mirror "https://dl.bintray.com/homebrew/mirror/openssl@1.1-1.1.0g.tar.gz"
+  mirror "https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.1.0g.tar.gz"
+  sha256 "de4d501267da39310905cb6dc8c6121f7a2cad45a7707f76df828fe1b85073af"
+  revision 1
   version_scheme 1
 
   bottle do
-    sha256 "bd582f23920475e5dee6aeaab79d9af9d6bd5592f534bc07e10cf41d1bc1ac43" => :sierra
-    sha256 "528ab5f19b4f5b08d8cc921ee0675515c50f1e870a10de7bac2fea1a4062c0c1" => :el_capitan
-    sha256 "34d106f1b300d4b192757941febde26cba194d903c5683d09df8b7328ce04215" => :yosemite
+    sha256 "6c6b3d283398a443549a7f3df072c4fb0b6053cef4c99245149f44c01e977284" => :high_sierra
+    sha256 "b0d78618e300fd5fceb5bf98001d41175bb8dcfdc1fc9239ecfa8838dc7e95c1" => :sierra
+    sha256 "54fda601f3bce5881e6b834966eb5f04090d5ed6b150d2efc7ea4e26de6446b7" => :el_capitan
   end
 
-  keg_only :provided_by_osx,
-    "Apple has deprecated use of OpenSSL in favor of its own TLS and crypto libraries"
+  devel do
+    url "https://www.openssl.org/source/openssl-1.1.1-pre1.tar.gz"
+    sha256 "dd291d0a81d77219d40b21b9caf4713daaf43416fe8d6eae0b96df39b8b17e6d"
+  end
 
-  option :universal
+  keg_only :versioned_formula
+
   option "without-test", "Skip build-time tests (not recommended)"
 
   # Only needs 5.10 to run, but needs >5.13.4 to run the testsuite.
   # https://github.com/openssl/openssl/blob/4b16fa791d3ad8/README.PERL
   # The MacOS ML tag is same hack as the way we handle most :python deps.
-  if build.with? "test"
-    depends_on :perl => "5.14" if MacOS.version <= :mountain_lion
-  else
-    depends_on :perl => "5.10"
-  end
-
-  def arch_args
-    {
-      :x86_64 => %w[darwin64-x86_64-cc enable-ec_nistp_64_gcc_128],
-      :i386 => %w[darwin-i386-cc],
-    }
-  end
+  depends_on "perl" if build.with?("test") && MacOS.version <= :mountain_lion
 
   # SSLv2 died with 1.1.0, so no-ssl2 no longer required.
   # SSLv3 & zlib are off by default with 1.1.0 but this may not
@@ -58,69 +52,17 @@ class OpensslAT11 < Formula
       ENV["PERL"] = Formula["perl"].opt_bin/"perl"
     end
 
-    if build.universal?
-      ENV.permit_arch_flags
-      archs = Hardware::CPU.universal_archs
-    elsif MacOS.prefer_64_bit?
-      archs = [Hardware::CPU.arch_64_bit]
+    if MacOS.prefer_64_bit?
+      arch_args = %w[darwin64-x86_64-cc enable-ec_nistp_64_gcc_128]
     else
-      archs = [Hardware::CPU.arch_32_bit]
+      arch_args = %w[darwin-i386-cc]
     end
 
-    dirs = []
-
-    archs.each do |arch|
-      if build.universal?
-        dir = "build-#{arch}"
-        dirs << dir
-        mkdir dir
-        mkdir "#{dir}/engines"
-      end
-
-      ENV.deparallelize
-      system "perl", "./Configure", *(configure_args + arch_args[arch])
-      system "make", "clean" if build.universal?
-      system "make"
-      system "make", "test" if build.with?("test")
-
-      next unless build.universal?
-      cp "include/openssl/opensslconf.h", dir
-      cp Dir["*.?.?.dylib", "*.a", "apps/openssl"], dir
-      cp Dir["engines/**/*.dylib"], "#{dir}/engines"
-    end
-
+    ENV.deparallelize
+    system "perl", "./Configure", *(configure_args + arch_args)
+    system "make"
+    system "make", "test" if build.with?("test")
     system "make", "install", "MANDIR=#{man}", "MANSUFFIX=ssl"
-
-    if build.universal?
-      %w[libcrypto libssl].each do |libname|
-        system "lipo", "-create", "#{dirs.first}/#{libname}.1.1.dylib",
-                                  "#{dirs.last}/#{libname}.1.1.dylib",
-                       "-output", "#{lib}/#{libname}.1.1.dylib"
-        system "lipo", "-create", "#{dirs.first}/#{libname}.a",
-                                  "#{dirs.last}/#{libname}.a",
-                       "-output", "#{lib}/#{libname}.a"
-      end
-
-      Dir.glob("#{dirs.first}/engines/*.dylib") do |engine|
-        libname = File.basename(engine)
-        system "lipo", "-create", "#{dirs.first}/engines/#{libname}",
-                                  "#{dirs.last}/engines/#{libname}",
-                       "-output", "#{lib}/engines-1.1/#{libname}"
-      end
-
-      system "lipo", "-create", "#{dirs.first}/openssl",
-                                "#{dirs.last}/openssl",
-                     "-output", "#{bin}/openssl"
-
-      confs = archs.map do |arch|
-        <<-EOS.undent
-          #ifdef __#{arch}__
-          #{(buildpath/"build-#{arch}/opensslconf.h").read}
-          #endif
-        EOS
-      end
-      (include/"openssl/opensslconf.h").atomic_write confs.join("\n")
-    end
   end
 
   def openssldir
@@ -134,7 +76,7 @@ class OpensslAT11 < Formula
 
     certs_list = `security find-certificate -a -p #{keychains.join(" ")}`
     certs = certs_list.scan(
-      /-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/m
+      /-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/m,
     )
 
     valid_certs = certs.select do |cert|
@@ -143,14 +85,14 @@ class OpensslAT11 < Formula
         openssl_io.close_write
       end
 
-      $?.success?
+      $CHILD_STATUS.success?
     end
 
     openssldir.mkpath
     (openssldir/"cert.pem").atomic_write(valid_certs.join("\n"))
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     A CA file has been bootstrapped using certificates from the system
     keychain. To add additional certificates, place .pem files in
       #{openssldir}/certs
@@ -162,7 +104,7 @@ class OpensslAT11 < Formula
 
   test do
     # Make sure the necessary .cnf file exists, otherwise OpenSSL gets moody.
-    assert (HOMEBREW_PREFIX/"etc/openssl@1.1/openssl.cnf").exist?,
+    assert_predicate HOMEBREW_PREFIX/"etc/openssl@1.1/openssl.cnf", :exist?,
             "OpenSSL requires the .cnf file for some functionality"
 
     # Check OpenSSL itself functions as expected.

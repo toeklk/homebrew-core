@@ -1,26 +1,31 @@
 class Htmlcleaner < Formula
   desc "HTML parser written in Java"
-  homepage "http://htmlcleaner.sourceforge.net/index.php"
-  url "https://downloads.sourceforge.net/project/htmlcleaner/htmlcleaner/htmlcleaner%20v2.16/htmlcleaner-2.16-src.zip"
-  sha256 "8b9066ebdaff85b15b3cb29208549227ca49351b4bd01779ea8cb3de6f4aac7e"
+  homepage "https://htmlcleaner.sourceforge.io"
+  url "https://downloads.sourceforge.net/project/htmlcleaner/htmlcleaner/htmlcleaner%20v2.21/htmlcleaner-2.21-src.zip"
+  sha256 "7b88e37b642170ef225eba380a97999d97dc84650f0ecb14ffed6fcf1d16c4a7"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "baa8a4e7b9b2968bc1d0aee422e7b1ba5306463982da62d8d2d6e7689b0937f5" => :sierra
-    sha256 "0bf9827d2819dc87b93d86b08bc77c04c418483a7cb834853524174592f9f672" => :el_capitan
-    sha256 "015a92188a5dc625ee57a5f2250c8c9029cfa770763d511ad9494964a6ce87a4" => :yosemite
-    sha256 "334a1504f936068186b106661eb95791f7b80aa2f05382ca092c6f4c66f8756b" => :mavericks
+    sha256 "9cd554397a9f87a8862466135f1c25968b6f03220e19eccc4d736d339f899423" => :high_sierra
+    sha256 "68276e2d39776358c4fae2bf77dc09861bed0bb9a8a97fa9f490c060fc50db60" => :sierra
+    sha256 "888335b4c91925434e794ad53483983e7087060cf6143fa2f69deadb6949f04a" => :el_capitan
   end
 
   depends_on "maven" => :build
-  depends_on :java => "1.8+"
+  depends_on :java => "1.8"
 
   def install
-    ENV.java_cache
+    cmd = Language::Java.java_home_cmd("1.8")
+    ENV["JAVA_HOME"] = Utils.popen_read(cmd).chomp
 
-    system "mvn", "clean", "package"
+    system "mvn", "--log-file", "build-output.log", "clean", "package"
     libexec.install Dir["target/htmlcleaner-*.jar"]
-    bin.write_jar_script "#{libexec}/htmlcleaner-#{version}.jar", "htmlcleaner"
+
+    (bin/"htmlcleaner").write <<~EOS
+      #!/bin/bash
+      export JAVA_HOME=$(#{cmd})
+      exec java  -jar #{libexec}/htmlcleaner-#{version}.jar "$@"
+    EOS
   end
 
   test do

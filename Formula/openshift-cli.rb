@@ -2,28 +2,21 @@ class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/origin.git",
-    :tag => "v1.3.1",
-    :revision => "274842360258d4f6ea1d3ec19559ecd395fd4d4f"
+    :tag => "v3.7.1",
+    :revision => "ab0f056b4415598756f2b1bd3b313b5dc613bb87",
+    :shallow => false
 
   head "https://github.com/openshift/origin.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "72eacfbfb995624437e0fc6f40bf6986c3916fa1efc5b044094f11a86573b7b6" => :sierra
-    sha256 "f4f8b22232cfbd01c146074420d4c8174e0468bce0f6ef9d233c85b6d92c0b5d" => :el_capitan
-    sha256 "c39245ceec2bbb6f17e0853698186e9e025d09d5431480bfaf73497ae458f3c3" => :yosemite
-  end
-
-  devel do
-    url "https://github.com/openshift/origin.git",
-      :tag => "v1.4.0-alpha.1",
-      :revision => "f189ede42f58a45365a51c6eb781d86d5bdc4349"
-    version "1.4.0-alpha.1"
-
-    depends_on "socat"
+    sha256 "b5d0436454761b6bf4e1c472b97d05f500d92e9b29669d640ea30c283d7ed842" => :high_sierra
+    sha256 "c6538907e7fed63cb44d5f886db9a37fd7bdb1c6254858f8c1b4872cb57b075e" => :sierra
+    sha256 "4c157753d72cd1c0aef0470325dcbc56a6e46ebe152e02ea4b35b28675490cc2" => :el_capitan
   end
 
   depends_on "go" => :build
+  depends_on "socat"
 
   def install
     # this is necessary to avoid having the version marked as dirty
@@ -31,8 +24,7 @@ class OpenshiftCli < Formula
 
     system "make", "all", "WHAT=cmd/oc", "GOFLAGS=-v", "OS_OUTPUT_GOPATH=1"
 
-    arch = MacOS.prefer_64_bit? ? "amd64" : "x86"
-    bin.install "_output/local/bin/darwin/#{arch}/oc"
+    bin.install "_output/local/bin/darwin/amd64/oc"
     bin.install_symlink "oc" => "oadm"
 
     bash_completion.install Dir["contrib/completions/bash/*"]
@@ -40,6 +32,6 @@ class OpenshiftCli < Formula
 
   test do
     assert_match /^oc v#{version}/, shell_output("#{bin}/oc version")
-    assert_match /^oadm v#{version}/, shell_output("#{bin}/oadm version")
+    assert_match /^oc v#{version}/, shell_output("#{bin}/oadm version")
   end
 end

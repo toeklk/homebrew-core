@@ -1,15 +1,16 @@
 class Snzip < Formula
   desc "Compression/decompression tool based on snappy"
   homepage "https://github.com/kubo/snzip"
-  url "https://bintray.com/artifact/download/kubo/generic/snzip-1.0.3.tar.gz"
-  sha256 "c83f1301cb1f1b64a25ef10e5fcfc2f6f66fa092ae833c524cad219c0ef2e990"
+  url "https://bintray.com/artifact/download/kubo/generic/snzip-1.0.4.tar.gz"
+  sha256 "a45081354715d48ed31899508ebed04a41d4b4a91dca37b79fc3b8ee0c02e25e"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "32c40172b6af9a0aa57db618d8a96b100f1021d5786862cf455e9666617d46af" => :sierra
-    sha256 "048d8e5c33afda8fda06d5c65ba7da97c65527556ffe54e11f7a0aa1f1019ca0" => :el_capitan
-    sha256 "3f0e1604d261a3d0aedc527a7e6242a11fe094aa1f635ae26e31da754eff6fdb" => :yosemite
-    sha256 "d2399ea073c5b04fe1eeba5d7d7e3c288c5da72c295739c569b4af73f47d9e69" => :mavericks
+    sha256 "fd4c734255707e1695f5d89a6dccc7d8b6a302771a71f6f6db0a054b9655d287" => :high_sierra
+    sha256 "953a79f0aa028d4b5f13cc606ead6e225c290972db683947dabed58bb6748257" => :sierra
+    sha256 "fdc031ce925717ee49048f3ffab3015f1039a06299f5093f7949e9a41cab975e" => :el_capitan
+    sha256 "68247e4d0d0520d9a2615acd906d079951b84e4138b27a69c2aa7ce6a286dd9e" => :yosemite
   end
 
   depends_on "snappy"

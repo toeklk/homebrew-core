@@ -11,21 +11,20 @@ class JohnJumbo < Formula
     # upstream.  See
     # https://github.com/magnumripper/JohnTheRipper/issues/1901
     patch do
-      url "https://github.com/magnumripper/JohnTheRipper/commit/d29ad8aabaa9726eb08f440001c37611fa072e0c.diff"
-      sha256 "de5c09397f3666d0592e0f418f26a78a6624c5a947347ec2440e141c8915ae82"
+      url "https://github.com/magnumripper/JohnTheRipper/commit/d29ad8aabaa9726eb08f440001c37611fa072e0c.diff?full_index=1"
+      sha256 "b3400f54c64dccce6fe4846872c945b280ec221c7a3d614b03c18029cba3695a"
     end
   end
 
   bottle do
     cellar :any
     rebuild 6
+    sha256 "6612d2001d80361ec70a19a8c54254a76fe1919a9cc72918032304e714144530" => :high_sierra
     sha256 "6a2460e120f697e09a1ed62a948e5ecd767fc1b24a3f331aa4d59833205e48a4" => :sierra
     sha256 "a87bf02d882413393f3f3759ab0fa6a171438609d101c7c9bc7772fe69e2ab47" => :el_capitan
     sha256 "cf9c82f416a4eb3aad7d4202b21105988d346be8d8df262ea4ca18e683475d32" => :yosemite
     sha256 "b36f66b0469b5c6cde95f780671db5b32e4e4dd7c16c4e7e591043bfdef2b65c" => :mavericks
   end
-
-  conflicts_with "john", :because => "both install the same binaries"
 
   option "without-completion", "bash/zsh completion will not be installed"
 
@@ -33,14 +32,11 @@ class JohnJumbo < Formula
   depends_on "openssl"
   depends_on "gmp"
 
+  conflicts_with "john", :because => "both install the same binaries"
+
   # Patch taken from MacPorts, tells john where to find runtime files.
   # https://github.com/magnumripper/JohnTheRipper/issues/982
   patch :DATA
-
-  fails_with :llvm do
-    build 2334
-    cause "Don't remember, but adding this to whitelist 2336."
-  end
 
   # https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/doc/INSTALL#L133-L143
   fails_with :gcc do

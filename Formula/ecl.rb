@@ -1,30 +1,34 @@
 class Ecl < Formula
   desc "Embeddable Common Lisp"
   homepage "https://common-lisp.net/project/ecl/"
-  url "https://common-lisp.net/project/ecl/static/files/release/ecl-16.1.2.tgz"
-  sha256 "2d482b1a0a4fbd5d881434517032279d808cb6405e22dd91ef6d733534464b99"
+  url "https://common-lisp.net/project/ecl/static/files/release/ecl-16.1.3.tgz"
+  sha256 "76a585c616e8fa83a6b7209325a309da5bc0ca68e0658f396f49955638111254"
+  revision 3
 
   head "https://gitlab.com/embeddable-common-lisp/ecl.git"
 
   bottle do
-    sha256 "3ff5a197a14d03d9e8c5083289506439f473685db7fe15b27f2659652c8165b9" => :sierra
-    sha256 "8915d3c5862aa5b89beb28119778715308f6639abde6fcefe052f716c3db9560" => :el_capitan
-    sha256 "46647c3577257ff30197afe689161d36a8bd8e99a2b24eaa44f97f2f38e644b1" => :yosemite
-    sha256 "5fa6a6a6f0ac717897ed635484a4b1675a48b8455e6178990bbce5109353131d" => :mavericks
+    sha256 "9afd54b532ae1f1ee3d62b32323007cc736def18f7dde363b19ee9cbf67364fa" => :high_sierra
+    sha256 "c4a7bf602fd2ce4a265cee2944cc0aa57829f9b2d965c1c54da4a905ee8cdf41" => :sierra
+    sha256 "2c27794e63438b4e4cb0aaaf8924d6586f2774c29f06b01429d569fec742e55d" => :el_capitan
   end
 
+  depends_on "bdw-gc"
   depends_on "gmp"
+  depends_on "libffi"
 
   def install
+    ENV.deparallelize
     system "./configure", "--prefix=#{prefix}",
                           "--enable-threads=yes",
-                          "--with-system-gmp=yes"
+                          "--enable-boehm=system",
+                          "--enable-gmp=system"
     system "make"
     system "make", "install"
   end
 
   test do
-    (testpath/"simple.cl").write <<-EOS.undent
+    (testpath/"simple.cl").write <<~EOS
       (write-line (write-to-string (+ 2 2)))
     EOS
     assert_equal "4", shell_output("#{bin}/ecl -shell #{testpath}/simple.cl").chomp

@@ -1,15 +1,15 @@
 class Doctl < Formula
   desc "Command-line tool for DigitalOcean"
   homepage "https://github.com/digitalocean/doctl"
-  url "https://github.com/digitalocean/doctl/archive/v1.5.0.tar.gz"
-  sha256 "66110a1377e0ca2fcb17bc2ac04e00aa2da5e961906419135772e3157c70f7f4"
+  url "https://github.com/digitalocean/doctl/archive/v1.7.1.tar.gz"
+  sha256 "6c47b5ce9c4739499732be96b914cecbad9135088504351601b75a9608d19d64"
   head "https://github.com/digitalocean/doctl.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "db724a87e33308a398042d7d1f753b8fdab9486cd8423e7a2a59965ac666864d" => :sierra
-    sha256 "ead0fb58a77d7e319b3014e4a4d31fe569bdbd016ca6f93da0d1713b479e9c80" => :el_capitan
-    sha256 "85f6e5c43246cf287b7a5359d99f85b7e21338b87852cf01a8772bd51bb5b722" => :yosemite
+    sha256 "324531ba538d2960e1580595a6fe16903902eadb04b339c85f156f935a60cce9" => :high_sierra
+    sha256 "8e6647bddaf162ac190de923f9eb0321e90e3022b017cf5c18f235e155a6e38f" => :sierra
+    sha256 "610df50fff53be73902d687e7ab052549d235c6410d48c9b8ffcaa4bb90d96e7" => :el_capitan
   end
 
   depends_on "go" => :build
@@ -30,6 +30,9 @@ class Doctl < Formula
     ].join(" ")
     system "go", "build", "-ldflags", ldflags, "github.com/digitalocean/doctl/cmd/doctl"
     bin.install "doctl"
+
+    (bash_completion/"doctl").write `#{bin}/doctl completion bash`
+    (zsh_completion/"doctl").write `#{bin}/doctl completion zsh`
   end
 
   test do

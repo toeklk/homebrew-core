@@ -1,15 +1,14 @@
 class Znc < Formula
   desc "Advanced IRC bouncer"
-  homepage "http://wiki.znc.in/ZNC"
-  url "http://znc.in/releases/archive/znc-1.6.3.tar.gz"
-  mirror "https://github.com/znc/znc/archive/znc-1.6.3.tar.gz"
-  sha256 "631c46de76fe601a41ef7676bc974958e9a302b72b25fc92b4a603a25d89b827"
+  homepage "https://wiki.znc.in/ZNC"
+  url "https://znc.in/releases/archive/znc-1.6.5.tar.gz"
+  sha256 "2f0225d49c53a01f8d94feea4619a6fe92857792bb3401a4eb1edd65f0342aca"
 
   bottle do
-    sha256 "ada44f04522b600c36f1d14d5c198b457cd4615e7fda64ac1827ae61e5e59c61" => :sierra
-    sha256 "1e190212ca7079d83a5de38a6d5fd4a7f3d76dc372cce250758ae05524e52856" => :el_capitan
-    sha256 "a6f958bcf993587a1d57cdd1cfb5d5c457fd61690a4c04e13853b238c5bb8563" => :yosemite
-    sha256 "ba52c547e66c05a2505d97726d41aa17b13232e8f52543a478ce7fa777da05e7" => :mavericks
+    sha256 "282e0fddf7f3e13d891b92ca31b2fc3d9f216ffd8771550cc4551d3e21b3b547" => :high_sierra
+    sha256 "c1d6ddcd9078631bcd94484f3796e95f32bf9e7b8d0886d9e2802b955b624cbf" => :sierra
+    sha256 "fe47b2288ee78acd11b5d4dc5a4a43a255153a211775875975f458cfc370c7a9" => :el_capitan
+    sha256 "61a0afcfcb021a7005d59f6d0a352fe27f05a6b2617eadb4482172d673666a67" => :yosemite
   end
 
   head do
@@ -22,12 +21,14 @@ class Znc < Formula
 
   option "with-debug", "Compile ZNC with debug support"
   option "with-icu4c", "Build with icu4c for charset support"
+  option "with-python3", "Build with mod_python support, allowing Python ZNC modules"
 
   deprecated_option "enable-debug" => "with-debug"
 
   depends_on "pkg-config" => :build
   depends_on "openssl"
   depends_on "icu4c" => :optional
+  depends_on "python3" => :optional
 
   needs :cxx11
 
@@ -41,6 +42,7 @@ class Znc < Formula
 
     args = ["--prefix=#{prefix}"]
     args << "--enable-debug" if build.with? "debug"
+    args << "--enable-python" if build.with? "python3"
 
     system "./autogen.sh" if build.head?
     system "./configure", *args
@@ -49,7 +51,7 @@ class Znc < Formula
 
   plist_options :manual => "znc --foreground"
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -77,6 +79,6 @@ class Znc < Formula
   test do
     mkdir ".znc"
     system bin/"znc", "--makepem"
-    assert File.exist?(".znc/znc.pem")
+    assert_predicate testpath/".znc/znc.pem", :exist?
   end
 end

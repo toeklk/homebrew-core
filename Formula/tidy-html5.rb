@@ -1,15 +1,15 @@
 class TidyHtml5 < Formula
   desc "Granddaddy of HTML tools, with support for modern standards"
   homepage "http://www.html-tidy.org/"
-  url "https://github.com/htacg/tidy-html5/archive/5.2.0.tar.gz"
-  sha256 "80533415acf11ac55f24b874ab39448e390ffec3c2b93df4b857d15602fc7c4d"
+  url "https://github.com/htacg/tidy-html5/archive/5.6.0.tar.gz"
+  sha256 "08a63bba3d9e7618d1570b4ecd6a7daa83c8e18a41c82455b6308bc11fe34958"
+  head "https://github.com/htacg/tidy-html5.git", :branch => "next"
 
   bottle do
     cellar :any
-    sha256 "13c0baa6b6195b8adc948328177d4bc3bd9777b7ed7c756a76155ce4defe18c0" => :sierra
-    sha256 "ea943c15cd5e364901517f2f423aa615eb701f180d0db617428bf5cbd03362be" => :el_capitan
-    sha256 "c6bd4b2ff01a8e2c0583fdbe665cf5f9a282cafe548c52bfd5c180d36c56ef89" => :yosemite
-    sha256 "0ab1735f830a593c4bb6567e427457abfc501e6211f12c547f5017b72dff8696" => :mavericks
+    sha256 "af9633f1578980fe3d4351c3d71b4b83cc79f814d87310e4b7d05830c53c9621" => :high_sierra
+    sha256 "6c8f843d25d6964b18d4c2fa15aaf2606b36decbbe65c31b38a7982e499a9d28" => :sierra
+    sha256 "48416711a2f1a080e9eae1ecba30773ee48eae98181e25c6ae5ace07cb7ac8ee" => :el_capitan
   end
 
   depends_on "cmake" => :build

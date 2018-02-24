@@ -3,7 +3,7 @@ class Camlp5TransitionalModeRequirement < Requirement
 
   satisfy(:build_env => false) { !Tab.for_name("camlp5").with?("strict") }
 
-  def message; <<-EOS.undent
+  def message; <<~EOS
     camlp5 must be compiled in transitional mode (instead of --strict mode):
       brew install camlp5
     EOS
@@ -13,26 +13,25 @@ end
 class Coq < Formula
   desc "Proof assistant for higher-order logic"
   homepage "https://coq.inria.fr/"
-  url "https://coq.inria.fr/distrib/8.5pl3/files/coq-8.5pl3.tar.gz"
-  version "8.5pl3"
-  sha256 "305b92e05d406d4d0c64f43d4fadb6b89419120a1d4ae4115ed1c5eb8812d33b"
-  head "git://scm.gforge.inria.fr/coq/coq.git", :branch => "trunk"
+  url "https://github.com/coq/coq/archive/V8.7.2.tar.gz"
+  sha256 "ef25c3979f69b891d40a8776b96059229b06de3d037923de9c657faf8ede78d2"
+  head "https://github.com/coq/coq.git"
 
   bottle do
-    sha256 "681e28c90f1502cd76feba07a59109c93609f85662d2212d7be03f1bbab0b51e" => :sierra
-    sha256 "18dfc2a61d346728da86009796af2772a3e17d9699dee85a7fbca81b2c6a40fb" => :el_capitan
-    sha256 "27eb546323bc8ed455005e0e987b224fc0a3749a2ecb9f46a9266eb058925eab" => :yosemite
+    sha256 "322a28d2fd675c87def801f418ea9e864f8a248d3a1b8db75f72b5ae27ccaecb" => :high_sierra
+    sha256 "636e15aa70244d7a667523dffed1510e08f20268dc76d8b88ea17966000906f2" => :sierra
+    sha256 "a94ce424a55a9abac395e56829030707c8cd62fa5a7f136ad8d2202f5d4e6cff" => :el_capitan
   end
 
+  depends_on "ocaml-findlib" => :build
   depends_on Camlp5TransitionalModeRequirement
   depends_on "camlp5"
   depends_on "ocaml"
+  depends_on "ocaml-num"
 
   def install
-    camlp5_lib = Formula["camlp5"].opt_lib/"ocaml/camlp5"
     system "./configure", "-prefix", prefix,
                           "-mandir", man,
-                          "-camlp5dir", camlp5_lib,
                           "-emacslib", elisp,
                           "-coqdocdir", "#{pkgshare}/latex",
                           "-coqide", "no",
@@ -42,7 +41,10 @@ class Coq < Formula
   end
 
   test do
-    (testpath/"testing.v").write <<-EOS.undent
+    (testpath/"testing.v").write <<~EOS
+      Require Coq.omega.Omega.
+      Require Coq.ZArith.ZArith.
+
       Inductive nat : Set :=
       | O : nat
       | S : nat -> nat.
@@ -52,7 +54,16 @@ class Coq < Formula
         | S n' => S (add n' m)
         end.
       Lemma add_O_r : forall (n: nat), add n O = n.
+      Proof.
       intros n; induction n; simpl; auto; rewrite IHn; auto.
+      Qed.
+
+      Import Coq.omega.Omega.
+      Import Coq.ZArith.ZArith.
+      Open Scope Z.
+      Lemma add_O_r_Z : forall (n: Z), n + 0 = n.
+      Proof.
+      intros; omega.
       Qed.
     EOS
     system("#{bin}/coqc", "#{testpath}/testing.v")

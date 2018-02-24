@@ -1,10 +1,8 @@
 class HgFastExport < Formula
   desc "Fast Mercurial to Git converter"
   homepage "http://repo.or.cz/w/fast-export.git"
-  url "https://github.com/frej/fast-export/archive/v160914.tar.gz"
-  sha256 "1eb2c520f9fa93413d17e4a4551e3dde0dad31564498f1204b191741bd5a4763"
-
-  head "git://repo.or.cz/fast-export.git"
+  url "https://github.com/frej/fast-export/archive/v180126.tar.gz"
+  sha256 "7cf77d61dba0b4e8e2a1f2c6cb3cf885845f992c6231d6bf7f075bd34999a8f9"
 
   bottle :unneeded
 

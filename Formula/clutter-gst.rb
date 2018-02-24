@@ -1,13 +1,14 @@
 class ClutterGst < Formula
   desc "ClutterMedia interface using GStreamer for video and audio"
   homepage "https://developer.gnome.org/clutter-gst/"
-  url "https://download.gnome.org/sources/clutter-gst/3.0/clutter-gst-3.0.20.tar.xz"
-  sha256 "a0011787ed2a2dafe914f973c1ede283d40b8eb75123f4a7b608ae6d1cc066c9"
+  url "https://download.gnome.org/sources/clutter-gst/3.0/clutter-gst-3.0.24.tar.xz"
+  sha256 "e9f1c87d8f4c47062e952fb8008704f8942cf2d6f290688f3f7d13e83578cc6c"
 
   bottle do
-    sha256 "549b0549c45fc4bacbc6763c868cf5f8cd62f2eb789f0d852640fc71cd797b34" => :sierra
-    sha256 "63bb495558a54cf03b7a16d9d1b67c666c4510ca606afe4f1bf5cef527392396" => :el_capitan
-    sha256 "3b0a812a9f656392a1b1764177a5f6d6b31dee45483f8fd0458af1f727ca6421" => :yosemite
+    sha256 "4751b85cf45b43953c0831ab0a6baee8ab555f28b07824ba9826cc9ebb5a4af2" => :high_sierra
+    sha256 "01ee56b08e394349a122c49946723ae3160fd929e69433ec217b147ef669772e" => :sierra
+    sha256 "076425aafd980be4f68320ab5b9ea0168c4b46669a8ec4780483bda559c042ca" => :el_capitan
+    sha256 "9a2970791ee1915aca45d49e265fdf7a4ff1730b5a371eda3b6c9e352141e13b" => :yosemite
   end
 
   depends_on "pkg-config" => :build
@@ -35,7 +36,7 @@ class ClutterGst < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <clutter-gst/clutter-gst.h>
 
       int main(int argc, char *argv[]) {

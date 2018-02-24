@@ -1,38 +1,26 @@
 class Knot < Formula
   desc "High-performance authoritative-only DNS server"
   homepage "https://www.knot-dns.cz/"
-
-  stable do
-    url "https://secure.nic.cz/files/knot-dns/knot-2.3.2.tar.xz"
-    sha256 "ba298157693d2b3264ff53afd397d8bb240336b36c18064515890733254700df"
-
-    resource "fstrm" do
-      url "https://github.com/farsightsec/fstrm/archive/v0.3.0.tar.gz"
-      sha256 "531ef29ed2a15dfe4993448eb4e8463c5ed8eebf1472a5608c6ac0a6f62b3a12"
-    end
-  end
+  url "https://secure.nic.cz/files/knot-dns/knot-2.6.5.tar.xz"
+  sha256 "33cd676706e2baeb37cf3879ccbc91a1e1cd1ee5d7a082adff4d1e753ce49d46"
 
   bottle do
-    cellar :any
-    sha256 "c549b46df63a3d2d496bf0206893b889f699668848060ea968c293180dc1240d" => :sierra
-    sha256 "5048a84ece6f6ebf1a16f5f326840542742f998bae4cfb60a64bdfcccd2ab593" => :el_capitan
-    sha256 "72980990b75b092230941043631b677ffd7a9e15d7cb036f991ce6746153f99c" => :yosemite
+    sha256 "d972c47af7dd0af6f6b993679fdad536a5608880f1e6a1c8be75aa60488ab1f1" => :high_sierra
+    sha256 "a08a3a161f845c3c3fdde06c62b2edaca3ba32610b9abffb51e28c1559709b4a" => :sierra
+    sha256 "1d24871eb07b2b143d310c2753406f33d19a21c79a0f7bea6afc60dadb706fdc" => :el_capitan
   end
 
   head do
-    url "https://gitlab.labs.nic.cz/labs/knot.git"
+    url "https://gitlab.labs.nic.cz/knot/knot-dns.git"
 
-    resource "fstrm" do
-      url "https://github.com/farsightsec/fstrm.git"
-    end
+    depends_on "automake" => :build
+    depends_on "autoconf" => :build
+    depends_on "libtool" => :build
   end
 
   # due to AT_REMOVEDIR
   depends_on :macos => :yosemite
 
-  depends_on "automake" => :build
-  depends_on "autoconf" => :build
-  depends_on "libtool" => :build
   depends_on "pkg-config" => :build
   depends_on "sphinx-doc" => :build
   depends_on "gnutls"
@@ -42,19 +30,9 @@ class Knot < Formula
   depends_on "openssl"
   depends_on "userspace-rcu"
   depends_on "protobuf-c"
-  depends_on "libevent"
+  depends_on "fstrm"
 
   def install
-    resource("fstrm").stage do
-      system "autoreconf", "-fvi"
-      system "./configure", "--prefix=#{libexec}/fstrm"
-      system "make", "install"
-    end
-
-    ENV.append "CFLAGS", "-I#{libexec}/fstrm/include"
-    ENV.append "LDFLAGS", "-L#{libexec}/fstrm/lib"
-    ENV.append_path "PKG_CONFIG_PATH", "#{libexec}/fstrm/lib/pkgconfig"
-
     system "autoreconf", "-fvi" if build.head?
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
@@ -80,19 +58,14 @@ class Knot < Formula
     (var/"knot").mkpath
   end
 
-  def knot_conf; <<-EOS.undent
+  def knot_conf; <<~EOS
     server:
       rundir: "#{var}/knot"
       listen: [ "0.0.0.0@53", "::@53" ]
 
     log:
       - target: "stderr"
-        any: "error"
-
-      - target: "syslog"
-        server: "info"
-        zone: "warning"
-        any: "error"
+        any: "info"
 
     control:
       listen: "knot.sock"
@@ -105,7 +78,7 @@ class Knot < Formula
 
   plist_options :startup => true
 
-  def plist; <<-EOS.undent
+  def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -122,8 +95,12 @@ class Knot < Formula
         <string>-c</string>
         <string>#{etc}/knot.conf</string>
       </array>
-      <key>ServiceIPC</key>
-      <false/>
+      <key>StandardInPath</key>
+      <string>/dev/null</string>
+      <key>StandardOutPath</key>
+      <string>/dev/null</string>
+      <key>StandardErrorPath</key>
+      <string>#{var}/log/knot.log</string>
     </dict>
     </plist>
     EOS

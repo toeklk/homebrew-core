@@ -1,14 +1,14 @@
 class Imapfilter < Formula
   desc "IMAP message processor/filter"
   homepage "https://github.com/lefcha/imapfilter/"
-  url "https://github.com/lefcha/imapfilter/archive/v2.6.7.tar.gz"
-  sha256 "183efd43c805abaf3f60a1bca788d42da7f05c52fc952efd4555fa40233b4868"
+  url "https://github.com/lefcha/imapfilter/archive/v2.6.11.tar.gz"
+  sha256 "baea9596ed251910b176a2bdcd46d78ab68f6aa4e066f70ca0d6153e32df54fb"
+  revision 1
 
   bottle do
-    sha256 "b76be4fb923b75e836d78d58cd05c8edbf173f162fae03fd140611b6f32dfbda" => :sierra
-    sha256 "473bc4d3ac25674e2c8ef0d64d7dda0e007e49a883cbd51b83c202e7a140bf6b" => :el_capitan
-    sha256 "8ef9f93aa2ea8aadc9f2b72319f2bfc1670236ef95ca671b223b97836b7a5a67" => :yosemite
-    sha256 "23c2c40f697d3b9f5f2c022a86f22af69f9b82ef71e6974c22763d0a04f18683" => :mavericks
+    sha256 "02803ddbca53c23b2d5cb2a5a8f35ae793345d76edc1950425237fcf988e2b96" => :high_sierra
+    sha256 "93dc1b7812665fe71b765e12febee6e82d73508e28f151221e25f127af916e2a" => :sierra
+    sha256 "b167861900fb3f72c9852c2db920a96eb10aeb3b96f075b6f25e90ad99b03ddd" => :el_capitan
   end
 
   depends_on "lua"
@@ -29,7 +29,7 @@ class Imapfilter < Formula
     prefix.install "samples"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     You will need to create a ~/.imapfilter/config.lua file.
     Samples can be found in:
       #{prefix}/samples

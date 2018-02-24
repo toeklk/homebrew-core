@@ -5,23 +5,22 @@ class Agda < Formula
 
   desc "Dependently typed functional programming language"
   homepage "http://wiki.portal.chalmers.se/agda/"
+  revision 1
 
   stable do
-    url "https://github.com/agda/agda/archive/v2.5.1.1.tar.gz"
-    sha256 "a0e23cbbcfd5a7e182d52efb9302c1c35085594fa650234806f6b0d90c7fe8d8"
+    url "https://hackage.haskell.org/package/Agda-2.5.3/Agda-2.5.3.tar.gz"
+    sha256 "aa14d4a3582013100f71e64d71c5deff6caa2a286083e20fc16f6dbb0fdf0065"
 
     resource "stdlib" do
-      url "https://github.com/agda/agda-stdlib/archive/v0.12.tar.gz"
-      sha256 "2fddbc6d08e74c6205075704f40c550fc40137dee44e6b22b2e08ddee1410e87"
+      url "https://github.com/agda/agda-stdlib.git",
+          :revision => "477ba28360133b1f5c45ce1b4e6b4efd467af331"
     end
   end
 
   bottle do
-    rebuild 1
-    sha256 "b8813af6da971b71f4083e6208a19460e4b8210aed499f1827112419b5290bea" => :sierra
-    sha256 "da0d064f704833f7594a2ece28d5aec82fdda17105d8059c955dd8e5f523270a" => :el_capitan
-    sha256 "4898eb5092dea5fb56a4c65cae2ff9eada1026f05901bb3056425b786dbb7d1e" => :yosemite
-    sha256 "c7a55550e0e9f4a440ceaa9a3348334a1eb792e3b9eb25e13d8dec643c06dab3" => :mavericks
+    sha256 "af5bd54a1f52386c3c8c9926f42ed72976e43f0e8f8bfc98dc6632083a79fafb" => :high_sierra
+    sha256 "65302e2ebe392a254221235dc09cde7d2ae9f827b1ad57ac0756662305777d53" => :sierra
+    sha256 "07e1f6b0ebd27aa81757575907d14b2ad9d9398f7e78eeed257397597a30c84f" => :el_capitan
   end
 
   head do
@@ -45,7 +44,7 @@ class Agda < Formula
     depends_on "cabal-install" => :build
   end
 
-  depends_on :emacs => ["23.4", :recommended]
+  depends_on "emacs" => :recommended
 
   def install
     # install Agda core
@@ -80,11 +79,11 @@ class Agda < Formula
     s = ""
 
     if build.with? "stdlib"
-      s += <<-EOS.undent
-      To use the Agda standard library by default:
-        mkdir -p ~/.agda
-        echo #{HOMEBREW_PREFIX}/lib/agda/standard-library.agda-lib >>~/.agda/libraries
-        echo standard-library >>~/.agda/defaults
+      s += <<~EOS
+        To use the Agda standard library by default:
+          mkdir -p ~/.agda
+          echo #{HOMEBREW_PREFIX}/lib/agda/standard-library.agda-lib >>~/.agda/libraries
+          echo standard-library >>~/.agda/defaults
       EOS
     end
 
@@ -93,7 +92,7 @@ class Agda < Formula
 
   test do
     simpletest = testpath/"SimpleTest.agda"
-    simpletest.write <<-EOS.undent
+    simpletest.write <<~EOS
       module SimpleTest where
 
       data ℕ : Set where
@@ -118,7 +117,7 @@ class Agda < Formula
     EOS
 
     stdlibtest = testpath/"StdlibTest.agda"
-    stdlibtest.write <<-EOS.undent
+    stdlibtest.write <<~EOS
       module StdlibTest where
 
       open import Data.Nat
@@ -130,7 +129,7 @@ class Agda < Formula
     EOS
 
     iotest = testpath/"IOTest.agda"
-    iotest.write <<-EOS.undent
+    iotest.write <<~EOS
       module IOTest where
 
       open import Agda.Builtin.IO
@@ -146,7 +145,7 @@ class Agda < Formula
     EOS
 
     stdlibiotest = testpath/"StdlibIOTest.agda"
-    stdlibiotest.write <<-EOS.undent
+    stdlibiotest.write <<~EOS
       module StdlibIOTest where
 
       open import IO
@@ -154,9 +153,6 @@ class Agda < Formula
       main : _
       main = run (putStr "Hello, world!")
     EOS
-
-    # run Agda's built-in test suite
-    system bin/"agda", "--test"
 
     # typecheck a simple module
     system bin/"agda", simpletest
@@ -172,7 +168,7 @@ class Agda < Formula
     # test the GHC backend
     if build.with? "ghc"
       cabal_sandbox do
-        cabal_install "text"
+        cabal_install "text", "ieee754"
         dbpath = Dir["#{testpath}/.cabal-sandbox/*-packages.conf.d"].first
         dbopt = "--ghc-flag=-package-db=#{dbpath}"
 

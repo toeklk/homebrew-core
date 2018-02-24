@@ -1,13 +1,13 @@
 class Gwyddion < Formula
   desc "Scanning Probe Microscopy visualization and analysis tool"
   homepage "http://gwyddion.net/"
-  url "http://gwyddion.net/download/2.46/gwyddion-2.46.tar.gz"
-  sha256 "642de6f6ebb2970718853ce5a0ff3363349e8148b9fc0a71d97d88be8501abb7"
+  url "http://gwyddion.net/download/2.50/gwyddion-2.50.tar.gz"
+  sha256 "f3834dae31d9bf696e8d59e2aa79a373a30d5f6caa6033601d2f9d57afa154f3"
 
   bottle do
-    sha256 "9dd978089274e8e8f16b2d6466022d026cf6ae5f8f748a0d7d0dde49a562c3f6" => :sierra
-    sha256 "d392e6b2b796002336917f2ad19064e8101e91fde5dcffddbaf67af7558f291d" => :el_capitan
-    sha256 "cbe78dc92bd686d4aaad67f943fc32d9d02565caaa6d8394661809603e9c7a72" => :yosemite
+    sha256 "298b62b2a21506f10dc8f8ce315fcfee9fc078ffac58fde0d8b29d0e998efad0" => :high_sierra
+    sha256 "a701145954bc8f36f4bef4711286a758bb62445bf59d65bff638c6a9559e4379" => :sierra
+    sha256 "36866a752fc238aefbb298c343d1e31a3741590dab97efbce94a1c1cb83088b0" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -18,7 +18,7 @@ class Gwyddion < Formula
   depends_on "libxml2"
   depends_on "minizip"
 
-  depends_on :python => :optional
+  depends_on "python" => :optional
   depends_on "pygtk" if build.with? "python"
   depends_on "gtksourceview" if build.with? "python"
 
@@ -32,7 +32,7 @@ class Gwyddion < Formula
 
   test do
     system "#{bin}/gwyddion", "--version"
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <libgwyddion/gwyddion.h>
 
       int main(int argc, char *argv[]) {

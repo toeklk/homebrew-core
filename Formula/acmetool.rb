@@ -4,14 +4,13 @@ class Acmetool < Formula
   desc "Automatic certificate acquisition tool for ACME (Let's Encrypt)"
   homepage "https://github.com/hlandau/acme"
   url "https://github.com/hlandau/acme.git",
-      :tag => "v0.0.58",
-      :revision => "a4d55ea51a8782633d7ca477d24c5da9a5c6147b"
+      :tag => "v0.0.67",
+      :revision => "221ea15246f0bbcf254b350bee272d43a1820285"
 
   bottle do
-    sha256 "ffe9ba58fe11e562e3587446ce7941b519ea1302d8c4633098c4962190c4f3f3" => :sierra
-    sha256 "b5767527c07c989aeb07cd0e442af716df286dc598633b5b88955180f07da448" => :el_capitan
-    sha256 "ecfea5ba3c74dd0725199ae56d4c9b280670dd3f3883854fbbc4dc7a5ddb831e" => :yosemite
-    sha256 "2c5e9990f3efa9e2a858ab7864ccc355a8a75030d7efb6edf4270ebdffde3cf4" => :mavericks
+    sha256 "c4ff2b08c70560072307d64272f105bcd66c05983efbf1e278de9e5012047738" => :high_sierra
+    sha256 "7c77a51f12ec154cd5a82f066d547c70f8970a4c5046adf2ab99c600c930a9d5" => :sierra
+    sha256 "8f9a190bbda5a5cd209cf7f45bcdfff9c504a7e368458b435c78b1c25c8cb54b" => :el_capitan
   end
 
   depends_on "go" => :build
@@ -28,17 +27,17 @@ class Acmetool < Formula
 
   go_resource "github.com/coreos/go-systemd" do
     url "https://github.com/coreos/go-systemd.git",
-        :revision => "43e4800a6165b4e02bb2a36673c54b230d6f7b26"
+        :revision => "cc4f39464dc797b91c8025330de585294c2a6950"
   end
 
   go_resource "github.com/hlandau/buildinfo" do
     url "https://github.com/hlandau/buildinfo.git",
-        :revision => "b25d4b0e518fdb8bcbefaa3d52d77473bebe08fd"
+        :revision => "337a29b5499734e584d4630ce535af64c5fe7813"
   end
 
   go_resource "github.com/hlandau/dexlogconfig" do
     url "https://github.com/hlandau/dexlogconfig.git",
-        :revision => "055e2e35f21ef605ada9e9af4e36597678678bf1"
+        :revision => "244f29bd260884993b176cd14ef2f7631f6f3c18"
   end
 
   go_resource "github.com/hlandau/goutils" do
@@ -51,11 +50,6 @@ class Acmetool < Formula
         :revision => "197ef798aed28e08ed3e176e678fda81be993a31"
   end
 
-  go_resource "github.com/hlandauf/gspt" do
-    url "https://github.com/hlandauf/gspt.git",
-        :revision => "25f3bd3f5948489aa5f31c949310ae9f2b0e956c"
-  end
-
   go_resource "github.com/jmhodges/clock" do
     url "https://github.com/jmhodges/clock.git",
         :revision => "880ee4c335489bc78d01e4d0a254ae880734bc15"
@@ -63,7 +57,12 @@ class Acmetool < Formula
 
   go_resource "github.com/mattn/go-isatty" do
     url "https://github.com/mattn/go-isatty.git",
-        :revision => "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8"
+        :revision => "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
+  end
+
+  go_resource "github.com/mattn/go-runewidth" do
+    url "https://github.com/mattn/go-runewidth.git",
+        :revision => "97311d9f7767e3d6f422ea06661bc2c7a19e8a5d"
   end
 
   go_resource "github.com/mitchellh/go-wordwrap" do
@@ -78,12 +77,12 @@ class Acmetool < Formula
 
   go_resource "github.com/peterhellberg/link" do
     url "https://github.com/peterhellberg/link.git",
-        :revision => "d1cebc7ea14a5fc0de7cb4a45acae773161642c6"
+        :revision => "8768c6d4dc563b4a09f58ecda04997024452c057"
   end
 
   go_resource "github.com/satori/go.uuid" do
     url "https://github.com/satori/go.uuid.git",
-        :revision => "0aa62d5ddceb50dbcb909d790b5345affd3669b6"
+        :revision => "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
   end
 
   go_resource "github.com/shiena/ansicolor" do
@@ -93,22 +92,32 @@ class Acmetool < Formula
 
   go_resource "golang.org/x/crypto" do
     url "https://go.googlesource.com/crypto.git",
-        :revision => "9e590154d2353f3f5e1b24da7275686040dcf491"
+        :revision => "a6600008915114d9c087fad9f03d75087b1a74df"
   end
 
   go_resource "golang.org/x/net" do
     url "https://go.googlesource.com/net.git",
-        :revision => "1358eff22f0dd0c54fc521042cc607f6ff4b531a"
+        :revision => "5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec"
+  end
+
+  go_resource "golang.org/x/sys" do
+    url "https://go.googlesource.com/sys.git",
+        :revision => "2c42eef0765b9837fbdab12011af7830f55f88f0"
+  end
+
+  go_resource "golang.org/x/text" do
+    url "https://go.googlesource.com/text.git",
+        :revision => "e19ae1496984b1c655b8044a65c0300a3c878dd3"
   end
 
   go_resource "gopkg.in/alecthomas/kingpin.v2" do
     url "https://gopkg.in/alecthomas/kingpin.v2.git",
-        :revision => "e9044be3ab2a8e11d4e1f418d12f0790d57e8d70"
+        :revision => "947dcec5ba9c011838740e680966fd7087a71d0d"
   end
 
   go_resource "gopkg.in/cheggaaa/pb.v1" do
     url "https://gopkg.in/cheggaaa/pb.v1.git",
-        :revision => "9453b2db37f4d8bc63751daca63bbe7049eb5e74"
+        :revision => "43d64de27312b32812ca7e994fa0bb03ccf08fdf"
   end
 
   go_resource "gopkg.in/hlandau/configurable.v1" do
@@ -118,32 +127,32 @@ class Acmetool < Formula
 
   go_resource "gopkg.in/hlandau/easyconfig.v1" do
     url "https://gopkg.in/hlandau/easyconfig.v1.git",
-        :revision => "bc5afaa18a1a72fe424da647d6bb57ca4d7f83c4"
+        :revision => "7589cb96edce2f94f8c1e6eb261f8c2b06220fe7"
   end
 
   go_resource "gopkg.in/hlandau/service.v2" do
     url "https://gopkg.in/hlandau/service.v2.git",
-        :revision => "601cce2a79c1e61856e27f43c28ed4d7d2c7a619"
+        :revision => "b64b3467ebd16f64faec1640c25e318efc0c0d7b"
   end
 
   go_resource "gopkg.in/hlandau/svcutils.v1" do
     url "https://gopkg.in/hlandau/svcutils.v1.git",
-        :revision => "88dbd6d288dcde4c17ea6048d9f3da23f263571c"
+        :revision => "c25dac49e50cbbcbef8c81b089f56156f4067729"
   end
 
   go_resource "gopkg.in/square/go-jose.v1" do
     url "https://gopkg.in/square/go-jose.v1.git",
-        :revision => "139276ceb5afbf13e636c44e9382f0ca75c12ba3"
+        :revision => "aa2e30fdd1fe9dd3394119af66451ae790d50e0d"
   end
 
   go_resource "gopkg.in/tylerb/graceful.v1" do
     url "https://gopkg.in/tylerb/graceful.v1.git",
-        :revision => "50a48b6e73fcc75b45e22c05b79629a67c79e938"
+        :revision => "4654dfbb6ad53cb5e27f37d99b02e16c1872fbbb"
   end
 
   go_resource "gopkg.in/yaml.v2" do
     url "https://gopkg.in/yaml.v2.git",
-        :revision => "e4d366fc3c7938e2958e662b4258c7a89e1f0e3e"
+        :revision => "d670f9405373e636a5a2765eea47fac0c9bc91a4"
   end
 
   def install

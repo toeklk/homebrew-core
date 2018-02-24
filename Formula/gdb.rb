@@ -1,31 +1,18 @@
-class UniversalBrewedPython < Requirement
-  satisfy { archs_for_command("python").universal? }
-
-  def message; <<-EOS.undent
-    A build of GDB using a brewed Python was requested, but Python is not
-    a universal build.
-
-    GDB requires Python to be built as a universal binary or it will fail
-    if attempting to debug a 32-bit binary on a 64-bit host.
-    EOS
-  end
-end
-
 class Gdb < Formula
   desc "GNU debugger"
   homepage "https://www.gnu.org/software/gdb/"
-  url "https://ftpmirror.gnu.org/gdb/gdb-7.12.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/gdb/gdb-7.12.tar.xz"
-  sha256 "834ff3c5948b30718343ea57b11cbc3235d7995c6a4f3a5cecec8c8114164f94"
-  revision 1
+  url "https://ftp.gnu.org/gnu/gdb/gdb-8.1.tar.xz"
+  mirror "https://ftpmirror.gnu.org/gdb/gdb-8.1.tar.xz"
+  sha256 "af61a0263858e69c5dce51eab26662ff3d2ad9aa68da9583e8143b5426be4b34"
 
   bottle do
-    sha256 "cddcc8e78bbff0cabe56a2d2a57ce9045defcb3ec28d17871d014171fc582465" => :sierra
-    sha256 "6cec71a37016b259d5e07f4de0a828075bc556252635078cc70ee8870bd7c9d8" => :el_capitan
-    sha256 "79c050699683460e4a78c3055a602665b2fc8dd72f639edab61cbe6f48ae79f7" => :yosemite
+    sha256 "43a6d6cca157ef70d13848f35c04e11d832dc0c96f5bcf53a43330f524b3ac40" => :high_sierra
+    sha256 "fe7c6261f9164e7a744c9c512ba7e5afff0e74e373ece9b5aa19d5da6443bfc2" => :sierra
+    sha256 "cd89001bcf8c93b5d6425ab91a400aeffe0cd5bbb0eccd8ab38c719ab5ca34ba" => :el_capitan
   end
 
   deprecated_option "with-brewed-python" => "with-python"
+  deprecated_option "with-guile" => "with-guile@2.0"
 
   option "with-python", "Use the Homebrew version of Python; by default system Python is used"
   option "with-version-suffix", "Add a version suffix to program"
@@ -33,19 +20,22 @@ class Gdb < Formula
 
   depends_on "pkg-config" => :build
   depends_on "python" => :optional
-  depends_on "guile" => :optional
+  depends_on "guile@2.0" => :optional
 
-  if MacOS.version >= :sierra
-    patch do
-      # Patch is needed to work on new 10.12 installs with SIP.
-      # See http://sourceware-org.1504.n7.nabble.com/gdb-on-macOS-10-12-quot-Sierra-quot-td415708.html
-      url "https://raw.githubusercontent.com/Homebrew/formula-patches/9d3dbc2/gdb/0001-darwin-nat.c-handle-Darwin-16-aka-Sierra.patch"
-      sha256 "a71489440781ae133eeba5a3123996e55f72bd914dbfdd3af0b0700f6d0e4e08"
-    end
+  fails_with :clang do
+    build 800
+    cause <<~EOS
+      probe.c:63:28: error: default initialization of an object of const type
+      'const any_static_probe_ops' without a user-provided default constructor
+    EOS
   end
 
-  if build.with? "python"
-    depends_on UniversalBrewedPython
+  fails_with :clang do
+    build 600
+    cause <<~EOS
+      clang: error: unable to execute command: Segmentation fault: 11
+      Test done on: Apple LLVM version 6.0 (clang-600.0.56) (based on LLVM 3.5svn)
+    EOS
   end
 
   def install
@@ -55,11 +45,11 @@ class Gdb < Formula
       "--disable-dependency-tracking",
     ]
 
-    args << "--with-guile" if build.with? "guile"
+    args << "--with-guile" if build.with? "guile@2.0"
     args << "--enable-targets=all" if build.with? "all-targets"
 
     if build.with? "python"
-      args << "--with-python=#{HOMEBREW_PREFIX}"
+      args << "--with-python=#{Formula["python"].opt_libexec}/bin"
     else
       args << "--with-python=/usr"
     end
@@ -70,16 +60,14 @@ class Gdb < Formula
 
     system "./configure", *args
     system "make"
-    system "make", "install"
 
-    # Remove conflicting items with binutils
-    rm_rf include
-    rm_rf lib
-    rm_rf share/"locale"
-    rm_rf share/"info"
+    # Don't install bfd or opcodes, as they are provided by binutils
+    inreplace ["bfd/Makefile", "opcodes/Makefile"], /^install:/, "dontinstall:"
+
+    system "make", "install"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     gdb requires special privileges to access Mach ports.
     You will need to codesign the binary. For instructions, see:
 

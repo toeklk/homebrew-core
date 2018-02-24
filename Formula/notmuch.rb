@@ -1,32 +1,29 @@
 class Notmuch < Formula
   desc "Thread-based email index, search, and tagging"
   homepage "https://notmuchmail.org"
-  url "https://notmuchmail.org/releases/notmuch-0.23.tar.gz"
-  sha256 "c5e75b658ee2b58c5ac7a79e34d2449d37ddfa5c9e67a736454ec296c9a0a1b8"
-  revision 1
+  url "https://notmuchmail.org/releases/notmuch-0.26.tar.gz"
+  sha256 "d3e894ed2ad9d721a442663f07a6f2a241dc98be7cc4af681f16edf88e0d76df"
+  head "git://notmuchmail.org/git/notmuch"
 
   bottle do
     cellar :any
-    sha256 "9d7eea0d1726bee4c1db877fe98fa7183568fe9f1262864509eaf355d87ae84c" => :sierra
-    sha256 "0a3d9be8af8ecfb1357b6e63055f61f7e4b2bba40c221be8ba0f5648f9b4e295" => :el_capitan
-    sha256 "36289b9c8994f4487132a397f248fa19acd46d7253f62815d5158da8f56c40f0" => :yosemite
+    sha256 "4a4c6981dbc9cc1061f30a9e571c729372edc52d235ac3682b6711ff19b2c136" => :high_sierra
+    sha256 "ec47c28caf199263d0c11301b42a29ce2326c3201a12ac20c687412db2c39555" => :sierra
+    sha256 "9fd854188d76d174dbd6d19eea001923403c908f33e11aff98cf135f58eb69a2" => :el_capitan
   end
 
   option "without-python", "Build without python support"
 
   depends_on "pkg-config" => :build
+  depends_on "libgpg-error" => :build
+  depends_on "glib"
   depends_on "gmime"
   depends_on "talloc"
   depends_on "xapian"
-  depends_on :emacs => ["21.1", :optional]
-  depends_on :python3 => :optional
-  depends_on :ruby => ["1.9", :optional]
-
-  # Requires zlib >= 1.2.5.2
-  resource "zlib" do
-    url "http://zlib.net/zlib-1.2.8.tar.gz"
-    sha256 "36658cb768a54c1d4dec43c3116c27ed893e88b02ecfcb44f2166f9c0b7f2a0d"
-  end
+  depends_on "zlib"
+  depends_on "emacs" => :optional
+  depends_on "python3" => :optional
+  depends_on "ruby" => :optional
 
   # Fix SIP issue with python bindings
   # A more comprehensive patch has been submitted upstream
@@ -34,12 +31,6 @@ class Notmuch < Formula
   patch :DATA
 
   def install
-    resource("zlib").stage do
-      system "./configure", "--prefix=#{buildpath}/zlib", "--static"
-      system "make", "install"
-      ENV.append_path "PKG_CONFIG_PATH", "#{buildpath}/zlib/lib/pkgconfig"
-    end
-
     args = %W[--prefix=#{prefix}]
 
     if build.with? "emacs"

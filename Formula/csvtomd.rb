@@ -3,28 +3,29 @@ class Csvtomd < Formula
 
   desc "CSV to Markdown table converter"
   homepage "https://github.com/mplewis/csvtomd"
-  url "https://files.pythonhosted.org/packages/5a/d8/9dbce820243bb6db670cd1ddea80ea1890c6bfd5d122910fdd157d51d71f/csvtomd-0.1.1.tar.gz"
-  sha256 "f2cd1da71ca8ed823d1f02167039e07e58d15a73d672069dfddcda8639576490"
+  url "https://files.pythonhosted.org/packages/2f/41/289bedde7fb32d817d5802eff68b99546842cb34df840665ec39b363f258/csvtomd-0.2.1.tar.gz"
+  sha256 "d9fdf166c3c299ad5800b3cb1661f223b98237f38f22e9d253d45d321f70ec72"
+  revision 1
 
   bottle do
-    sha256 "4364ae91ea62c6b25d87245d0f9046bb3156191b1826ff337f717a43fe4c480d" => :sierra
-    sha256 "ff9ed1382f01e5351c6377052e9e62618feeb04377294a5b7dc4c5f7b5a915c6" => :el_capitan
-    sha256 "ae4316cbe060984c617344c9a581996b1456f3c7c4ad951097c7aa09bb331d97" => :yosemite
+    cellar :any_skip_relocation
+    sha256 "9798a11d45bc49d35e9d0cadc43f67f0fab0303381421063721f80223acc84fc" => :high_sierra
+    sha256 "93644a15d58ab235eec9ef98f2ae23890ff811756fdba8870327b3d2b474cc72" => :sierra
+    sha256 "95e1e0ae2ba1fa1205a19822b5b79b2586ba9f36bf9fed7faf30e1a4223f27c6" => :el_capitan
   end
 
-  depends_on :python3
+  depends_on "python3"
 
   def install
-    virtualenv_create(libexec, "python3")
     virtualenv_install_with_resources
   end
 
   test do
-    (testpath/"test.csv").write <<-EOS.undent
+    (testpath/"test.csv").write <<~EOS
       column 1,column 2
       hello,world
     EOS
-    markdown = <<-EOS.undent.strip
+    markdown = <<~EOS.strip
       column 1  |  column 2
       ----------|----------
       hello     |  world

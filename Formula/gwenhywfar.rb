@@ -1,16 +1,13 @@
 class Gwenhywfar < Formula
   desc "Utility library required by aqbanking and related software"
   homepage "http://www.aqbanking.de/"
-  url "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=201&file=01&dummy=gwenhywfar-4.15.3.tar.gz"
-  sha256 "6a0e8787c99620414da6140e567c616b55856c5edf8825a9ebc67431923ee63a"
-
-  head "http://git.aqbanking.de/git/gwenhywfar.git"
+  url "https://www.aquamaniac.de/sites/download/download.php?package=01&release=208&file=02&dummy=gwenhywfar-4.20.0.tar.gz"
+  sha256 "5a88daabba1388f9528590aab5de527a12dd44a7da4572ce48469a29911b0fb0"
 
   bottle do
-    sha256 "4134a1899f551ec91f6495d69a3939c9aa30d38f292291f00869709d0f299020" => :sierra
-    sha256 "9b78e775989003bfe9e79bc745ef477b2c485c58d4aaff947cf4a44e86f1fc9b" => :el_capitan
-    sha256 "f0beb1b72cafab6696ab63c5a0ae5aa22040095bd6ae8997121f1725e7a11d5f" => :yosemite
-    sha256 "ef8ea6c7fa80e6e89faf9dbbc3f2aa7ef89fd31e16b940abd64ed036a7b1069a" => :mavericks
+    sha256 "229eac2112343d4616576f947213706ebe5f28e0030dd5bef89ee4efa3043ac9" => :high_sierra
+    sha256 "97aaff3937e4551227a66a55963d3dda7e24e53b9e9aa1ffca78ae455be00ab1" => :sierra
+    sha256 "1760007de92dd5e7282a82f2534feb65380338fd8cb11632eef8914c2ddb56a4" => :el_capitan
   end
 
   option "without-cocoa", "Build without cocoa support"
@@ -30,6 +27,7 @@ class Gwenhywfar < Formula
     guis << "gtk2" if build.with? "gtk+"
     guis << "cocoa" if build.with? "cocoa"
 
+    system "autoreconf", "-fiv" if build.head?
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
@@ -39,7 +37,7 @@ class Gwenhywfar < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <gwenhywfar/gwenhywfar.h>
 
       int main()

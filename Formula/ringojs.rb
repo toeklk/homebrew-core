@@ -1,21 +1,24 @@
 class Ringojs < Formula
   desc "CommonJS-based JavaScript runtime"
-  homepage "http://ringojs.org"
-  url "https://github.com/ringo/ringojs/releases/download/v0.12.0/ringojs-0.12.tar.gz"
-  sha256 "1ec1a325d94bcb8512cd9e8e972525c34dd5871bbad92689f00efdfc109ba668"
+  homepage "https://ringojs.org"
+  url "https://github.com/ringo/ringojs/releases/download/v1.2.1/ringojs-1.2.1.tar.gz"
+  sha256 "a04ba090e2a2835a196e4748b699e6f6842ff68919e73dea8f6193af73fdd841"
 
   bottle :unneeded
+
+  depends_on :java => "1.8"
 
   def install
     rm Dir["bin/*.cmd"]
     libexec.install Dir["*"]
-    bin.write_exec_script Dir["#{libexec}/bin/*"]
+    bin.install Dir["#{libexec}/bin/*"]
+    bin.env_script_all_files(libexec/"bin", Language::Java.java_home_env("1.8"))
   end
 
   test do
-    (testpath/"test.js").write <<-EOS.undent
-        var x = 40 + 2;
-        console.assert(x === 42);
+    (testpath/"test.js").write <<~EOS
+      var x = 40 + 2;
+      console.assert(x === 42);
     EOS
     system "#{bin}/ringo", "test.js"
   end

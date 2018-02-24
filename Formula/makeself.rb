@@ -1,8 +1,8 @@
 class Makeself < Formula
   desc "Make self-extractable archives on UNIX"
   homepage "http://www.megastep.org/makeself/"
-  url "https://github.com/megastep/makeself/archive/release-2.2.0.tar.gz"
-  sha256 "9c9d003e097d9c198433a05926e64d9b7cd330c7f10cb4e6048877d0a87de341"
+  url "https://github.com/megastep/makeself/archive/release-2.3.1.tar.gz"
+  sha256 "72211fab8e6e34ec16acded47203c9fff2a3f1313c9ebd4330f6c94ffea43993"
   head "https://github.com/megastep/makeself.git"
 
   bottle :unneeded
@@ -18,6 +18,6 @@ class Makeself < Formula
   test do
     touch "testfile"
     system "tar", "cvzf", "testfile.tar.gz", "testfile"
-    system "makeself", ".", "testfile.run", '"A test file"', "echo"
+    system "#{bin}/makeself", ".", "testfile.run", '"A test file"', "echo"
   end
 end

@@ -1,14 +1,14 @@
 class GnuCobol < Formula
   desc "Implements much of the COBOL 85 and COBOL 2002 standards"
   homepage "http://www.opencobol.org/"
-  revision 3
+  revision 5
 
   stable do
     url "https://downloads.sourceforge.net/project/open-cobol/gnu-cobol/1.1/gnu-cobol-1.1.tar.gz"
     sha256 "5cd6c99b2b1c82fd0c8fffbb350aaf255d484cde43cf5d9b92de1379343b3d7e"
 
     fails_with :clang do
-      cause <<-EOS.undent
+      cause <<~EOS
         Building with Clang configures GNU-COBOL to use Clang as its compiler,
         which causes subsequent GNU-COBOL-based builds to fail.
       EOS
@@ -16,10 +16,10 @@ class GnuCobol < Formula
   end
 
   bottle do
-    sha256 "d5bc16ae030b10d2e70b63689f76a81bb892d6abeb34da7016c854faaf3d7b1b" => :sierra
-    sha256 "a131417f7ad9681d3f3d52e4cb7be7b2b088690c3abada3ce7a4dcb622297939" => :el_capitan
-    sha256 "e9f7cf55043f5f2ec64c4d057f96c8e0803866f0fe2bdf351ec0187543bcb518" => :yosemite
-    sha256 "24d59407e2d5086b2737045bd3883a7b3b9f7f99f6b48b44ac49f751c256aa72" => :mavericks
+    sha256 "d8d90339937363e53f4555e93d195d3c9d69f495876cfe975c320dbfbf130b8a" => :high_sierra
+    sha256 "af857363783841c39c355677f7ef68f68239cfa66e4f31e9105d6399c30fc957" => :sierra
+    sha256 "580728d788d7e3a818a8d50d945ca4c7dafacbfa8eecd78d0fac364d63c0657e" => :el_capitan
+    sha256 "ec0481e921b59ac386a1e2a1266cb86b671a82fa466e6478f8581f4f2b114881" => :yosemite
   end
 
   devel do
@@ -65,12 +65,13 @@ class GnuCobol < Formula
   end
 
   test do
-    (testpath/"hello.cob").write <<-EOS
-       IDENTIFICATION DIVISION.
-       PROGRAM-ID. hello.
-       PROCEDURE DIVISION.
-       DISPLAY "Hello World!".
-       STOP RUN.
+    (testpath/"hello.cob").write <<~EOS
+            * COBOL must be indented
+      000001 IDENTIFICATION DIVISION.
+      000002 PROGRAM-ID. hello.
+      000003 PROCEDURE DIVISION.
+      000004 DISPLAY "Hello World!".
+      000005 STOP RUN.
     EOS
     system "#{bin}/cobc", "-x", testpath/"hello.cob"
     system testpath/"hello"

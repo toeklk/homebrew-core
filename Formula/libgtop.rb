@@ -1,31 +1,45 @@
 class Libgtop < Formula
   desc "Library for portably obtaining information about processes"
   homepage "https://library.gnome.org/devel/libgtop/stable/"
-  url "https://download.gnome.org/sources/libgtop/2.34/libgtop-2.34.0.tar.xz"
-  sha256 "8d8ae39e700d1c8c0b3e1391ed10ca88e6fc14f49d175d516dab6e3313b4ee2a"
+  url "https://download.gnome.org/sources/libgtop/2.38/libgtop-2.38.0.tar.xz"
+  sha256 "4f6c0e62bb438abfd16b4559cd2eca0251de19e291c888cdc4dc88e5ffebb612"
 
   bottle do
-    sha256 "1b6dd8bba18db9ebed44b58bbf99e3b94d207be8e3c120a40d2a44d15d2a5a50" => :sierra
-    sha256 "9b8ceeb264abb5c07af3a72bcefa52c2b1adb4fc653fce58e08781e07f4a6345" => :el_capitan
-    sha256 "19d041da8eb252e9b96445bdbd90bceaaa9433006c54bfb19ee1aed9f4699007" => :yosemite
-    sha256 "31cc9651d4ecfb271a6186218e0b3c208321d76bf81d3d60f63d514794dcabb1" => :mavericks
+    sha256 "93d65fe5d0e5727fa542adb6f21fbbdb0812d7cfe93345d693864bb017f90d35" => :high_sierra
+    sha256 "351fcbb0c758d7435e58862c3ffeaef9c437e53dcf43a7ab4ca4dc260cb014e0" => :sierra
+    sha256 "fc47a0ffb4dd010bf29bc8dd6e0d88a75a2ccb66b33e5a43869e20303e2e9fcb" => :el_capitan
   end
 
+  # Some build deps were added for the patch below,
+  # and can be removed on the next release:
+  # autoconf, automake, gnome-common, gtk-doc, libtool
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
+  depends_on "gnome-common" => :build
+  depends_on "gtk-doc" => :build
+  depends_on "libtool" => :build
   depends_on "pkg-config" => :build
   depends_on "intltool" => :build
   depends_on "gettext"
   depends_on "glib"
   depends_on "gobject-introspection"
 
+  # Fixes the build on OS X by providing a stub implementation of a new feature
+  # https://gitlab.gnome.org/GNOME/libgtop/issues/36
+  patch do
+    url "https://github.com/GNOME/libgtop/commit/42b049f338363f92c1e93b4549fc944098eae674.patch?full_index=1"
+    sha256 "f05b31e0490f9f98c905a771c02071a554dac9965378d60137e50f1e50e84bed"
+  end
+
   def install
-    system "./configure", "--disable-debug", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--without-x"
+    system "./autogen.sh", "--disable-debug", "--disable-dependency-tracking",
+                           "--prefix=#{prefix}",
+                           "--without-x"
     system "make", "install"
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <glibtop/sysinfo.h>
 
       int main(int argc, char *argv[]) {

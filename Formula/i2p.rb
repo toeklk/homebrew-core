@@ -1,8 +1,9 @@
 class I2p < Formula
   desc "Anonymous overlay network - a network within a network"
   homepage "https://geti2p.net"
-  url "https://download.i2p2.de/releases/0.9.27/i2pinstall_0.9.27.jar"
-  sha256 "5e9ae0b1e8fb5707ae6903e09aa1110b6d98742b5c2952f24667133e563843f0"
+  url "https://download.i2p2.de/releases/0.9.33/i2pinstall_0.9.33.jar"
+  mirror "https://launchpad.net/i2p/trunk/0.9.33/+download/i2pinstall_0.9.33.jar"
+  sha256 "40ef1da2ae760f0b28fcec0d6b0ae45b5fd261a492c6bf192625d5888f90ba4a"
 
   bottle :unneeded
 
@@ -20,6 +21,6 @@ class I2p < Formula
   end
 
   test do
-    assert_match "I2P Service is not running.", shell_output("i2prouter status", 1)
+    assert_match "I2P Service is not running.", shell_output("#{bin}/i2prouter status", 1)
   end
 end

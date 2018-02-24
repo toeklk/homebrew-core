@@ -1,14 +1,15 @@
 class Global < Formula
   desc "Source code tag system"
   homepage "https://www.gnu.org/software/global/"
-  url "https://ftpmirror.gnu.org/global/global-6.5.5.tar.gz"
-  mirror "https://ftp.gnu.org/gnu/global/global-6.5.5.tar.gz"
-  sha256 "bc5b42a2c58d1570ff6b6acf7479c3e1609fe0ec8b44e5baa5290dc47148cf7b"
+  url "https://ftp.gnu.org/gnu/global/global-6.6.2.tar.gz"
+  mirror "https://ftpmirror.gnu.org/global/global-6.6.2.tar.gz"
+  sha256 "43c64711301c2caf40dc56d7b91dd03d2b882a31fa31812bf20de0c8fb2e717f"
+  revision 1
 
   bottle do
-    sha256 "3a7631af0628e819fe08751c74e9de2b744cebabfcd2c5cc6d6b7fe97a3a404c" => :sierra
-    sha256 "5264d8a192de1d386deef9498dcb1fc660e5cba7675a347a9984d951f1a93e83" => :el_capitan
-    sha256 "ac78f2132504eda491cc8cb2e2919cbce501c3397970ffee3854c1eeabe50cbf" => :yosemite
+    sha256 "edda8dcf4e58e9fde59fa4aa144581b73f61c1bf4ff2357c2bb8d5c4814eaf56" => :high_sierra
+    sha256 "e16018befb94709f6bbdca2e7c6b1e2314b6aa9bd0d0ff98070a63a0d0be6bf8" => :sierra
+    sha256 "b7369855f9cbc9f4443e4f0ff2e180fc3dcf9f16579165b189c848d04c75820c" => :el_capitan
   end
 
   head do
@@ -23,7 +24,7 @@ class Global < Formula
   end
 
   option "with-ctags", "Enable Exuberant Ctags as a plug-in parser"
-  option "with-pygments", "Enable Pygments as a plug-in parser (should enable exuberent-ctags too)"
+  option "with-pygments", "Enable Pygments as a plug-in parser (should enable exuberant-ctags too)"
   option "with-sqlite3", "Use SQLite3 API instead of BSD/DB API for making tag files"
 
   deprecated_option "with-exuberant-ctags" => "with-ctags"
@@ -32,9 +33,9 @@ class Global < Formula
 
   skip_clean "lib/gtags"
 
-  resource "pygments" do
-    url "https://pypi.python.org/packages/source/P/Pygments/Pygments-2.1.3.tar.gz"
-    sha256 "88e4c8a91b2af5962bfa5ea2447ec6dd357018e86e94c7d14bd8cacbc5b55d81"
+  resource "Pygments" do
+    url "https://files.pythonhosted.org/packages/71/2a/2e4e77803a8bd6408a2903340ac498cb0a2181811af7c9ec92cb70b0308a/Pygments-2.2.0.tar.gz"
+    sha256 "dbae1046def0efb574852fab9e90209b23f556367b5a320c0bcb871c77c3e8cc"
   end
 
   def install
@@ -55,7 +56,7 @@ class Global < Formula
     if build.with? "pygments"
       ENV.prepend_create_path "PYTHONPATH", libexec/"lib/python2.7/site-packages"
       pygments_args = %W[build install --prefix=#{libexec}]
-      resource("pygments").stage { system "python", "setup.py", *pygments_args }
+      resource("Pygments").stage { system "python", "setup.py", *pygments_args }
     end
 
     system "./configure", *args
@@ -74,12 +75,12 @@ class Global < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
-       int c2func (void) { return 0; }
-       void cfunc (void) {int cvar = c2func(); }")
+    (testpath/"test.c").write <<~EOS
+      int c2func (void) { return 0; }
+      void cfunc (void) {int cvar = c2func(); }")
     EOS
     if build.with?("pygments") || build.with?("ctags")
-      (testpath/"test.py").write <<-EOS
+      (testpath/"test.py").write <<~EOS
         def py2func ():
              return 0
         def pyfunc ():

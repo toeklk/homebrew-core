@@ -1,16 +1,16 @@
 class Tldr < Formula
   desc "Simplified and community-driven man pages"
-  homepage "https://tldr-pages.github.io"
+  homepage "https://tldr.sh/"
   url "https://github.com/tldr-pages/tldr-cpp-client/archive/v1.3.0.tar.gz"
   sha256 "6210ece3f5d8f8e55b404e2f6c84be50bfdde9f0d194a271bce751a3ed6141be"
+  revision 2
   head "https://github.com/tldr-pages/tldr-cpp-client.git"
 
   bottle do
     cellar :any
-    sha256 "3e843db1b1f35c9fb0e3cdd47f2eacaaf0411a8158d3c13a8826cccb0692ce7d" => :sierra
-    sha256 "3f98b7a5abcf565a4bce8c674b1f8d0ac5f79075a96f8695eab627a162b8154b" => :el_capitan
-    sha256 "9124b5e08e84aaf28cefb7a13ca37c969eb42edb3801ad73c6cb0e9a9092bc49" => :yosemite
-    sha256 "6087f487eb4de38affd318f610b95af55724624ea376ba0010e451f2bffc82bd" => :mavericks
+    sha256 "00f5ce204fa62e51ed3be821abba9fdda36335b6cecf65231158c02b9713f357" => :high_sierra
+    sha256 "06f9609695fb6b14bbd78f3246bb176b341aecda6ce70515723cee8e8e4ced69" => :sierra
+    sha256 "209c571e3472128665194e73451199087236758a0a7cfa6e88ffd7aa444abbac" => :el_capitan
   end
 
   depends_on "pkg-config" => :build

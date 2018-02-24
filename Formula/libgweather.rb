@@ -1,14 +1,13 @@
 class Libgweather < Formula
   desc "GNOME library for weather, locations and timezones"
   homepage "https://wiki.gnome.org/Projects/LibGWeather"
-  url "https://download.gnome.org/sources/libgweather/3.20/libgweather-3.20.1.tar.xz"
-  sha256 "81eb829fab6375cc9a4d448ae0f790e48f9720e91eb74678b22264cfbc8938d0"
+  url "https://download.gnome.org/sources/libgweather/3.26/libgweather-3.26.1.tar.xz"
+  sha256 "fca78470b345bce948e0333cab0a7c52c32562fc4a75de37061248a64e8fc4b8"
 
   bottle do
-    sha256 "3d9010f144e6ea66b00c5d4b492e7e8a67435f0b2b2dd5bbac25490eac088e54" => :sierra
-    sha256 "b6bddc8ca66e33ca7ff10d57038d37b0eb674bcdf0ddffb5581a50cd1db19465" => :el_capitan
-    sha256 "29ca26ee32e81a2c12c1c7b52cd1695bad1e20e8702bbdb123651ff8430a4ff5" => :yosemite
-    sha256 "e8325e2c5d6b2c90dfd28ea294a95220ce62577a1b97f7234ed037a6702bbc79" => :mavericks
+    sha256 "07ccd0c7376e8b3df7f535d8a2a38bfa4912442957c787099d87cb7fbbc3140e" => :high_sierra
+    sha256 "f70cfbb5fe2c7c26d74af33487f6a259069449e3d65f1e52c37fbcb4f3af1763" => :sierra
+    sha256 "136de1236c9cec9d180e90bfcdc07778e07609737c48417eb50e0d8a6a36a130" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
@@ -37,7 +36,7 @@ class Libgweather < Formula
   end
 
   test do
-    (testpath/"test.c").write <<-EOS.undent
+    (testpath/"test.c").write <<~EOS
       #include <libgweather/gweather.h>
 
       int main(int argc, char *argv[]) {

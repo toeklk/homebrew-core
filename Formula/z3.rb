@@ -1,20 +1,20 @@
 class Z3 < Formula
   desc "High-performance theorem prover"
   homepage "https://github.com/Z3Prover/z3"
-  url "https://github.com/Z3Prover/z3/archive/z3-4.5.0.tar.gz"
-  sha256 "aeae1d239c5e06ac183be7dd853775b84698db1265cb2258e5918a28372d4a0c"
+  url "https://github.com/Z3Prover/z3/archive/z3-4.6.0.tar.gz"
+  sha256 "511da31d1f985cf0c79b2de05bda4e057371ba519769d1546ff71e1304fe53c9"
   head "https://github.com/Z3Prover/z3.git"
 
   bottle do
     cellar :any
-    sha256 "0f1f3d3de36a046161950aa09e2dc42e1d49deccdd12acaf1ebbb472b2250ad1" => :sierra
-    sha256 "4646641c96b2369b11cd87d6cc81debf675f078fee3e0a296c8d0a0b4ce738f5" => :el_capitan
-    sha256 "72feb2352c0f9d5fbbf22ae83443520bff85acd6448898a5d89ba3fe42c61566" => :yosemite
+    sha256 "b8e7d05e007f45e7ac1d1962279db7f32043306441a984715842957e242683db" => :high_sierra
+    sha256 "a0fcd87fa76072a7f8a6fb663c5d2589e8e1395e8c11acfb26150a7867aa6076" => :sierra
+    sha256 "bc1f47e9c9c1bff59983a17e00b00ab6724de6c182147cbecd6115fea377fda8" => :el_capitan
   end
 
   option "without-python", "Build without python 2 support"
-  depends_on :python => :recommended if MacOS.version <= :snow_leopard
-  depends_on :python3 => :optional
+  depends_on "python" => :recommended if MacOS.version <= :snow_leopard
+  depends_on "python3" => :optional
 
   def install
     if build.without?("python3") && build.without?("python")
@@ -27,6 +27,13 @@ class Z3 < Formula
         system "make"
         system "make", "install"
       end
+    end
+
+    # qprofdiff is not yet part of the source release (it will be as soon as a
+    # version is released after 4.5.0), so we only include it in HEAD builds
+    if build.head?
+      system "make", "-C", "contrib/qprofdiff"
+      bin.install "contrib/qprofdiff/qprofdiff"
     end
 
     pkgshare.install "examples"
